@@ -27,5 +27,4 @@
 $ gulp                          
 ```
 
-This will start a lightweight development server with Browser-Sync and
-synchronized browsing across multiple devices and browsers.
+이렇게 하면 자동으로 빌드 및 브라우저 실행이 됩니다. 같은 포트로 접속할 경우 Browser-Sync에 의해 동기화됩니다.
