@@ -19838,7 +19838,7 @@ module.exports = Todo;
 
 },{"react":156}],158:[function(require,module,exports){
 var React = require('react');
-var Todo = require('./Todo.jsx');
+var Todo = require('./Todo');
 
 var TodoList = React.createClass({displayName: "TodoList",
     getInitialState() {
@@ -19869,13 +19869,13 @@ var TodoList = React.createClass({displayName: "TodoList",
 
 module.exports = TodoList;
 
-},{"./Todo.jsx":157,"react":156}],159:[function(require,module,exports){
+},{"./Todo":157,"react":156}],159:[function(require,module,exports){
 var React = require('react');
-var TodoList = require('./components/TodoList.jsx');
+var TodoList = require('./components/TodoList');
 
 React.render(
     React.createElement(TodoList, null),
     document.getElementById('app')
 );
 
-},{"./components/TodoList.jsx":158,"react":156}]},{},[159]);
+},{"./components/TodoList":158,"react":156}]},{},[159]);

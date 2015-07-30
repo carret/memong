@@ -11,7 +11,7 @@ var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync').create();
 
 var paths = {
-    js: ['./src/**/**/*.jsx', './src/**/*.jsx', './src/*.jsx'],
+    js: ['./src/**/**/*.js', './src/**/*.js', './src/*.js'],
     css: ['./src/css/**/*.css', './src/css/*.css'],
     views: ['./src/views/*.*']
 };
@@ -20,7 +20,7 @@ var paths = {
 
 
 gulp.task('build-js', function() {
-    return browserify('./src/main.jsx')
+    return browserify('./src/main.js')
         .transform(reactify)
         .bundle()
         .pipe(source('main.js'))
