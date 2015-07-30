@@ -1,0 +1,28 @@
+{
+  "name": "memong",
+  "version": "1.0.0",
+  "description": "Markdown Memo App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Team. carret",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.3.3",
+    "express": "^4.13.1",
+    "mongoose": "^4.1.0",
+    "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.8.1",
+    "browserify": "^11.0.1",
+    "gulp": "^3.9.0",
+    "gulp-concat-css": "^2.2.0",
+    "gulp-ejsmin": "0.0.1",
+    "gulp-minify-css": "^1.2.0",
+    "gulp-nodemon": "^2.0.3",
+    "reactify": "^1.1.1",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
