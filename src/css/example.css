@@ -2,3 +2,8 @@
     width: 100%;
     height: 100%;
 }
+
+.last-editing-memo-textarea {
+    min-width: 500px;
+    min-height: 700px;
+}
