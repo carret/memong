@@ -55158,19 +55158,19 @@ exports.generate = generate
 
 },{}],391:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
-var ActionConstants = require('../constants/ActionConstants');
+var MemoActionConstants = require('../constants/MemoActionConstants');
 
-var AppActions = {
+var MemoActions = {
     initMemo: function(_memos) {
         AppDispatcher.handleClientAction({
-            actionType: ActionConstants.INIT_MEMO,
+            actionType: MemoActionConstants.INIT_MEMO,
             memos: _memos
         });
     },
 
     addMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
-            actionType: ActionConstants.ADD_MEMO,
+            actionType: MemoActionConstants.ADD_MEMO,
             targetEditMemo: _targetEditMemo,
             context: _context
         });
@@ -55178,24 +55178,24 @@ var AppActions = {
 
     startEditMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
-            actionType: ActionConstants.START_EDIT_MEMO,
+            actionType: MemoActionConstants.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
     },
 
     completeEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
-            actionType: ActionConstants.END_EDIT_MEMO,
+            actionType: MemoActionConstants.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
     }
 };
 
-module.exports = AppActions;
+module.exports = MemoActions;
 
-},{"../constants/ActionConstants":397,"../dispatcher/AppDispatcher":399}],392:[function(require,module,exports){
+},{"../constants/MemoActionConstants":397,"../dispatcher/AppDispatcher":399}],392:[function(require,module,exports){
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
+var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
 var md = new Remarkable({
     html:         false,        // Enable HTML tags in source
@@ -55210,7 +55210,7 @@ var md = new Remarkable({
 
 var CompleteMemo = React.createClass({displayName: "CompleteMemo",
     startEditMemo: function() {
-        AppActions.startEditMemo(this.props.memo);
+        MemoActions.startEditMemo(this.props.memo);
     },
 
     render: function() {
@@ -55225,11 +55225,11 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/AppActions":391,"react":326,"remarkable":327}],393:[function(require,module,exports){
+},{"../../actions/MemoActions":391,"react":326,"remarkable":327}],393:[function(require,module,exports){
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
+var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
-var ActionConstants = require('../../constants/ActionConstants');
+var MemoActionConstants = require('../../constants/MemoActionConstants');
 var _ = require('underscore');
 
 
@@ -55240,7 +55240,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: ActionConstants.END_EDIT_MEMO
+            actionType: MemoActionConstants.END_EDIT_MEMO
         };
     },
 
@@ -55259,7 +55259,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
         if (matches != undefined) {
             if (matches.length == 2) {
-                this.setState({actionType: ActionConstants.ADD_MEMO}, function() {
+                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
                     React.findDOMNode(this.refs._textarea).blur();
                 });
             }
@@ -55271,19 +55271,19 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         var result = "";
 
         switch(this.state.actionType) {
-            case ActionConstants.END_EDIT_MEMO :
+            case MemoActionConstants.END_EDIT_MEMO :
                 result = value;
-                AppActions.completeEditMemo(_.extend({}, this.props.memo, {
+                MemoActions.completeEditMemo(_.extend({}, this.props.memo, {
                     value: result
                 }));
                 break;
 
-            case ActionConstants.ADD_MEMO :
+            case MemoActionConstants.ADD_MEMO :
                 matches = value.match(regEx);
                 result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
                 this.setState({value: value.slice((value.indexOf(matches[1], matches[0].length), value.length))});
 
-                AppActions.addMemo(this.props.memo, result);
+                MemoActions.addMemo(this.props.memo, result);
                 React.findDOMNode(this.refs._textarea).focus();
                 break;
         }
@@ -55310,7 +55310,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/AppActions":391,"../../constants/ActionConstants":397,"../../constants/MemoTypeConstants":398,"react":326,"underscore":390}],394:[function(require,module,exports){
+},{"../../actions/MemoActions":391,"../../constants/MemoActionConstants":397,"../../constants/MemoTypeConstants":398,"react":326,"underscore":390}],394:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -55376,8 +55376,8 @@ module.exports = Editor;
 
 },{"../../constants/MemoTypeConstants":398,"../../stores/MemoStore":401,"./CompleteMemo":392,"./EditMemo":393,"./GlobalEditMemo":395,"./NoneMemo":396,"react":326,"underscore":390}],395:[function(require,module,exports){
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
-var ActionConstants = require('../../constants/ActionConstants');
+var MemoActions = require('../../actions/MemoActions');
+var MemoActionConstants = require('../../constants/MemoActionConstants');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
@@ -55390,7 +55390,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: ActionConstants.END_EDIT_MEMO
+            actionType: MemoActionConstants.END_EDIT_MEMO
         };
     },
 
@@ -55409,7 +55409,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
         if (matches != undefined) {
             if (matches.length == 2) {
-                this.setState({actionType: ActionConstants.ADD_MEMO}, function() {
+                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
                     React.findDOMNode(this.refs._textarea).blur();
                 });
             }
@@ -55422,7 +55422,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
         var updateValue = "";
 
         switch(this.state.actionType) {
-            case ActionConstants.END_EDIT_MEMO :
+            case MemoActionConstants.END_EDIT_MEMO :
                 if (value == "") {
                     return;
                 }
@@ -55430,17 +55430,17 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
                 this.setState({value: ""});
                 break;
 
-            case ActionConstants.ADD_MEMO :
+            case MemoActionConstants.ADD_MEMO :
                 matches = value.match(regEx);
                 result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
                 updateValue = value.slice(value.indexOf(matches[1], matches[0].length), value.length);
                 this.setState({
                     value: updateValue,
-                    actionType: ActionConstants.END_EDIT_MEMO
+                    actionType: MemoActionConstants.END_EDIT_MEMO
                 });
                 break;
         }
-        AppActions.addMemo(_.extend(this.props.memo, {
+        MemoActions.addMemo(_.extend(this.props.memo, {
             value: updateValue
         }), result);
         React.findDOMNode(this.refs._textarea).focus();
@@ -55465,9 +55465,9 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/AppActions":391,"../../constants/ActionConstants":397,"../../constants/MemoTypeConstants":398,"react":326,"underscore":390}],396:[function(require,module,exports){
+},{"../../actions/MemoActions":391,"../../constants/MemoActionConstants":397,"../../constants/MemoTypeConstants":398,"react":326,"underscore":390}],396:[function(require,module,exports){
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
+var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
 var md = new Remarkable({
     html:         false,        // Enable HTML tags in source
@@ -55482,7 +55482,7 @@ var md = new Remarkable({
 
 var NoneMemo = React.createClass({displayName: "NoneMemo",
     startEditMemo: function() {
-        AppActions.startEditMemo(this.props.memo);
+        MemoActions.startEditMemo(this.props.memo);
     },
 
     render: function() {
@@ -55497,7 +55497,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/AppActions":391,"react":326,"remarkable":327}],397:[function(require,module,exports){
+},{"../../actions/MemoActions":391,"react":326,"remarkable":327}],397:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -55529,6 +55529,13 @@ AppDispatcher.handleClientAction = function(action) {
     });
 };
 
+AppDispatcher.handleServerAction = function(action) {
+    this.dispatch({
+        source: 'SERVER_ACTION',
+        action: action
+    });
+};
+
 module.exports = AppDispatcher;
 
 },{"flux":169}],400:[function(require,module,exports){
@@ -55536,9 +55543,9 @@ var React = require('react');
 
 //var MemoViewer = require('./components/MemoViewer/MemoViewer');
 var Editor = require('./components/Editor/Editor');
-var AppActions = require('./actions/AppActions');
+var MemoActions = require('./actions/MemoActions');
 
-AppActions.initMemo([]);
+MemoActions.initMemo([]);
 
 React.render(
     React.createElement("div", {className: "app"}, 
@@ -55547,10 +55554,10 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/AppActions":391,"./components/Editor/Editor":394,"react":326}],401:[function(require,module,exports){
+},{"./actions/MemoActions":391,"./components/Editor/Editor":394,"react":326}],401:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-var ActionConstants = require('../constants/ActionConstants');
+var MemoActionConstants = require('../constants/MemoActionConstants');
 var MemoTypeConstants = require('../constants/MemoTypeConstants');
 var _ = require('underscore');
 var sui = require('simple-unique-id');
@@ -55684,19 +55691,19 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
-        case ActionConstants.INIT_MEMO:
+        case MemoActionConstants.INIT_MEMO:
             initMemo(action.memos);
             break;
 
-        case ActionConstants.ADD_MEMO:
+        case MemoActionConstants.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
             break;
 
-        case ActionConstants.START_EDIT_MEMO:
+        case MemoActionConstants.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
             break;
 
-        case ActionConstants.END_EDIT_MEMO:
+        case MemoActionConstants.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
             break;
 
@@ -55711,4 +55718,4 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/ActionConstants":397,"../constants/MemoTypeConstants":398,"../dispatcher/AppDispatcher":399,"events":148,"simple-unique-id":388,"underscore":390}]},{},[400]);
+},{"../constants/MemoActionConstants":397,"../constants/MemoTypeConstants":398,"../dispatcher/AppDispatcher":399,"events":148,"simple-unique-id":388,"underscore":390}]},{},[400]);

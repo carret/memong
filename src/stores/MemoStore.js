@@ -1,6 +1,6 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-var ActionConstants = require('../constants/ActionConstants');
+var MemoActionConstants = require('../constants/MemoActionConstants');
 var MemoTypeConstants = require('../constants/MemoTypeConstants');
 var _ = require('underscore');
 var sui = require('simple-unique-id');
@@ -134,19 +134,19 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
-        case ActionConstants.INIT_MEMO:
+        case MemoActionConstants.INIT_MEMO:
             initMemo(action.memos);
             break;
 
-        case ActionConstants.ADD_MEMO:
+        case MemoActionConstants.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
             break;
 
-        case ActionConstants.START_EDIT_MEMO:
+        case MemoActionConstants.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
             break;
 
-        case ActionConstants.END_EDIT_MEMO:
+        case MemoActionConstants.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
             break;
 

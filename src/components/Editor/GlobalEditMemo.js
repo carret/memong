@@ -1,6 +1,6 @@
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
-var ActionConstants = require('../../constants/ActionConstants');
+var MemoActions = require('../../actions/MemoActions');
+var MemoActionConstants = require('../../constants/MemoActionConstants');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
@@ -13,7 +13,7 @@ var GlobalEditMemo = React.createClass({
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: ActionConstants.END_EDIT_MEMO
+            actionType: MemoActionConstants.END_EDIT_MEMO
         };
     },
 
@@ -32,7 +32,7 @@ var GlobalEditMemo = React.createClass({
 
         if (matches != undefined) {
             if (matches.length == 2) {
-                this.setState({actionType: ActionConstants.ADD_MEMO}, function() {
+                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
                     React.findDOMNode(this.refs._textarea).blur();
                 });
             }
@@ -45,7 +45,7 @@ var GlobalEditMemo = React.createClass({
         var updateValue = "";
 
         switch(this.state.actionType) {
-            case ActionConstants.END_EDIT_MEMO :
+            case MemoActionConstants.END_EDIT_MEMO :
                 if (value == "") {
                     return;
                 }
@@ -53,17 +53,17 @@ var GlobalEditMemo = React.createClass({
                 this.setState({value: ""});
                 break;
 
-            case ActionConstants.ADD_MEMO :
+            case MemoActionConstants.ADD_MEMO :
                 matches = value.match(regEx);
                 result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
                 updateValue = value.slice(value.indexOf(matches[1], matches[0].length), value.length);
                 this.setState({
                     value: updateValue,
-                    actionType: ActionConstants.END_EDIT_MEMO
+                    actionType: MemoActionConstants.END_EDIT_MEMO
                 });
                 break;
         }
-        AppActions.addMemo(_.extend(this.props.memo, {
+        MemoActions.addMemo(_.extend(this.props.memo, {
             value: updateValue
         }), result);
         React.findDOMNode(this.refs._textarea).focus();

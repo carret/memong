@@ -1,7 +1,7 @@
 var React = require('react');
-var AppActions = require('../../actions/AppActions');
+var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
-var ActionConstants = require('../../constants/ActionConstants');
+var MemoActionConstants = require('../../constants/MemoActionConstants');
 var _ = require('underscore');
 
 
@@ -12,7 +12,7 @@ var EditMemo = React.createClass({
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: ActionConstants.END_EDIT_MEMO
+            actionType: MemoActionConstants.END_EDIT_MEMO
         };
     },
 
@@ -31,7 +31,7 @@ var EditMemo = React.createClass({
 
         if (matches != undefined) {
             if (matches.length == 2) {
-                this.setState({actionType: ActionConstants.ADD_MEMO}, function() {
+                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
                     React.findDOMNode(this.refs._textarea).blur();
                 });
             }
@@ -43,19 +43,19 @@ var EditMemo = React.createClass({
         var result = "";
 
         switch(this.state.actionType) {
-            case ActionConstants.END_EDIT_MEMO :
+            case MemoActionConstants.END_EDIT_MEMO :
                 result = value;
-                AppActions.completeEditMemo(_.extend({}, this.props.memo, {
+                MemoActions.completeEditMemo(_.extend({}, this.props.memo, {
                     value: result
                 }));
                 break;
 
-            case ActionConstants.ADD_MEMO :
+            case MemoActionConstants.ADD_MEMO :
                 matches = value.match(regEx);
                 result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
                 this.setState({value: value.slice((value.indexOf(matches[1], matches[0].length), value.length))});
 
-                AppActions.addMemo(this.props.memo, result);
+                MemoActions.addMemo(this.props.memo, result);
                 React.findDOMNode(this.refs._textarea).focus();
                 break;
         }

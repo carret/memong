@@ -9,4 +9,11 @@ AppDispatcher.handleClientAction = function(action) {
     });
 };
 
+AppDispatcher.handleServerAction = function(action) {
+    this.dispatch({
+        source: 'SERVER_ACTION',
+        action: action
+    });
+};
+
 module.exports = AppDispatcher;

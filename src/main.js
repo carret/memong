@@ -2,9 +2,9 @@ var React = require('react');
 
 //var MemoViewer = require('./components/MemoViewer/MemoViewer');
 var Editor = require('./components/Editor/Editor');
-var AppActions = require('./actions/AppActions');
+var MemoActions = require('./actions/MemoActions');
 
-AppActions.initMemo([]);
+MemoActions.initMemo([]);
 
 React.render(
     <div className="app">
