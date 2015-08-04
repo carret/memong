@@ -1,4 +1,5 @@
 var React = require('react');
+<<<<<<< HEAD
 ////var TodoList = require('./components/TodoList');
 //var Header = require('./components/Header');
 //
@@ -121,5 +122,18 @@ var PRODUCTS = [
 
 React.render(
     <FilterableProductTable products={PRODUCTS} />,
+=======
+
+//var MemoViewer = require('./components/MemoViewer/MemoViewer');
+var Editor = require('./components/Editor/Editor');
+var MemoActions = require('./actions/MemoActions');
+
+MemoActions.initMemo([]);
+
+React.render(
+    <div className="app">
+        <Editor />
+    </div>,
+>>>>>>> seokju
     document.getElementById('app')
 );
