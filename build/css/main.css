@@ -1,1 +1,1 @@
-.app{width:100%;height:100%}.last-editing-memo-textarea{min-width:500px;min-height:700px}
+.app{display:-webkit-flex;display:flex}.memo-viewer{width:250px}.editor{-webkit-flex:1;-ms-flex:1;flex:1;overflow:scroll}.global-edit-memo{overflow:visible}.edit-memo-textarea,.global-edit-memo-textarea{width:100%}

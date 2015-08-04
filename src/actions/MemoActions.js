@@ -17,6 +17,13 @@ var MemoActions = {
         });
     },
 
+    deleteMemo: function(_targetCompleteMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: MemoActionConstants.DELETE_MEMO,
+            targetCompleteMemo: _targetCompleteMemo
+        });
+    },
+
     startEditMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
             actionType: MemoActionConstants.START_EDIT_MEMO,
