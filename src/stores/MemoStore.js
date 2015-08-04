@@ -17,6 +17,7 @@ var globalEditMemo = {
 var matches = [];
 
 
+
 //Private Function
 //비공개 함수 영역입니다. 데이터를 수정합니다.
 
@@ -81,7 +82,7 @@ function _indexOf(arr, searchId, property) {
 function _parseMemo(memo) {
     var props = {};
 
-    matches = memo.value.match(/# .+/g);
+    matches = memo.value.match(/^(#)[ \t].+/gm);
 
     if (matches != undefined) {
         if (matches.length == 1) {
@@ -140,6 +141,10 @@ AppDispatcher.register(function(payload) {
 
         case MemoActionConstants.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
+            break;
+
+        case MemoActionConstants.DELETE_MEMO:
+            deleteMemo(action.targetCompleteMemo);
             break;
 
         case MemoActionConstants.START_EDIT_MEMO:

@@ -4,8 +4,10 @@ var MemoActionConstants = require('../../constants/MemoActionConstants');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
+var Textarea = require('react-textarea-autosize');
 
-var regEx = /# .+/g;
+
+var regEx = /^(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -32,7 +34,7 @@ var GlobalEditMemo = React.createClass({
 
         if (matches != undefined) {
             if (matches.length == 2) {
-                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
+                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
                     React.findDOMNode(this.refs._textarea).blur();
                 });
             }
@@ -76,7 +78,7 @@ var GlobalEditMemo = React.createClass({
         };
         return(
             <div className="global-edit-memo">
-                <textarea ref="_textarea"
+                <Textarea ref="_textarea"
                           className="global-edit-memo-textarea"
                           valueLink={valueLink}
                           onBlur={this._handleAction}

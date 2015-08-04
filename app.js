@@ -21,24 +21,6 @@ app.use(express.static(__dirname + '/build'));
 //passports.initializePassport();
 routes.doRoutes(app);
 
-app.get('/comments.json', function(req, res) {
-    fs.readFile('comments.json', function(err, data) {
-        res.setHeader('Cache-Control', 'no-cache');
-        res.json(JSON.parse(data));
-    });
-});
-
-app.post('/comments.json', function(req, res) {
-    fs.readFile('comments.json', function(err, data) {
-        var comments = JSON.parse(data);
-        comments.push(req.body);
-        fs.writeFile('comments.json', JSON.stringify(comments, null, 4), function(err) {
-            res.setHeader('Cache-Control', 'no-cache');
-            res.json(comments);
-        });
-    });
-});
-
 app.listen(8888);
 
 console.log("Running at Port 8888");

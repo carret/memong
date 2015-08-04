@@ -31,7 +31,7 @@ var Editor = React.createClass({
     },
 
     render: function() {
-        var item = _.map(this.state.memos, function(memo) {
+        var items = _.map(this.state.memos, function(memo) {
             var type = memo.type;
             switch(type) {
                 case MemoTypeConstants.COMPLETE_MEMO :
@@ -49,7 +49,7 @@ var Editor = React.createClass({
         });
 
         return (
-            <div className="editor">{item}</div>
+            <div className="editor">{items}</div>
         );
     },
 

@@ -4,8 +4,10 @@ var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
 var _ = require('underscore');
 
+var Textarea = require('react-textarea-autosize');
 
-var regEx = /# .+/g;
+
+var regEx = /^(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({
@@ -68,8 +70,8 @@ var EditMemo = React.createClass({
         };
 
         return (
-            <div className="eidt-memo">
-                <textarea ref="_textarea"
+            <div className="edit-memo">
+                <Textarea ref="_textarea"
                           className="edit-memo-textarea"
                           valueLink={valueLink}
                           onBlur={this._handleAction}
