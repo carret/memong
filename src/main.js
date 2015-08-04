@@ -65,7 +65,7 @@ var SearchBar = React.createClass({
         this.props.onUserInput {
             this.props.onUserInput(this.refs.filterTextInput.getDOMNode().value, this.refs.inStockOnlyInput.getDOMNode().checked);
         }
-    }
+    },
     render: function() {
         return (
             <form>
