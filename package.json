@@ -13,9 +13,12 @@
     "express": "^4.13.1",
     "mongoose": "^4.1.0",
     "react": "^0.13.3",
+    "material-ui":"0.10.2",
     "mongoose": "^4.0.7",
     "cookie-parser": "~1.0.1",
-    "body-parser": "~1.0.0"
+    "body-parser": "~1.0.0",
+    "passport" : "0.2.2",
+    "passport-facebook":"2.0.0"
   },
   "devDependencies": {
     "browser-sync": "^2.8.1",

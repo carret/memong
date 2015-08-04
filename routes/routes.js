@@ -4,6 +4,7 @@
 
 exports.doRoutes = function(app) {
     app.get ('/', index)
+    require('./api/login').doRoutes(app)
     require('./api/note').doRoutes(app)
     require('./api/memo').doRoutes(app)
 }
