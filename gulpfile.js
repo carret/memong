@@ -17,8 +17,6 @@ var paths = {
 };
 
 
-
-
 gulp.task('build-js', function() {
     return browserify('./src/main.js')
         .transform(reactify)

@@ -1,7 +1,15 @@
 var React = require('react');
-var TodoList = require('./components/TodoList');
+
+var MemoViewer = require('./components/MemoViewer/MemoViewer');
+var Editor = require('./components/Editor/Editor');
+var MemoActions = require('./actions/MemoActions');
+
+MemoActions.initMemo([]);
 
 React.render(
-    <TodoList />,
+    <div className="app">
+        <MemoViewer />
+        <Editor />
+    </div>,
     document.getElementById('app')
 );
