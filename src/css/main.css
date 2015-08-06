@@ -1,5 +1,10 @@
 
 .app {
+
+}
+
+.content {
+    margin-top : 56px;
     display: -webkit-flex;
     display: flex;
 }

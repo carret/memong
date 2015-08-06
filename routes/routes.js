@@ -10,5 +10,6 @@ exports.doRoutes = function(app) {
 }
 
 var index = function(req, res) {
+    //ÄíÅ° Ã¼Å©
     res.render('index', {title : "memong"})
 }

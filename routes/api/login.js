@@ -4,6 +4,15 @@
 var passport=require('../../passports');
 
 exports.doRoutes = function(app) {
+    app.get('/login/google', passport.authenticate('google', {
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    }));
+    app.get('/login/google/callback', passport.authenticate('google', {successRedirect:'/login/google/success', failureRedirect:'/login/google/fail'}));
+    app.get('/login/google/success', ensureAuthenticated, function(req,res,next) {
+        res.send(req.user);
+    });
     app.get('/login/facebook', passport.authenticate('facebook'));
     app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/login/facebook/success', failureRedirect:'/login/facebook/fail'}));
     app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {

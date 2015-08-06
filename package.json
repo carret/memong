@@ -20,6 +20,7 @@
     "body-parser": "~1.0.0",
     "passport" : "0.2.2",
     "passport-facebook":"2.0.0",
+    "passport-google-oauth":"0.2.0",
     "react-textarea-autosize": "^2.4.2",
     "remarkable": "^1.6.0",
     "simple-unique-id": "0.0.1",
@@ -35,5 +36,17 @@
     "gulp-nodemon": "^2.0.3",
     "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "oauth": {
+    "google": {
+      "GOOGLE_APP_ID": "577897444749-7oorn4p1co3frfnue1d7b2qirud5matn.apps.googleusercontent.com",
+      "GOOGLE_APP_SECRET": "5-rjZ_ojA90iJCotkWdpMdyD",
+      "callbackURL": "http://localhost:8888/login/google/callback"
+    }, "facebook": {
+      "FACEBOOK_APP_ID": "906973419373720",
+      "FACEBOOK_APP_SECRET": "7e12213660608afcdaddc280438bb4c2",
+      "callbackURL":"http://localhost:8888/login/facebook/callback"
+    }
   }
+
 }

@@ -1,1 +1,1 @@
-.app{display:-webkit-flex;display:flex}.memo-viewer{width:250px}.editor{-webkit-flex:1;-ms-flex:1;flex:1;overflow:scroll}.global-edit-memo{overflow:visible}.edit-memo-textarea,.global-edit-memo-textarea{width:100%}
+.content{margin-top:56px;display:-webkit-flex;display:flex}.memo-viewer{width:250px}.editor{-webkit-flex:1;-ms-flex:1;flex:1;overflow:scroll}.global-edit-memo{overflow:visible}.edit-memo-textarea,.global-edit-memo-textarea{width:100%}
