@@ -8,9 +8,11 @@ app.use(express.static(__dirname + '/build'));
 
 
 app.get('/', function(req,res) {
-    res.render('index');
+    res.render('__static__index');
 });
-
+app.get('/typography', function(req,res){
+    res.render('__static__typography');
+});
 
 app.listen(8888);
 console.log("Running at Port 8888");

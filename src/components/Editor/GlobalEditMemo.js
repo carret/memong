@@ -7,7 +7,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 

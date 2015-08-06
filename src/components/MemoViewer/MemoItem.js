@@ -12,7 +12,7 @@ var MemoItem = React.createClass({
             <div className="memo-viewer-item-name">
                 <h3>{this.props.memo.name}</h3>
                 </div>
-            <div>
+            <div className="memo-viewer-item-button-conatiner">
                 <button className="memo-viewer-item-button" onClick={this._onDelete}>삭제</button>
             </div>
         </div>

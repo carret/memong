@@ -55535,7 +55535,7 @@ var MemoActions = {
 
 module.exports = MemoActions;
 
-},{"../constants/MemoActionConstants":401,"../dispatcher/AppDispatcher":403}],394:[function(require,module,exports){
+},{"../constants/MemoActionConstants":402,"../dispatcher/AppDispatcher":404}],394:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -55577,7 +55577,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
@@ -55654,7 +55654,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":401,"../../constants/MemoTypeConstants":402,"react":328,"react-textarea-autosize":172,"underscore":392}],396:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":402,"../../constants/MemoTypeConstants":403,"react":328,"react-textarea-autosize":172,"underscore":392}],396:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -55718,7 +55718,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/MemoTypeConstants":402,"../../stores/MemoStore":405,"./CompleteMemo":394,"./EditMemo":395,"./GlobalEditMemo":397,"./NoneMemo":398,"react":328,"underscore":392}],397:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":403,"../../stores/MemoStore":406,"./CompleteMemo":394,"./EditMemo":395,"./GlobalEditMemo":397,"./NoneMemo":398,"react":328,"underscore":392}],397:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
@@ -55728,7 +55728,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -55811,7 +55811,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":401,"../../constants/MemoTypeConstants":402,"react":328,"react-textarea-autosize":172,"underscore":392}],398:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":402,"../../constants/MemoTypeConstants":403,"react":328,"react-textarea-autosize":172,"underscore":392}],398:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -55845,6 +55845,23 @@ module.exports = NoneMemo;
 
 },{"../../actions/MemoActions":393,"react":328,"remarkable":329}],399:[function(require,module,exports){
 var React = require('react');
+
+var EditMemoItem = React.createClass({displayName: "EditMemoItem",
+    render: function() {
+        return (
+            React.createElement("div", {className: "memo-viewer-edit-item"}, 
+                React.createElement("div", {className: "memo-viewer-edit-item-name"}, 
+                    React.createElement("h3", null, this.props.memo.name)
+                )
+            )
+        );
+    }
+});
+
+module.exports = EditMemoItem;
+
+},{"react":328}],400:[function(require,module,exports){
+var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 
 var MemoItem = React.createClass({displayName: "MemoItem",
@@ -55858,7 +55875,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
             React.createElement("div", {className: "memo-viewer-item-name"}, 
                 React.createElement("h3", null, this.props.memo.name)
                 ), 
-            React.createElement("div", null, 
+            React.createElement("div", {className: "memo-viewer-item-button-conatiner"}, 
                 React.createElement("button", {className: "memo-viewer-item-button", onClick: this._onDelete}, "삭제")
             )
         )
@@ -55868,13 +55885,14 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActions":393,"react":328}],400:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"react":328}],401:[function(require,module,exports){
 var React = require('react');
 var MemoStore = require('../../stores/MemoStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
 var MemoItem = require('./MemoItem');
+var EditMemoItem = require('./EditMemoItem');
 
 
 function getMemos() {
@@ -55903,8 +55921,13 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            if (memo.type == MemoTypeConstants.COMPLETE_MEMO) {
-                return React.createElement(MemoItem, {memo: memo, id: memo.id});
+            switch (memo.type) {
+                case MemoTypeConstants.COMPLETE_MEMO:
+                    return React.createElement(MemoItem, {memo: memo, id: memo.id});
+                /*
+                case MemoTypeConstants.EDIT_MEMO:
+                    return <EditMemoItem memo={memo} id={memo.id}/>;
+                    */
             }
         });
 
@@ -55916,7 +55939,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/MemoTypeConstants":402,"../../stores/MemoStore":405,"./MemoItem":399,"react":328,"underscore":392}],401:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":403,"../../stores/MemoStore":406,"./EditMemoItem":399,"./MemoItem":400,"react":328,"underscore":392}],402:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -55927,7 +55950,7 @@ module.exports = keyMirror({
     END_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":313}],402:[function(require,module,exports){
+},{"react/lib/keyMirror":313}],403:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -55937,7 +55960,7 @@ module.exports = keyMirror({
     GLOBAL_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":313}],403:[function(require,module,exports){
+},{"react/lib/keyMirror":313}],404:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -55958,7 +55981,7 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":169}],404:[function(require,module,exports){
+},{"flux":169}],405:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -55975,7 +55998,7 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/MemoActions":393,"./components/Editor/Editor":396,"./components/MemoViewer/MemoViewer":400,"react":328}],405:[function(require,module,exports){
+},{"./actions/MemoActions":393,"./components/Editor/Editor":396,"./components/MemoViewer/MemoViewer":401,"react":328}],406:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MemoActionConstants = require('../constants/MemoActionConstants');
@@ -56060,7 +56083,7 @@ function _indexOf(arr, searchId, property) {
 function _parseMemo(memo) {
     var props = {};
 
-    matches = memo.value.match(/^(#)[ \t].+/gm);
+    matches = memo.value.match(/^\s?(#)[ \t].+/gm);
 
     if (matches != undefined) {
         if (matches.length == 1) {
@@ -56144,4 +56167,4 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/MemoActionConstants":401,"../constants/MemoTypeConstants":402,"../dispatcher/AppDispatcher":403,"events":148,"simple-unique-id":390,"underscore":392}]},{},[404]);
+},{"../constants/MemoActionConstants":402,"../constants/MemoTypeConstants":403,"../dispatcher/AppDispatcher":404,"events":148,"simple-unique-id":390,"underscore":392}]},{},[405]);

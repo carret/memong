@@ -4,6 +4,7 @@ var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
 var MemoItem = require('./MemoItem');
+var EditMemoItem = require('./EditMemoItem');
 
 
 function getMemos() {
@@ -32,8 +33,13 @@ var MemoViewer = React.createClass({
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            if (memo.type == MemoTypeConstants.COMPLETE_MEMO) {
-                return <MemoItem memo={memo} id={memo.id} />;
+            switch (memo.type) {
+                case MemoTypeConstants.COMPLETE_MEMO:
+                    return <MemoItem memo={memo} id={memo.id}/>;
+                /*
+                case MemoTypeConstants.EDIT_MEMO:
+                    return <EditMemoItem memo={memo} id={memo.id}/>;
+                    */
             }
         });
 
