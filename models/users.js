@@ -6,8 +6,8 @@ var db = require('../db');
 
 var userSchema = new mongoose.Schema({
 
-    _id : {
-        type : String,
+    token : {
+        type : Object,
         unique : true,
         required : true
     },
