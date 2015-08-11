@@ -55535,7 +55535,55 @@ var MemoActions = {
 
 module.exports = MemoActions;
 
-},{"../constants/MemoActionConstants":402,"../dispatcher/AppDispatcher":404}],394:[function(require,module,exports){
+},{"../constants/MemoActionConstants":412,"../dispatcher/AppDispatcher":414}],394:[function(require,module,exports){
+var React = require('react');
+
+var Login = React.createClass({displayName: "Login",
+    render: function() {
+        return(
+            React.createElement("button", {className: "account"}, "로그인")
+        );
+    }
+});
+
+module.exports = Login;
+
+},{"react":328}],395:[function(require,module,exports){
+var React = require('react');
+
+var Logout = React.createClass({displayName: "Logout",
+    render: function() {
+        return(
+            React.createElement("div", {className: "account", onClick: this.props.handleLogout}, 
+                React.createElement("button", {className: "logout"}, 
+                    React.createElement("i", {className: "material-icons"}, ""), 
+                    React.createElement("span", null, "석주 나")
+                )
+            )
+        );
+    }
+});
+
+
+module.exports = Logout;
+
+},{"react":328}],396:[function(require,module,exports){
+var React = require('react');
+
+var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
+    render: function() {
+        return (
+            React.createElement("div", {id: "directory-viewer"}, 
+                React.createElement("div", {className: "header"}, "디렉토리"), 
+                React.createElement("div", {className: "content"})
+            )
+        );
+    }
+});
+
+module.exports = DirectoryViewer;
+
+},{"react":328}],397:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -55567,7 +55615,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActions":393,"react":328,"remarkable":329}],395:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"react":328,"remarkable":329}],398:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -55654,7 +55702,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":402,"../../constants/MemoTypeConstants":403,"react":328,"react-textarea-autosize":172,"underscore":392}],396:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":412,"../../constants/MemoTypeConstants":413,"react":328,"react-textarea-autosize":172,"underscore":392}],399:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -55706,7 +55754,7 @@ var Editor = React.createClass({displayName: "Editor",
         });
 
         return (
-            React.createElement("div", {className: "editor"}, items)
+            React.createElement("div", {id: "editor"}, items)
         );
     },
 
@@ -55718,7 +55766,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/MemoTypeConstants":403,"../../stores/MemoStore":406,"./CompleteMemo":394,"./EditMemo":395,"./GlobalEditMemo":397,"./NoneMemo":398,"react":328,"underscore":392}],397:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":413,"../../stores/MemoStore":416,"./CompleteMemo":397,"./EditMemo":398,"./GlobalEditMemo":400,"./NoneMemo":401,"react":328,"underscore":392}],400:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
@@ -55798,8 +55846,9 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
             requestChange: this._handleValueInput
         };
         return(
-            React.createElement("div", {className: "global-edit-memo"}, 
+            React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
+                          minRows: 20, 
                           className: "global-edit-memo-textarea", 
                           valueLink: valueLink, 
                           onBlur: this._handleAction}
@@ -55811,7 +55860,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":402,"../../constants/MemoTypeConstants":403,"react":328,"react-textarea-autosize":172,"underscore":392}],398:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"../../constants/MemoActionConstants":412,"../../constants/MemoTypeConstants":413,"react":328,"react-textarea-autosize":172,"underscore":392}],401:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -55843,7 +55892,189 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActions":393,"react":328,"remarkable":329}],399:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"react":328,"remarkable":329}],402:[function(require,module,exports){
+var React = require('react');
+
+var Exporter = React.createClass({displayName: "Exporter",
+    render: function() {
+        return (
+            React.createElement("div", {id: "exporter", onClick: this.props.handleExport}, 
+                React.createElement("button", {className: "header-menu"}, 
+                    React.createElement("i", {className: "material-icons"}, "")
+                )
+            )
+        )
+    }
+});
+
+module.exports = Exporter;
+
+},{"react":328}],403:[function(require,module,exports){
+var React = require('react');
+
+var MemoSearcher = require('./MemoSearcher/MemoSearcher');
+var Login = require('./Account/Login');
+var Logout = require('./Account/Logout');
+var Exporter = require('./Exporter/Exporter');
+var NoteLoader = require('./NoteLoader/NoteLoader');
+
+
+var Header = React.createClass({displayName: "Header",
+    getInitialState: function() {
+        return {
+            memoSearcherActive: false,
+            logoutActive: false
+        };
+    },
+
+    _activeMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: true
+        });
+    },
+    _disableMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: false
+        });
+    },
+
+    _handleExport: function() {
+    },
+
+    _handleLogout: function() {
+        this.setState({
+            logoutActive: true
+        });
+    },
+
+
+    render: function() {
+        return (
+            React.createElement("div", {id: "header"}, 
+                React.createElement("div", {className: "header-left"}, 
+                    React.createElement("div", {id: "logo-icon"}, 
+                        React.createElement("img", {src: "./libs/logo.svg"})
+                    ), 
+                    React.createElement("a", {id: "logo"}, "memongade")
+                ), 
+                React.createElement("div", {className: "header-right"}, 
+                    React.createElement(Exporter, {handleExport: this._handleExport}), 
+                    React.createElement(MemoSearcher, {activeMemoSearcher: this._activeMemoSearcher, disableMemoSearcher: this._disableMemoSearcher, memoSearcherActive: this.state.memoSearcherActive}), 
+                    React.createElement(Logout, {handleLogout: this._handleLogout, logoutActive: this.state.logoutActive})
+                ), 
+                React.createElement(NoteLoader, null)
+            )
+        );
+    }
+});
+
+module.exports = Header;
+
+},{"./Account/Login":394,"./Account/Logout":395,"./Exporter/Exporter":402,"./MemoSearcher/MemoSearcher":405,"./NoteLoader/NoteLoader":411,"react":328}],404:[function(require,module,exports){
+var React = require('react');
+
+var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
+var MemoViewer = require('./MemoViewer/MemoViewer');
+var NoteHeader = require('./NoteHeader/NoteHeader');
+var Editor = require('./Editor/Editor');
+
+var AsideDOM;
+var SectionDOM;
+
+
+var Main = React.createClass({displayName: "Main",
+    getInitialState: function() {
+        return {
+            asideVisible: true,
+            mainWidth: window.innerWidth
+        }
+    },
+
+    componentDidMount: function() {
+        AsideDOM = $(React.findDOMNode(this.refs._aside));
+        SectionDOM = $(React.findDOMNode(this.refs._section));
+
+        window.addEventListener('resize', this._handleResize);
+
+        SectionDOM.css("width", this.state.mainWidth - 502);
+    },
+
+    componentWillUnmount: function() {
+        window.removeEventListener('resize', this._handleResize);
+    },
+
+    _handleResize: function() {
+        this.setState({mainWidth: window.innerWidth});
+        if (this.state.asideVisible) {
+            SectionDOM.css("width", this.state.mainWidth - 502);
+        }
+        else {
+            SectionDOM.css("width", this.state.mainWidth);
+        }
+    },
+
+    _toggleAside: function() {
+        if (!this.state.asideVisible) {
+            AsideDOM.removeClass('hide');
+            SectionDOM.removeClass('hide');
+            SectionDOM.animate({
+                "width": this.state.mainWidth - 502
+            }, 650);
+        }
+        else {
+            AsideDOM.addClass('hide');
+            SectionDOM.addClass('hide');
+            SectionDOM.css("width", this.state.mainWidth);
+        }
+        this.setState({ asideVisible: !this.state.asideVisible });
+    },
+
+    render: function() {
+        return(
+            React.createElement("div", {ref: "_main", id: "main"}, 
+                React.createElement("div", {ref: "_aside", id: "aside"}, 
+                    React.createElement(DirectoryViewer, null), 
+                    React.createElement(MemoViewer, null)
+                ), 
+                React.createElement("div", {ref: "_section", id: "section"}, 
+                    React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
+                    React.createElement(Editor, null)
+                )
+            )
+        );
+    }
+});
+
+module.exports = Main;
+
+},{"./DirectoryViewer/DirectoryViewer":396,"./Editor/Editor":399,"./MemoViewer/MemoViewer":408,"./NoteHeader/NoteHeader":409,"react":328}],405:[function(require,module,exports){
+var React = require('react');
+
+
+var MemoSearcher = React.createClass({displayName: "MemoSearcher",
+    render: function() {
+        var content = (this.props.memoSearcherActive == true) ?
+            (React.createElement("div", {className: "inputer"}, 
+                React.createElement("input", {placeholder: "Search Memo..."}), 
+                React.createElement("button", {onClick: this.props.disableMemoSearcher}, 
+                    React.createElement("i", {className: "material-icons"}, "")
+                )
+            )) :
+            (React.createElement("button", {className: "header-menu", onClick: this.props.activeMemoSearcher}, 
+                React.createElement("i", {className: "material-icons"}, "")
+            ));
+
+        return (
+            React.createElement("div", {id: "memo-searcher"}, 
+                content
+            )
+        );
+    }
+});
+
+module.exports = MemoSearcher;
+
+},{"react":328}],406:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -55860,7 +56091,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":328}],400:[function(require,module,exports){
+},{"react":328}],407:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 
@@ -55872,11 +56103,13 @@ var MemoItem = React.createClass({displayName: "MemoItem",
     render: function() {
         return (
         React.createElement("div", {className: "memo-viewer-item"}, 
-            React.createElement("div", {className: "memo-viewer-item-name"}, 
-                React.createElement("h3", null, this.props.memo.name)
-                ), 
-            React.createElement("div", {className: "memo-viewer-item-button-conatiner"}, 
-                React.createElement("button", {className: "memo-viewer-item-button", onClick: this._onDelete}, "삭제")
+            React.createElement("span", {className: "title"}, 
+                this.props.memo.name
+            ), 
+            React.createElement("div", null, 
+                React.createElement("button", {className: "btn_delete", onClick: this._onDelete}, 
+                    React.createElement("i", {className: "material-icons"}, "")
+                )
             )
         )
         );
@@ -55885,7 +56118,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActions":393,"react":328}],401:[function(require,module,exports){
+},{"../../actions/MemoActions":393,"react":328}],408:[function(require,module,exports){
 var React = require('react');
 var MemoStore = require('../../stores/MemoStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -55916,7 +56149,6 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     },
 
     render: function() {
@@ -55932,14 +56164,70 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
         });
 
         return (
-            React.createElement("div", {className: "memo-viewer"}, items)
+            React.createElement("div", {id: "memo-viewer"}, 
+                React.createElement("div", {className: "header"}, "메모"), 
+                React.createElement("div", {className: "content"}, 
+                    items
+                )
+            )
         );
     }
 });
 
 module.exports = MemoViewer;
 
-},{"../../constants/MemoTypeConstants":403,"../../stores/MemoStore":406,"./EditMemoItem":399,"./MemoItem":400,"react":328,"underscore":392}],402:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":413,"../../stores/MemoStore":416,"./EditMemoItem":406,"./MemoItem":407,"react":328,"underscore":392}],409:[function(require,module,exports){
+var React = require('react');
+
+var ToggleAsideButton = require('./ToggleAsideButton');
+
+var NoteHeader = React.createClass({displayName: "NoteHeader",
+    render: function() {
+        return(
+            React.createElement("div", {id: "note-header"}, 
+                React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
+                React.createElement("span", {className: "title"}, "노트 타이틀"), 
+                React.createElement("div", {className: "menu"}
+                )
+            )
+        );
+    }
+});
+
+
+module.exports = NoteHeader;
+
+},{"./ToggleAsideButton":410,"react":328}],410:[function(require,module,exports){
+var React = require('react');
+
+var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
+    render: function() {
+        var icon = (this.props.asideVisible == true) ? React.createElement("i", {className: "material-icons"}, "") : React.createElement("i", {className: "material-icons"}, "");
+
+        return(
+            React.createElement("div", {ref: "btn", id: "btn_toggle-aside", onClick: this.props.toggleAsideVisible}, 
+                icon
+            )
+        );
+    }
+});
+
+module.exports = ToggleAsideButton;
+
+},{"react":328}],411:[function(require,module,exports){
+var React = require('react');
+
+var NoteLoader = React.createClass({displayName: "NoteLoader",
+    render: function() {
+        return(
+            React.createElement("div", {id: "note-loader"})
+        );
+    }
+});
+
+module.exports = NoteLoader;
+
+},{"react":328}],412:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -55950,7 +56238,7 @@ module.exports = keyMirror({
     END_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":313}],403:[function(require,module,exports){
+},{"react/lib/keyMirror":313}],413:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -55960,7 +56248,7 @@ module.exports = keyMirror({
     GLOBAL_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":313}],404:[function(require,module,exports){
+},{"react/lib/keyMirror":313}],414:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -55981,24 +56269,26 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":169}],405:[function(require,module,exports){
+},{"flux":169}],415:[function(require,module,exports){
 var React = require('react');
 
-var MemoViewer = require('./components/MemoViewer/MemoViewer');
-var Editor = require('./components/Editor/Editor');
-var MemoActions = require('./actions/MemoActions');
+var MemoAction = require('./actions/MemoActions');
 
-MemoActions.initMemo([]);
+var Main = require('./components/Main');
+var Header = require('./components/Header');
+
+
+MemoAction.initMemo([]);
 
 React.render(
-    React.createElement("div", {className: "app"}, 
-        React.createElement(MemoViewer, null), 
-        React.createElement(Editor, null)
+    React.createElement("div", {id: "app-inner"}, 
+        React.createElement(Header, null), 
+        React.createElement(Main, null)
     ),
     document.getElementById('app')
 );
 
-},{"./actions/MemoActions":393,"./components/Editor/Editor":396,"./components/MemoViewer/MemoViewer":401,"react":328}],406:[function(require,module,exports){
+},{"./actions/MemoActions":393,"./components/Header":403,"./components/Main":404,"react":328}],416:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MemoActionConstants = require('../constants/MemoActionConstants');
@@ -56167,4 +56457,4 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/MemoActionConstants":402,"../constants/MemoTypeConstants":403,"../dispatcher/AppDispatcher":404,"events":148,"simple-unique-id":390,"underscore":392}]},{},[405]);
+},{"../constants/MemoActionConstants":412,"../constants/MemoTypeConstants":413,"../dispatcher/AppDispatcher":414,"events":148,"simple-unique-id":390,"underscore":392}]},{},[415]);

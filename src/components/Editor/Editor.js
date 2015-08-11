@@ -49,7 +49,7 @@ var Editor = React.createClass({
         });
 
         return (
-            <div className="editor">{items}</div>
+            <div id="editor">{items}</div>
         );
     },
 

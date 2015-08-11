@@ -8,7 +8,7 @@ app.use(express.static(__dirname + '/build'));
 
 
 app.get('/', function(req,res) {
-    res.render('__static__index');
+    res.render('index');
 });
 app.get('/typography', function(req,res){
     res.render('__static__typography');

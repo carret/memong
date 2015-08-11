@@ -1,15 +1,18 @@
 var React = require('react');
 
-var MemoViewer = require('./components/MemoViewer/MemoViewer');
-var Editor = require('./components/Editor/Editor');
-var MemoActions = require('./actions/MemoActions');
+var MemoAction = require('./actions/MemoActions');
 
-MemoActions.initMemo([]);
+var Main = require('./components/Main');
+var Header = require('./components/Header');
+
+
+MemoAction.initMemo([]);
 
 React.render(
-    <div className="app">
-        <MemoViewer />
-        <Editor />
+    <div id="app-inner">
+        <Header />
+        <Main />
     </div>,
     document.getElementById('app')
 );
+

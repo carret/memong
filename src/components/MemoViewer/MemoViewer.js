@@ -28,7 +28,6 @@ var MemoViewer = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     },
 
     render: function() {
@@ -44,7 +43,12 @@ var MemoViewer = React.createClass({
         });
 
         return (
-            <div className="memo-viewer">{items}</div>
+            <div id="memo-viewer">
+                <div className="header">메모</div>
+                <div className="content">
+                    {items}
+                </div>
+            </div>
         );
     }
 });

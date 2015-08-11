@@ -8,12 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500' rel='stylesheet' type='text/css'>
 
     <link rel="author" href="/humans.txt" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" />
     <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
+    <div id="app"></div>
+<!--
     <header>
         <div class="header-left">
             <a id="logo" href="/">Memongade</a>
@@ -25,8 +28,21 @@
         </div>
     </header>
     <main>
-        <aside>aside</aside>
-        <section>section</section>
+        <aside>
+            <div id="directory-view"></div>
+            <div id="memo-view"></div>
+        </aside>
+        <section>
+            <div id="note-header">
+                <span class="note-header-head">노트 이름</span>
+                <div class="note-header-menu">
+                    <button>+</button>
+                </div>
+            </div>
+            <div id="editor"></div>
+        </section>
     </main>
+-->
+    <script type="text/javascript" src="/main.js"></script>
 </body>
 </html>
