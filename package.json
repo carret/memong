@@ -2,25 +2,27 @@
   "name": "memong",
   "version": "1.0.0",
   "description": "Markdown Memo App",
-  "main": "app.js",
+  "main": "app.¡s",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Team. carret",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.1",
     "ejs": "^2.3.3",
     "express": "^4.13.1",
     "flux": "^2.0.3",
-    "mongoose": "^4.1.0",
-    "react": "^0.13.3",
-    "material-ui":"0.10.2",
+    "gulp-less": "^3.0.3",
+    "material-ui": "0.10.2",
     "mongoose": "^4.0.7",
-    "cookie-parser": "~1.0.1",
-    "body-parser": "~1.0.0",
-    "passport" : "0.2.2",
-    "passport-facebook":"2.0.0",
-    "passport-google-oauth":"0.2.0",
+    "passport": "0.2.2",
+    "passport-facebook": "2.0.0",
+    "passport-google-oauth": "0.2.0",
+    "rc-dialog": "^4.5.0",
+    "react": "^0.13.3",
+    "react-autosuggest": "1.18.3",
     "react-textarea-autosize": "^2.4.2",
     "remarkable": "^1.6.0",
     "simple-unique-id": "0.0.1",
@@ -42,11 +44,11 @@
       "GOOGLE_APP_ID": "577897444749-7oorn4p1co3frfnue1d7b2qirud5matn.apps.googleusercontent.com",
       "GOOGLE_APP_SECRET": "5-rjZ_ojA90iJCotkWdpMdyD",
       "callbackURL": "http://localhost:8888/login/google/callback"
-    }, "facebook": {
+    },
+    "facebook": {
       "FACEBOOK_APP_ID": "906973419373720",
       "FACEBOOK_APP_SECRET": "7e12213660608afcdaddc280438bb4c2",
-      "callbackURL":"http://localhost:8888/login/facebook/callback"
+      "callbackURL": "http://localhost:8888/login/facebook/callback"
     }
   }
-
 }

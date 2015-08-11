@@ -18,7 +18,6 @@ app.use(passports.initialize());
 app.use(passports.session());
 app.use(express.static(__dirname + '/build'));
 
-//passports.initializePassport();
 routes.doRoutes(app);
 
 app.listen(8888);

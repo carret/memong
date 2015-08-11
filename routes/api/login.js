@@ -12,6 +12,7 @@ exports.doRoutes = function(app) {
     app.get('/login/google/callback', passport.authenticate('google', {successRedirect:'/login/google/success', failureRedirect:'/login/google/fail'}));
     app.get('/login/google/success', ensureAuthenticated, function(req,res,next) {
         res.send(req.user);
+        res.redirect('/');
     });
     app.get('/login/facebook', passport.authenticate('facebook'));
     app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/login/facebook/success', failureRedirect:'/login/facebook/fail'}));
@@ -20,16 +21,19 @@ exports.doRoutes = function(app) {
     });
     app.get('/logout', function(req, res){
         console.log('logout');
-        req.logout();
+        req.logOut();
+        //req.session.destroy(function (err) {
+        //    res.redirect('/'); //Inside a callbackâ€¦ bulletproof!
+        //});
         res.redirect('/');
     });
 
     function ensureAuthenticated(req, res, next) {
-        // ·Î±×ÀÎÀÌ µÇ¾î ÀÖÀ¸¸é, ´ÙÀ½ ÆÄÀÌÇÁ¶óÀÎÀ¸·Î ÁøÇà
+        // ï¿½Î±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (req.isAuthenticated()) {
             return next();
         }
-        // ·Î±×ÀÎÀÌ ¾ÈµÇ¾î ÀÖÀ¸¸é, login ÆäÀÌÁö·Î ÁøÇà
+        // ï¿½Î±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÇ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, login ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         else {
             res.redirect('/');
         }
