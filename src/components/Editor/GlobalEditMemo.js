@@ -7,7 +7,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -77,8 +77,9 @@ var GlobalEditMemo = React.createClass({
             requestChange: this._handleValueInput
         };
         return(
-            <div className="global-edit-memo">
+            <div className="globaledit-memo">
                 <Textarea ref="_textarea"
+                          minRows={20}
                           className="global-edit-memo-textarea"
                           valueLink={valueLink}
                           onBlur={this._handleAction}

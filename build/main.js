@@ -59438,7 +59438,107 @@ var MemoActions = {
 
 module.exports = MemoActions;
 
-},{"../constants/MemoActionConstants":437,"../dispatcher/AppDispatcher":439}],426:[function(require,module,exports){
+},{"../constants/MemoActionConstants":445,"../dispatcher/AppDispatcher":447}],426:[function(require,module,exports){
+var React = require('react');
+var Dialog = require('rc-dialog');
+
+var container;
+
+function showDialog(content, props) {
+    if (!container) {
+        container = document.createElement('div');
+        document.body.appendChild(container);
+    }
+
+    var close = props.onClose;
+    props.onClose = function() {
+        if(close)
+            close();
+        React.unmountComponentAtNode(container);
+    };
+
+    var dialog = React.render(React.createElement(Dialog, React.__spread({},  props, {renderToBody: false}), content), container);
+    dialog.show();
+    return dialog;
+}
+
+var DialogContent = React.createClass({displayName: "DialogContent",
+    getInitialState : function() {
+        return {
+            value:''
+        }
+    },
+    render : function() {
+        return (
+            React.createElement("div", null, 
+                React.createElement("div", null, 
+                    React.createElement("a", {href: "/login/facebook"}, "Login Facebook")
+                ), 
+                React.createElement("div", null, 
+                    React.createElement("a", {href: "/login/google"}, "Login Google")
+                )
+            )
+        );
+    }
+});
+
+var LoginBtn = React.createClass({displayName: "LoginBtn",
+    handleTrigger: function () {
+        this.d = showDialog(React.createElement(DialogContent, null),{
+            title: React.createElement("p", null, " Login memong"),
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+    render: function () {
+        return (
+            React.createElement("div", null, 
+                React.createElement("button", {className: "account", onClick: this.handleTrigger}, "로그인")
+            )
+        );
+    }
+});
+
+module.exports = LoginBtn;
+
+},{"rc-dialog":174,"react":360}],427:[function(require,module,exports){
+var React = require('react');
+
+var Logout = React.createClass({displayName: "Logout",
+    render: function() {
+        return(
+            React.createElement("div", {className: "account", onClick: this.props.handleLogout}, 
+                React.createElement("button", {className: "logout"}, 
+                    React.createElement("i", {className: "material-icons"}, ""), 
+                    React.createElement("span", null, "석주 나")
+                )
+            )
+        );
+    }
+});
+
+
+module.exports = Logout;
+
+},{"react":360}],428:[function(require,module,exports){
+var React = require('react');
+
+var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
+    render: function() {
+        return (
+            React.createElement("div", {id: "directory-viewer"}, 
+                React.createElement("div", {className: "header"}, "디렉토리"), 
+                React.createElement("div", {className: "content"})
+            )
+        );
+    }
+});
+
+module.exports = DirectoryViewer;
+
+},{"react":360}],429:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -59470,7 +59570,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActions":425,"react":360,"remarkable":361}],427:[function(require,module,exports){
+},{"../../actions/MemoActions":425,"react":360,"remarkable":361}],430:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -59480,7 +59580,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
@@ -59557,7 +59657,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActions":425,"../../constants/MemoActionConstants":437,"../../constants/MemoTypeConstants":438,"react":360,"react-textarea-autosize":204,"underscore":424}],428:[function(require,module,exports){
+},{"../../actions/MemoActions":425,"../../constants/MemoActionConstants":445,"../../constants/MemoTypeConstants":446,"react":360,"react-textarea-autosize":204,"underscore":424}],431:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -59609,7 +59709,7 @@ var Editor = React.createClass({displayName: "Editor",
         });
 
         return (
-            React.createElement("div", {className: "editor"}, items)
+            React.createElement("div", {id: "editor"}, items)
         );
     },
 
@@ -59621,7 +59721,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/MemoTypeConstants":438,"../../stores/MemoStore":441,"./CompleteMemo":426,"./EditMemo":427,"./GlobalEditMemo":429,"./NoneMemo":430,"react":360,"underscore":424}],429:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":446,"../../stores/MemoStore":449,"./CompleteMemo":429,"./EditMemo":430,"./GlobalEditMemo":432,"./NoneMemo":433,"react":360,"underscore":424}],432:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
@@ -59631,7 +59731,7 @@ var _ = require('underscore');
 var Textarea = require('react-textarea-autosize');
 
 
-var regEx = /^(#)[ \t].+/gm;
+var regEx = /^\s?(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -59701,8 +59801,9 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
             requestChange: this._handleValueInput
         };
         return(
-            React.createElement("div", {className: "global-edit-memo"}, 
+            React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
+                          minRows: 20, 
                           className: "global-edit-memo-textarea", 
                           valueLink: valueLink, 
                           onBlur: this._handleAction}
@@ -59714,7 +59815,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActions":425,"../../constants/MemoActionConstants":437,"../../constants/MemoTypeConstants":438,"react":360,"react-textarea-autosize":204,"underscore":424}],430:[function(require,module,exports){
+},{"../../actions/MemoActions":425,"../../constants/MemoActionConstants":445,"../../constants/MemoTypeConstants":446,"react":360,"react-textarea-autosize":204,"underscore":424}],433:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -59746,7 +59847,189 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActions":425,"react":360,"remarkable":361}],431:[function(require,module,exports){
+},{"../../actions/MemoActions":425,"react":360,"remarkable":361}],434:[function(require,module,exports){
+var React = require('react');
+
+var Exporter = React.createClass({displayName: "Exporter",
+    render: function() {
+        return (
+            React.createElement("div", {id: "exporter", onClick: this.props.handleExport}, 
+                React.createElement("button", {className: "header-menu"}, 
+                    React.createElement("i", {className: "material-icons"}, "")
+                )
+            )
+        )
+    }
+});
+
+module.exports = Exporter;
+
+},{"react":360}],435:[function(require,module,exports){
+var React = require('react');
+
+var MemoSearcher = require('./MemoSearcher/MemoSearcher');
+var Login = require('./Account/Login');
+var Logout = require('./Account/Logout');
+var Exporter = require('./Exporter/Exporter');
+var NoteLoader = require('./NoteLoader/NoteLoader');
+
+
+var Header = React.createClass({displayName: "Header",
+    getInitialState: function() {
+        return {
+            memoSearcherActive: false,
+            logoutActive: false
+        };
+    },
+
+    _activeMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: true
+        });
+    },
+    _disableMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: false
+        });
+    },
+
+    _handleExport: function() {
+    },
+
+    _handleLogout: function() {
+        this.setState({
+            logoutActive: true
+        });
+    },
+
+
+    render: function() {
+        return (
+            React.createElement("div", {id: "header"}, 
+                React.createElement("div", {className: "header-left"}, 
+                    React.createElement("div", {id: "logo-icon"}, 
+                        React.createElement("img", {src: "./libs/logo.svg"})
+                    ), 
+                    React.createElement("a", {id: "logo"}, "memongade")
+                ), 
+                React.createElement("div", {className: "header-right"}, 
+                    React.createElement(Exporter, {handleExport: this._handleExport}), 
+                    React.createElement(MemoSearcher, null), 
+                    React.createElement(Login, null)
+                ), 
+                React.createElement(NoteLoader, null)
+            )
+        );
+    }
+});
+
+module.exports = Header;
+
+},{"./Account/Login":426,"./Account/Logout":427,"./Exporter/Exporter":434,"./MemoSearcher/MemoSearcher":437,"./NoteLoader/NoteLoader":444,"react":360}],436:[function(require,module,exports){
+var React = require('react');
+
+var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
+var MemoViewer = require('./MemoViewer/MemoViewer');
+var NoteHeader = require('./NoteHeader/NoteHeader');
+var Editor = require('./Editor/Editor');
+
+var AsideDOM;
+var SectionDOM;
+
+
+var Main = React.createClass({displayName: "Main",
+    getInitialState: function() {
+        return {
+            asideVisible: true,
+            mainWidth: window.innerWidth
+        }
+    },
+
+    componentDidMount: function() {
+        AsideDOM = $(React.findDOMNode(this.refs._aside));
+        SectionDOM = $(React.findDOMNode(this.refs._section));
+
+        window.addEventListener('resize', this._handleResize);
+
+        SectionDOM.css("width", this.state.mainWidth - 502);
+    },
+
+    componentWillUnmount: function() {
+        window.removeEventListener('resize', this._handleResize);
+    },
+
+    _handleResize: function() {
+        this.setState({mainWidth: window.innerWidth});
+        if (this.state.asideVisible) {
+            SectionDOM.css("width", this.state.mainWidth - 502);
+        }
+        else {
+            SectionDOM.css("width", this.state.mainWidth);
+        }
+    },
+
+    _toggleAside: function() {
+        if (!this.state.asideVisible) {
+            AsideDOM.removeClass('hide');
+            SectionDOM.removeClass('hide');
+            SectionDOM.animate({
+                "width": this.state.mainWidth - 502
+            }, 650);
+        }
+        else {
+            AsideDOM.addClass('hide');
+            SectionDOM.addClass('hide');
+            SectionDOM.css("width", this.state.mainWidth);
+        }
+        this.setState({ asideVisible: !this.state.asideVisible });
+    },
+
+    render: function() {
+        return(
+            React.createElement("div", {ref: "_main", id: "main"}, 
+                React.createElement("div", {ref: "_aside", id: "aside"}, 
+                    React.createElement(DirectoryViewer, null), 
+                    React.createElement(MemoViewer, null)
+                ), 
+                React.createElement("div", {ref: "_section", id: "section"}, 
+                    React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
+                    React.createElement(Editor, null)
+                )
+            )
+        );
+    }
+});
+
+module.exports = Main;
+
+},{"./DirectoryViewer/DirectoryViewer":428,"./Editor/Editor":431,"./MemoViewer/MemoViewer":441,"./NoteHeader/NoteHeader":442,"react":360}],437:[function(require,module,exports){
+//var React = require('react');
+//
+//
+//var MemoSearcher = React.createClass({
+//    render: function() {
+//        var content = (this.props.memoSearcherActive == true) ?
+//            (<div className="inputer">
+//                <input placeholder="Search Memo..."/>
+//                <button onClick={this.props.disableMemoSearcher}>
+//                    <i className="material-icons">&#xE14C;</i>
+//                </button>
+//            </div>) :
+//            (<button className="header-menu" onClick={this.props.activeMemoSearcher}>
+//                <i className="material-icons">&#xE8B6;</i>
+//            </button>);
+//
+//        return (
+//            <div id="memo-searcher">
+//                {content}
+//            </div>
+//        );
+//    }
+//});
+//
+//module.exports = MemoSearcher;
+
+
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -59785,7 +60068,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
     render :function() {
         return (
             React.createElement("div", {className: "custom-renderer-example"}, 
-              React.createElement(Autosuggest, {className: "react-autosuggest", suggestions: this.getSuggestion, suggestionRenderer: this.renderSuggestion})
+                React.createElement(Autosuggest, {className: "react-autosuggest", suggestions: this.getSuggestion, suggestionRenderer: this.renderSuggestion})
             )
         );
     }
@@ -59793,96 +60076,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
-},{"./utils":434,"react":360,"react-autosuggest":199}],432:[function(require,module,exports){
-var React = require('react')
-var LoginBtn = require('./Login');
-var AutoInput=require('./AutoInput');
-
-
-var Header = React.createClass({displayName: "Header",
-    render: function() {
-        return (
-                React.createElement("div", null, 
-                    React.createElement(AutoInput, null), 
-                    React.createElement(LoginBtn, null)
-                )
-        );
-    },
-});
-
-
-module.exports = Header;
-
-},{"./AutoInput":431,"./Login":433,"react":360}],433:[function(require,module,exports){
-/**
- * Created by Jaewook on 2015-08-01.
- */
-var React = require('react');
-var Dialog = require('rc-dialog');
-
-var container;
-
-function showDialog(content, props) {
-    if (!container) {
-        container = document.createElement('div');
-        document.body.appendChild(container);
-    }
-
-    var close = props.onClose;
-    props.onClose = function() {
-        if(close)
-            close();
-        React.unmountComponentAtNode(container);
-    };
-
-    var dialog = React.render(React.createElement(Dialog, React.__spread({},  props, {renderToBody: false}), content), container);
-    dialog.show();
-    return dialog;
-}
-
-var DialogContent = React.createClass({displayName: "DialogContent",
-    getInitialState : function() {
-        return {
-            value:''
-        }
-    },
-    render : function() {
-        return (
-            React.createElement("div", null, 
-                React.createElement("div", null, 
-                    React.createElement("a", {href: "/login/facebook"}, "Login Facebook")
-                ), 
-                React.createElement("div", null, 
-                    React.createElement("a", {href: "/login/google"}, "Login Google")
-                )
-            )
-        );
-    }
-});
-
-var LoginBtn = React.createClass({displayName: "LoginBtn",
-    handleTrigger: function () {
-        this.d = showDialog(React.createElement(DialogContent, null),{
-            title: React.createElement("p", null, " Login memong"),
-            animation: 'zoom',
-            maskAnimation: 'fade',
-            onBeforeClose: this.beforeClose,
-            style: {width: 300}
-        });
-    },
-    render: function () {
-        return (
-            React.createElement("div", null, 
-                React.createElement("button", {className: "btn btn-primary", onClick: this.handleTrigger}, "Login")
-            )
-        );
-    }
-});
-
-
-module.exports = LoginBtn;
-
-},{"rc-dialog":174,"react":360}],434:[function(require,module,exports){
+},{"./utils":438,"react":360,"react-autosuggest":199}],438:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -59892,7 +60086,24 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
-},{}],435:[function(require,module,exports){
+},{}],439:[function(require,module,exports){
+var React = require('react');
+
+var EditMemoItem = React.createClass({displayName: "EditMemoItem",
+    render: function() {
+        return (
+            React.createElement("div", {className: "memo-viewer-edit-item"}, 
+                React.createElement("div", {className: "memo-viewer-edit-item-name"}, 
+                    React.createElement("h3", null, this.props.memo.name)
+                )
+            )
+        );
+    }
+});
+
+module.exports = EditMemoItem;
+
+},{"react":360}],440:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 
@@ -59904,11 +60115,13 @@ var MemoItem = React.createClass({displayName: "MemoItem",
     render: function() {
         return (
         React.createElement("div", {className: "memo-viewer-item"}, 
-            React.createElement("div", {className: "memo-viewer-item-name"}, 
-                React.createElement("h3", null, this.props.memo.name)
-                ), 
+            React.createElement("span", {className: "title"}, 
+                this.props.memo.name
+            ), 
             React.createElement("div", null, 
-                React.createElement("button", {className: "memo-viewer-item-button", onClick: this._onDelete}, "삭제")
+                React.createElement("button", {className: "btn_delete", onClick: this._onDelete}, 
+                    React.createElement("i", {className: "material-icons"}, "")
+                )
             )
         )
         );
@@ -59917,13 +60130,14 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActions":425,"react":360}],436:[function(require,module,exports){
+},{"../../actions/MemoActions":425,"react":360}],441:[function(require,module,exports){
 var React = require('react');
 var MemoStore = require('../../stores/MemoStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
 var MemoItem = require('./MemoItem');
+var EditMemoItem = require('./EditMemoItem');
 
 
 function getMemos() {
@@ -59947,25 +60161,85 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            if (memo.type == MemoTypeConstants.COMPLETE_MEMO) {
-                return React.createElement(MemoItem, {memo: memo, id: memo.id});
+            switch (memo.type) {
+                case MemoTypeConstants.COMPLETE_MEMO:
+                    return React.createElement(MemoItem, {memo: memo, id: memo.id});
+                /*
+                case MemoTypeConstants.EDIT_MEMO:
+                    return <EditMemoItem memo={memo} id={memo.id}/>;
+                    */
             }
         });
 
         return (
-            React.createElement("div", {className: "memo-viewer"}, items)
+            React.createElement("div", {id: "memo-viewer"}, 
+                React.createElement("div", {className: "header"}, "메모"), 
+                React.createElement("div", {className: "content"}, 
+                    items
+                )
+            )
         );
     }
 });
 
 module.exports = MemoViewer;
 
-},{"../../constants/MemoTypeConstants":438,"../../stores/MemoStore":441,"./MemoItem":435,"react":360,"underscore":424}],437:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":446,"../../stores/MemoStore":449,"./EditMemoItem":439,"./MemoItem":440,"react":360,"underscore":424}],442:[function(require,module,exports){
+var React = require('react');
+
+var ToggleAsideButton = require('./ToggleAsideButton');
+
+var NoteHeader = React.createClass({displayName: "NoteHeader",
+    render: function() {
+        return(
+            React.createElement("div", {id: "note-header"}, 
+                React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
+                React.createElement("span", {className: "title"}, "노트 타이틀"), 
+                React.createElement("div", {className: "menu"}
+                )
+            )
+        );
+    }
+});
+
+
+module.exports = NoteHeader;
+
+},{"./ToggleAsideButton":443,"react":360}],443:[function(require,module,exports){
+var React = require('react');
+
+var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
+    render: function() {
+        var icon = (this.props.asideVisible == true) ? React.createElement("i", {className: "material-icons"}, "") : React.createElement("i", {className: "material-icons"}, "");
+
+        return(
+            React.createElement("div", {ref: "btn", id: "btn_toggle-aside", onClick: this.props.toggleAsideVisible}, 
+                icon
+            )
+        );
+    }
+});
+
+module.exports = ToggleAsideButton;
+
+},{"react":360}],444:[function(require,module,exports){
+var React = require('react');
+
+var NoteLoader = React.createClass({displayName: "NoteLoader",
+    render: function() {
+        return(
+            React.createElement("div", {id: "note-loader"})
+        );
+    }
+});
+
+module.exports = NoteLoader;
+
+},{"react":360}],445:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -59976,7 +60250,7 @@ module.exports = keyMirror({
     END_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":345}],438:[function(require,module,exports){
+},{"react/lib/keyMirror":345}],446:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -59986,7 +60260,7 @@ module.exports = keyMirror({
     GLOBAL_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":345}],439:[function(require,module,exports){
+},{"react/lib/keyMirror":345}],447:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -60007,27 +60281,26 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":169}],440:[function(require,module,exports){
+},{"flux":169}],448:[function(require,module,exports){
 var React = require('react');
 
-var MemoViewer = require('./components/MemoViewer/MemoViewer');
-var Editor = require('./components/Editor/Editor');
-var MemoActions = require('./actions/MemoActions');
-var Header = require('./components/Header/Header');
-MemoActions.initMemo([]);
+var MemoAction = require('./actions/MemoActions');
+
+var Main = require('./components/Main');
+var Header = require('./components/Header');
+
+
+MemoAction.initMemo([]);
 
 React.render(
-    React.createElement("div", {className: "app"}, 
+    React.createElement("div", {id: "app-inner"}, 
         React.createElement(Header, null), 
-        React.createElement("div", {className: "content"}, 
-            React.createElement(MemoViewer, null), 
-            React.createElement(Editor, null)
-        )
+        React.createElement(Main, null)
     ),
     document.getElementById('app')
 );
 
-},{"./actions/MemoActions":425,"./components/Editor/Editor":428,"./components/Header/Header":432,"./components/MemoViewer/MemoViewer":436,"react":360}],441:[function(require,module,exports){
+},{"./actions/MemoActions":425,"./components/Header":435,"./components/Main":436,"react":360}],449:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MemoActionConstants = require('../constants/MemoActionConstants');
@@ -60112,7 +60385,7 @@ function _indexOf(arr, searchId, property) {
 function _parseMemo(memo) {
     var props = {};
 
-    matches = memo.value.match(/^(#)[ \t].+/gm);
+    matches = memo.value.match(/^\s?(#)[ \t].+/gm);
 
     if (matches != undefined) {
         if (matches.length == 1) {
@@ -60196,4 +60469,4 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/MemoActionConstants":437,"../constants/MemoTypeConstants":438,"../dispatcher/AppDispatcher":439,"events":148,"simple-unique-id":422,"underscore":424}]},{},[440]);
+},{"../constants/MemoActionConstants":445,"../constants/MemoTypeConstants":446,"../dispatcher/AppDispatcher":447,"events":148,"simple-unique-id":422,"underscore":424}]},{},[448]);

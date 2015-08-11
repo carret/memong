@@ -4,6 +4,7 @@ var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
 var MemoItem = require('./MemoItem');
+var EditMemoItem = require('./EditMemoItem');
 
 
 function getMemos() {
@@ -27,18 +28,27 @@ var MemoViewer = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            if (memo.type == MemoTypeConstants.COMPLETE_MEMO) {
-                return <MemoItem memo={memo} id={memo.id} />;
+            switch (memo.type) {
+                case MemoTypeConstants.COMPLETE_MEMO:
+                    return <MemoItem memo={memo} id={memo.id}/>;
+                /*
+                case MemoTypeConstants.EDIT_MEMO:
+                    return <EditMemoItem memo={memo} id={memo.id}/>;
+                    */
             }
         });
 
         return (
-            <div className="memo-viewer">{items}</div>
+            <div id="memo-viewer">
+                <div className="header">메모</div>
+                <div className="content">
+                    {items}
+                </div>
+            </div>
         );
     }
 });

@@ -4,12 +4,14 @@
 
 exports.doRoutes = function(app) {
     app.get ('/', index)
+    app.get('/typography', function(req,res){
+        res.render('__static__typography');
+    });
     require('./api/login').doRoutes(app)
     require('./api/note').doRoutes(app)
     require('./api/memo').doRoutes(app)
 }
 
 var index = function(req, res) {
-    //ÄíÅ° Ã¼Å©
     res.render('index', {title : "memong"})
 }

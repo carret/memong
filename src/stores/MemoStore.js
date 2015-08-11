@@ -82,7 +82,7 @@ function _indexOf(arr, searchId, property) {
 function _parseMemo(memo) {
     var props = {};
 
-    matches = memo.value.match(/^(#)[ \t].+/gm);
+    matches = memo.value.match(/^\s?(#)[ \t].+/gm);
 
     if (matches != undefined) {
         if (matches.length == 1) {

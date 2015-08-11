@@ -27,6 +27,7 @@ passport.use(new FacebookStrategy({
     },
     function (accessToken, refreshToken, profile, done) {
         console.log(profile);
+        console.log(accessToken);
         return done(null, profile);
     }
 ));
@@ -38,6 +39,7 @@ passport.use(new GoogleStrategy({
     },
     function (accessToken, refreshToken, profile, done) {
         console.log(profile);
+        console.log(accessToken);
         return done(null, profile);
     }
 ));

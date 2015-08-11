@@ -1,6 +1,3 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -57,11 +54,10 @@ var LoginBtn = React.createClass({
     render: function () {
         return (
             <div>
-                <button className="btn btn-primary" onClick={this.handleTrigger}>Login</button>
+                <button className="account" onClick={this.handleTrigger}>로그인</button>
             </div>
         );
     }
 });
-
 
 module.exports = LoginBtn;
