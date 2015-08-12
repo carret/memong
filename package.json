@@ -9,7 +9,6 @@
   "author": "Team. carret",
   "license": "MIT",
   "dependencies": {
-    "async-waterfall": "^0.1.5",
     "ejs": "^2.3.3",
     "express": "^4.13.1",
     "flux": "^2.0.3",

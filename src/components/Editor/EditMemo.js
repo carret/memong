@@ -6,11 +6,17 @@ var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
 
+var TextareaDOM;
 
-var regEx = /^\s?(#)[ \t].+/gm;
+
+var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({
+    propTypes: {
+        scrolltoTarget: React.PropTypes.func.isRequired
+    },
+
     getInitialState: function() {
         return {
             value: this.props.memo.value,
@@ -20,29 +26,43 @@ var EditMemo = React.createClass({
 
     componentDidMount: function() {
         var value = this.props.memo.value;
-        React.findDOMNode(this.refs._textarea).selectionStart = value.length;
-        React.findDOMNode(this.refs._textarea).selectionEnd = value.length;
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM = React.findDOMNode(this.refs._textarea);
+        TextareaDOM.selectionStart = value.length;
+        TextareaDOM.selectionEnd = value.length;
+        var offset = $(TextareaDOM).offset();
+        TextareaDOM.focus();
+        this.props.scrolltoTarget(offset.top);
     },
 
     _handleValueInput: function(_value) {
         this.setState({value: _value});
+    },
 
-        var value = this.state.value;
-        matches = value.match(regEx);
+    _handleKeyInput: function(event) {
+        if (event.keyCode === 13) {
+            var value = this.state.value;
+            matches = value.match(regEx);
 
-        if (matches != undefined) {
-            if (matches.length == 2) {
-                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
-                    React.findDOMNode(this.refs._textarea).blur();
-                });
+            if (matches != undefined) {
+                if (matches.length >= 2) {
+                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                        TextareaDOM.blur();
+                    });
+                }
             }
+        }
+        if (event.keyCode === 9) {
+            event.preventDefault();
+            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+                TextareaDOM.blur();
+            });
         }
     },
 
     _handleAction: function() {
         var value = this.state.value;
         var result = "";
+        var updateValue = "";
 
         switch(this.state.actionType) {
             case MemoActionConstants.END_EDIT_MEMO :
@@ -53,12 +73,22 @@ var EditMemo = React.createClass({
                 break;
 
             case MemoActionConstants.ADD_MEMO :
-                matches = value.match(regEx);
-                result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
-                this.setState({value: value.slice((value.indexOf(matches[1], matches[0].length), value.length))});
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(value)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                result = value.slice(0, index[len-1]);
+                updateValue = value.slice(index[len-1], value.length);
+                this.setState({
+                    value: updateValue,
+                    actionType: MemoActionConstants.END_EDIT_MEMO,
+                });
 
                 MemoActions.addMemo(this.props.memo, result);
-                React.findDOMNode(this.refs._textarea).focus();
+                TextareaDOM.focus();
                 break;
         }
     },
@@ -74,6 +104,7 @@ var EditMemo = React.createClass({
                 <Textarea ref="_textarea"
                           className="edit-memo-textarea"
                           valueLink={valueLink}
+                          onKeyDown={this._handleKeyInput}
                           onBlur={this._handleAction}
                     />
             </div>

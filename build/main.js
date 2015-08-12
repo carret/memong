@@ -55624,11 +55624,17 @@ var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
 
+var TextareaDOM;
 
-var regEx = /^\s?(#)[ \t].+/gm;
+
+var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
+    propTypes: {
+        scrolltoTarget: React.PropTypes.func.isRequired
+    },
+
     getInitialState: function() {
         return {
             value: this.props.memo.value,
@@ -55638,29 +55644,43 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
     componentDidMount: function() {
         var value = this.props.memo.value;
-        React.findDOMNode(this.refs._textarea).selectionStart = value.length;
-        React.findDOMNode(this.refs._textarea).selectionEnd = value.length;
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM = React.findDOMNode(this.refs._textarea);
+        TextareaDOM.selectionStart = value.length;
+        TextareaDOM.selectionEnd = value.length;
+        var offset = $(TextareaDOM).offset();
+        TextareaDOM.focus();
+        this.props.scrolltoTarget(offset.top);
     },
 
     _handleValueInput: function(_value) {
         this.setState({value: _value});
+    },
 
-        var value = this.state.value;
-        matches = value.match(regEx);
+    _handleKeyInput: function(event) {
+        if (event.keyCode === 13) {
+            var value = this.state.value;
+            matches = value.match(regEx);
 
-        if (matches != undefined) {
-            if (matches.length == 2) {
-                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function() {
-                    React.findDOMNode(this.refs._textarea).blur();
-                });
+            if (matches != undefined) {
+                if (matches.length >= 2) {
+                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                        TextareaDOM.blur();
+                    });
+                }
             }
+        }
+        if (event.keyCode === 9) {
+            event.preventDefault();
+            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+                TextareaDOM.blur();
+            });
         }
     },
 
     _handleAction: function() {
         var value = this.state.value;
         var result = "";
+        var updateValue = "";
 
         switch(this.state.actionType) {
             case MemoActionConstants.END_EDIT_MEMO :
@@ -55671,12 +55691,22 @@ var EditMemo = React.createClass({displayName: "EditMemo",
                 break;
 
             case MemoActionConstants.ADD_MEMO :
-                matches = value.match(regEx);
-                result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
-                this.setState({value: value.slice((value.indexOf(matches[1], matches[0].length), value.length))});
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(value)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                result = value.slice(0, index[len-1]);
+                updateValue = value.slice(index[len-1], value.length);
+                this.setState({
+                    value: updateValue,
+                    actionType: MemoActionConstants.END_EDIT_MEMO,
+                });
 
                 MemoActions.addMemo(this.props.memo, result);
-                React.findDOMNode(this.refs._textarea).focus();
+                TextareaDOM.focus();
                 break;
         }
     },
@@ -55692,6 +55722,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
                 React.createElement(Textarea, {ref: "_textarea", 
                           className: "edit-memo-textarea", 
                           valueLink: valueLink, 
+                          onKeyDown: this._handleKeyInput, 
                           onBlur: this._handleAction}
                     )
             )
@@ -55722,17 +55753,30 @@ function getMemos() {
     };
 }
 
+var EditorDOM;
+
 var Editor = React.createClass({displayName: "Editor",
     getInitialState: function() {
         return getMemos();
     },
 
     componentDidMount: function() {
+        EditorDOM = $(React.findDOMNode(this.refs._editor));
+
         MemoStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
     componentWillUnmount: function() {
         MemoStore.removeChangeListener(this._onChange); //Listener 삭제
+    },
+
+    _preventFocusScroll: function(position) {
+        EditorDOM.scrollTop(position);
+    },
+
+    _scrolltoTarget: function(targetTop) {
+        console.log(targetTop);
+        console.log(EditorDOM.scrollTop());
     },
 
     render: function() {
@@ -55743,24 +55787,23 @@ var Editor = React.createClass({displayName: "Editor",
                     return React.createElement(CompleteMemo, {memo: memo, key: memo.id});
 
                 case MemoTypeConstants.EDIT_MEMO :
-                    return React.createElement(EditMemo, {memo: memo, key: memo.id});
+                    return React.createElement(EditMemo, {memo: memo, key: memo.id, scrolltoTarget: this._scrolltoTarget});
 
                 case MemoTypeConstants.NONE_MEMO :
                     return React.createElement(NoneMemo, {memo: memo, key: memo.id});
 
                 case MemoTypeConstants.GLOBAL_EDIT_MEMO :
-                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.id});
+                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.id, scrolltoTarget: this._scrolltoTarget});
             }
-        });
+        }.bind(this));
 
         return (
-            React.createElement("div", {id: "editor"}, items)
+            React.createElement("div", {id: "editor", ref: "_editor"}, items)
         );
     },
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     }
 });
 
@@ -55775,8 +55818,10 @@ var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
 
+var TextareaDOM;
 
-var regEx = /^\s?(#)[ \t].+/gm;
+
+var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -55790,23 +55835,34 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
     componentDidMount: function() {
         var value = this.props.memo.value;
-        React.findDOMNode(this.refs._textarea).selectionStart = value.length;
-        React.findDOMNode(this.refs._textarea).selectionEnd = value.length;
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM = React.findDOMNode(this.refs._textarea);
+        TextareaDOM.selectionStart = value.length;
+        TextareaDOM.selectionEnd = value.length;
+        TextareaDOM.focus();
     },
 
     _handleValueInput: function(_value) {
         this.setState({value: _value});
+    },
 
-        var value = this.state.value;
-        matches = value.match(regEx);
+    _handleKeyInput: function(event) {
+        if (event.keyCode === 13) {
+            var value = this.state.value;
+            matches = value.match(regEx);
 
-        if (matches != undefined) {
-            if (matches.length == 2) {
-                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
-                    React.findDOMNode(this.refs._textarea).blur();
-                });
+            if (matches != undefined) {
+                if (matches.length >= 2) {
+                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                        TextareaDOM.blur();
+                    });
+                }
             }
+        }
+        if (event.keyCode === 9) {
+            event.preventDefault();
+            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+                TextareaDOM.blur();
+            });
         }
     },
 
@@ -55825,19 +55881,26 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
                 break;
 
             case MemoActionConstants.ADD_MEMO :
-                matches = value.match(regEx);
-                result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
-                updateValue = value.slice(value.indexOf(matches[1], matches[0].length), value.length);
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(value)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                result = value.slice(0, index[len-1]);
+                updateValue = value.slice(index[len-1], value.length);
                 this.setState({
                     value: updateValue,
                     actionType: MemoActionConstants.END_EDIT_MEMO
                 });
                 break;
         }
+
         MemoActions.addMemo(_.extend(this.props.memo, {
             value: updateValue
         }), result);
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM.focus();
     },
 
     render: function() {
@@ -55848,9 +55911,10 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
         return(
             React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
-                          minRows: 20, 
+                          minRows: 25, 
                           className: "global-edit-memo-textarea", 
                           valueLink: valueLink, 
+                          onKeyDown: this._handleKeyInput, 
                           onBlur: this._handleAction}
                     )
             )
@@ -55995,7 +56059,6 @@ var Main = React.createClass({displayName: "Main",
         SectionDOM = $(React.findDOMNode(this.refs._section));
 
         window.addEventListener('resize', this._handleResize);
-
         SectionDOM.css("width", this.state.mainWidth - 502);
     },
 
@@ -56104,7 +56167,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
         return (
         React.createElement("div", {className: "memo-viewer-item"}, 
             React.createElement("span", {className: "title"}, 
-                this.props.memo.name
+                this.props.memo.title
             ), 
             React.createElement("div", null, 
                 React.createElement("button", {className: "btn_delete", onClick: this._onDelete}, 
@@ -56155,13 +56218,20 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
         var items = _.map(this.state.memos, function(memo) {
             switch (memo.type) {
                 case MemoTypeConstants.COMPLETE_MEMO:
-                    return React.createElement(MemoItem, {memo: memo, id: memo.id});
-                /*
+                    return React.createElement(MemoItem, {memo: memo, key: memo.id});
+
+                case MemoTypeConstants.NONE_MEMO:
+                    return React.createElement(MemoItem, {memo: memo, key: memo.id});
+
                 case MemoTypeConstants.EDIT_MEMO:
-                    return <EditMemoItem memo={memo} id={memo.id}/>;
-                    */
+                    return React.createElement(EditMemoItem, {memo: memo, key: memo.id});
             }
         });
+
+        if (typeof items[0] === "undefined") {
+            items = React.createElement("div", {className: "no-memo"}, React.createElement("span", null, "NO"), React.createElement("span", null, "MEMO"));
+        }
+
 
         return (
             React.createElement("div", {id: "memo-viewer"}, 
@@ -56280,6 +56350,7 @@ var Header = require('./components/Header');
 
 MemoAction.initMemo([]);
 
+
 React.render(
     React.createElement("div", {id: "app-inner"}, 
         React.createElement(Header, null), 
@@ -56301,11 +56372,11 @@ var sui = require('simple-unique-id');
 var _memos = [];
 var globalEditMemo = {
     id: sui.generate("globalEditMemo"),
-    name: null,
+    title: null,
     value: "",
-    type: MemoTypeConstants.GLOBAL_EDIT_MEMO
+    type: MemoTypeConstants.GLOBAL_EDIT_MEMO,
+    date: null
 };
-var matches = [];
 
 
 
@@ -56323,9 +56394,12 @@ function addMemo(_targetEditMemo, _context) {
     var newMemo = _.extend({}, {
         value: _context
     });
-    _parseMemo(newMemo);
+    var _newMemos = _parseMemo(newMemo);
+    var len = _newMemos.length;
 
-    _memos.splice(index, 0, newMemo);
+    for (var idx=0; idx<len; idx++) {
+        _memos.splice(index+idx, 0, _newMemos[idx]);
+    }
 }
 
 function deleteMemo(_targetMemo) {
@@ -56335,25 +56409,20 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(_memos, _targetCompleteMemo.id, "id");
-    if (index == _memos.length - 2) {
-        var value = _memos[index].value + (_.last(_memos)).value;
-        _memos.splice(index, 2);
-        _memos.push(_.extend(globalEditMemo, {
-            id: sui.generate(value),
-            value: value
-        }));
-    }
-    else {
-        _targetCompleteMemo.type = MemoTypeConstants.EDIT_MEMO;
-        _memos[index] = _.extend({}, _memos[index], _targetCompleteMemo);
-    }
+    _targetCompleteMemo.type = MemoTypeConstants.EDIT_MEMO;
+    _memos[index] = _.extend({}, _memos[index], _targetCompleteMemo);
 }
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(_memos, _targetEditMemo.id, "id");
-    _parseMemo(_targetEditMemo);
+    var _newMemos = _parseMemo(_targetEditMemo);
+    var len = _newMemos.length;
 
-    _memos[index] = _.extend({}, _memos[index], _targetEditMemo);
+    for (var idx=0; idx<len-1; idx++) {
+        _memos.splice(index+idx, 0, _newMemos[idx]);
+    }
+
+    _memos[index + len - 1] = _.extend({}, _memos[index + len - 1], _newMemos[len - 1]);
 }
 
 
@@ -56371,28 +56440,67 @@ function _indexOf(arr, searchId, property) {
 }
 
 function _parseMemo(memo) {
-    var props = {};
+    var resultMemos = new Array();
+    var _proto_memo = {
+        id: null,
+        title: null,
+        value: "",
+        type: MemoTypeConstants.NONE_MEMO,
+        date: null
+    };
 
-    matches = memo.value.match(/^\s?(#)[ \t].+/gm);
+    var regEx = /^[^#\s]?(#)[ \t].+/gm;
+    var _arr, result = new Array();
+    while ((_arr = regEx.exec(memo.value)) !== null) {
+        result.push({
+            _title: _arr[0],
+            _index: _arr.index
+        });
+    }
+    var len = result.length;
 
-    if (matches != undefined) {
-        if (matches.length == 1) {
-            props.name = matches[0].slice(2, matches[0].length);
-            props.type = MemoTypeConstants.COMPLETE_MEMO;
-        }
-        else {
-            throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
-        }
+    if (len == 0) {
+        var _memo = _.extend(_proto_memo, {
+            title: "(No Title)",
+            type: MemoTypeConstants.NONE_MEMO,
+            value: memo.value,
+            date: new Date()
+        });
+        resultMemos.push(_memo);
     }
     else {
-        props.name = "none-memo";
-        props.type = MemoTypeConstants.NONE_MEMO;
+        var index = 0;
+        var value;
+        for (var idx=0; idx<len; idx++) {
+            if (idx == len-1) {
+                value = (memo.value).slice(index, (memo.value).length);
+            }
+            else {
+                value = (memo.value).slice(index, result[idx + 1]._index);
+                index = result[idx+1]._index;
+            }
+
+            var _memo = _.extend(_proto_memo, {
+                title: (result[idx]._title).slice(2, (result[idx]._title).length),
+                value: value,
+                type: MemoTypeConstants.COMPLETE_MEMO,
+                date: new Date()
+            });
+            resultMemos.push(_memo);
+        }
     }
 
-    props.id = sui.generate(props.name);
-    return (
-        _.extend(memo, props)
-    );
+    if (resultMemos.length == 0) {
+        throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
+    }
+    else {
+        for (var idx=0; idx<resultMemos.length; idx++) {
+            resultMemos[idx] = _.extend({}, resultMemos[idx], {
+                id: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+            });
+        }
+    }
+    return resultMemos;
 }
 
 

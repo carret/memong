@@ -10,7 +10,7 @@ var MemoItem = React.createClass({
         return (
         <div className="memo-viewer-item">
             <span className="title">
-                {this.props.memo.name}
+                {this.props.memo.title}
             </span>
             <div>
                 <button className="btn_delete" onClick={this._onDelete}>

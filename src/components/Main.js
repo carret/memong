@@ -22,7 +22,6 @@ var Main = React.createClass({
         SectionDOM = $(React.findDOMNode(this.refs._section));
 
         window.addEventListener('resize', this._handleResize);
-
         SectionDOM.css("width", this.state.mainWidth - 502);
     },
 
