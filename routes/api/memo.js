@@ -7,7 +7,6 @@ var Note = db.model('Note');
 
 var note = new Note();
 
-
  exports.doRoutes = function(app) {
  //app.get('/memo', getMemo)
  app.post('/memo/add', addMemo)
@@ -44,10 +43,11 @@ var saveMemo = function(req, res) {
 
         res.send(200,test);
 
+        /* test ¿ë
         test.memos.push({
             header : '77',
             main : '777'
-        });
+        });*/
 
         Note.update({_id: test['_id']},test,{upsert:true},function(err){
             if(err){
@@ -57,6 +57,5 @@ var saveMemo = function(req, res) {
             }
             res.end();
         });
-
     });
 };

@@ -24,16 +24,16 @@ var Note = {
                 },
                 header: {
                     type: String,
-                    default: 'test h'
                 },
                 main: {
                     type: String,
-                    required: true,
-                    default: 'test m'
+                    required: true
                 },
                 tag: {
                     type: Array
                 }
+
+                // 타입 추가
             }
         ]
 };
