@@ -8,6 +8,7 @@ var Header = require('./components/Header');
 
 MemoAction.initMemo([]);
 
+
 React.render(
     <div id="app-inner">
         <Header />

@@ -10,11 +10,11 @@ var sui = require('simple-unique-id');
 var _memos = [];
 var globalEditMemo = {
     id: sui.generate("globalEditMemo"),
-    name: null,
+    title: null,
     value: "",
-    type: MemoTypeConstants.GLOBAL_EDIT_MEMO
+    type: MemoTypeConstants.GLOBAL_EDIT_MEMO,
+    date: null
 };
-var matches = [];
 
 
 
@@ -32,9 +32,12 @@ function addMemo(_targetEditMemo, _context) {
     var newMemo = _.extend({}, {
         value: _context
     });
-    _parseMemo(newMemo);
+    var _newMemos = _parseMemo(newMemo);
+    var len = _newMemos.length;
 
-    _memos.splice(index, 0, newMemo);
+    for (var idx=0; idx<len; idx++) {
+        _memos.splice(index+idx, 0, _newMemos[idx]);
+    }
 }
 
 function deleteMemo(_targetMemo) {
@@ -44,25 +47,20 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(_memos, _targetCompleteMemo.id, "id");
-    if (index == _memos.length - 2) {
-        var value = _memos[index].value + (_.last(_memos)).value;
-        _memos.splice(index, 2);
-        _memos.push(_.extend(globalEditMemo, {
-            id: sui.generate(value),
-            value: value
-        }));
-    }
-    else {
-        _targetCompleteMemo.type = MemoTypeConstants.EDIT_MEMO;
-        _memos[index] = _.extend({}, _memos[index], _targetCompleteMemo);
-    }
+    _targetCompleteMemo.type = MemoTypeConstants.EDIT_MEMO;
+    _memos[index] = _.extend({}, _memos[index], _targetCompleteMemo);
 }
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(_memos, _targetEditMemo.id, "id");
-    _parseMemo(_targetEditMemo);
+    var _newMemos = _parseMemo(_targetEditMemo);
+    var len = _newMemos.length;
 
-    _memos[index] = _.extend({}, _memos[index], _targetEditMemo);
+    for (var idx=0; idx<len-1; idx++) {
+        _memos.splice(index+idx, 0, _newMemos[idx]);
+    }
+
+    _memos[index + len - 1] = _.extend({}, _memos[index + len - 1], _newMemos[len - 1]);
 }
 
 
@@ -80,28 +78,67 @@ function _indexOf(arr, searchId, property) {
 }
 
 function _parseMemo(memo) {
-    var props = {};
+    var resultMemos = new Array();
+    var _proto_memo = {
+        id: null,
+        title: null,
+        value: "",
+        type: MemoTypeConstants.NONE_MEMO,
+        date: null
+    };
 
-    matches = memo.value.match(/^\s?(#)[ \t].+/gm);
+    var regEx = /^[^#\s]?(#)[ \t].+/gm;
+    var _arr, result = new Array();
+    while ((_arr = regEx.exec(memo.value)) !== null) {
+        result.push({
+            _title: _arr[0],
+            _index: _arr.index
+        });
+    }
+    var len = result.length;
 
-    if (matches != undefined) {
-        if (matches.length == 1) {
-            props.name = matches[0].slice(2, matches[0].length);
-            props.type = MemoTypeConstants.COMPLETE_MEMO;
-        }
-        else {
-            throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
-        }
+    if (len == 0) {
+        var _memo = _.extend(_proto_memo, {
+            title: "(No Title)",
+            type: MemoTypeConstants.NONE_MEMO,
+            value: memo.value,
+            date: new Date()
+        });
+        resultMemos.push(_memo);
     }
     else {
-        props.name = "none-memo";
-        props.type = MemoTypeConstants.NONE_MEMO;
+        var index = 0;
+        var value;
+        for (var idx=0; idx<len; idx++) {
+            if (idx == len-1) {
+                value = (memo.value).slice(index, (memo.value).length);
+            }
+            else {
+                value = (memo.value).slice(index, result[idx + 1]._index);
+                index = result[idx+1]._index;
+            }
+
+            var _memo = _.extend(_proto_memo, {
+                title: (result[idx]._title).slice(2, (result[idx]._title).length),
+                value: value,
+                type: MemoTypeConstants.COMPLETE_MEMO,
+                date: new Date()
+            });
+            resultMemos.push(_memo);
+        }
     }
 
-    props.id = sui.generate(props.name);
-    return (
-        _.extend(memo, props)
-    );
+    if (resultMemos.length == 0) {
+        throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
+    }
+    else {
+        for (var idx=0; idx<resultMemos.length; idx++) {
+            resultMemos[idx] = _.extend({}, resultMemos[idx], {
+                id: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+            });
+        }
+    }
+    return resultMemos;
 }
 
 

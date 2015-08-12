@@ -34,13 +34,20 @@ var MemoViewer = React.createClass({
         var items = _.map(this.state.memos, function(memo) {
             switch (memo.type) {
                 case MemoTypeConstants.COMPLETE_MEMO:
-                    return <MemoItem memo={memo} id={memo.id}/>;
-                /*
+                    return <MemoItem memo={memo} key={memo.id} />;
+
+                case MemoTypeConstants.NONE_MEMO:
+                    return <MemoItem memo={memo} key={memo.id} />;
+
                 case MemoTypeConstants.EDIT_MEMO:
-                    return <EditMemoItem memo={memo} id={memo.id}/>;
-                    */
+                    return <EditMemoItem memo={memo} key={memo.id} />;
             }
         });
+
+        if (typeof items[0] === "undefined") {
+            items = <div className="no-memo"><span>NO</span><span>MEMO</span></div>;
+        }
+
 
         return (
             <div id="memo-viewer">
