@@ -40,6 +40,7 @@ var Main = React.createClass({
     },
 
     _toggleAside: function() {
+        console.log("what");
         if (!this.state.asideVisible) {
             AsideDOM.removeClass('hide');
             SectionDOM.removeClass('hide');
