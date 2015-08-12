@@ -21,7 +21,7 @@
 @color-grey-600: #757575;
 @color-grey-700: #616161;
 @color-grey-800: #424242;
-@color-grey-850: #222222;
+@color-grey-850: #232323;
 @color-grey-900: #212121;
 
 @color-red-300: #E57373;
@@ -467,7 +467,39 @@ html, body {
                     -ms-flex: 1;
                     flex: 1;
 
+                    overflow-y: scroll;
+
                     background-color: @color-grey-200;
+
+                    .no-memo {
+                        height: inherit;
+
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: -moz-box;
+                        display: -ms-flexbox;
+                        display: flex;
+
+                        -webkit-box-orient: vertical;
+                        -webkit-box-direction: normal;
+                        -webkit-flex-direction: column;
+                        -moz-box-orient: vertical;
+                        -moz-box-direction: normal;
+                        -ms-flex-direction: column;
+                        flex-direction: column;
+
+                        align-self: center;
+
+                        text-align: center;
+
+                        span{
+                            color: @color-grey-400;
+                            display: block;
+                            font-size: 1.8em;
+                            font-weight: 700;
+                            line-height: 150%;
+                        }
+                    }
 
                     .memo-viewer-item {
                         background-color: @color-grey-100;
@@ -575,7 +607,7 @@ html, body {
                     float: left;
                     display: inline-block;
                     font-size: 1.3em;
-                    font-weight: 500;
+                    font-weight: 700;
                 }
 
                 &:after {
@@ -597,8 +629,7 @@ html, body {
                         width: 22px;
                         height: 22px;
                         font-size: 22px;
-                        color: @color-grey-700;
-
+                        color: @color-grey-500;
                         will-change: background-color;
 
                         -webkit-transition: background-color .3s ease;
@@ -619,6 +650,8 @@ html, body {
 
             #editor {
 
+                font-size: 14px;
+                line-height: 180%;
                 -webkit-box-flex: 1;
                 -webkit-flex: 1;
                 -moz-box-flex: 1;
@@ -629,53 +662,52 @@ html, body {
                 color: @color-grey-800;
 
                 padding: 0 2rem;
-
-                overflow: scroll;
+                overflow-y: auto;
 
                 font-size: 1.142857em;
 
                 p {
                     font-weight: 300;
                     margin-top: 0;
-                    margin-bottom: 1.5rem;
+                    margin-bottom: 1.8rem;
                 }
 
                 strong {
-                    font-weight: 500;
+                    font-weight: 700;
                 }
 
                 h1 {
-                    line-height: 3rem;
-                    margin-top: 0.75rem;
-                    font-weight: 500;
-                    margin-bottom: calc(1.5rem - 0.25rem);
+                    line-height: 3.6rem;
+                    margin-top: 1.2rem;
+                    font-weight: 700;
+                    margin-bottom: calc(1.8rem - 0.4rem);
                 }
 
                 h2 {
-                    line-height: 3rem;
-                    font-weight: 500;
-                    margin-top: 1.25rem;
-                    margin-bottom: calc(0.75rem - 0.25rem);
+                    line-height: 3.6rem;
+                    font-weight: 700;
+                    margin-top: 1.7rem;
+                    margin-bottom: calc(1.8rem - 0.4rem);
                 }
 
                 h3 {
                     font-size: 1.25em;
-                    font-weight: 500;
-                    line-height: 2.25rem;
-                    margin-top: 0.75rem;
-                    margin-bottom: calc(0.75rem - 0.25rem);
+                    font-weight: 700;
+                    line-height: 2.7rem;
+                    margin-top: 1.05rem;
+                    margin-bottom: calc(0.9rem - 0.4rem);
                 }
 
                 h4 {
                     font-size: 1em;
-                    font-weight: 500;
+                    font-weight: 700;
                     margin-top: 0;
-                    margin-bottom: 0.75rem;
+                    margin-bottom: 0.9rem;
                 }
 
                 h5 {
                     font-size: 1em;
-                    font-weight: 500;
+                    font-weight: 700;
                     margin-top: 0;
                     margin-bottom: 0;
                 }
@@ -684,26 +716,24 @@ html, body {
                     display: inline-block;
                     float: left;
                     font-size: 1em;
-                    font-weight: 500;
+                    font-weight: 700;
                     margin-top: 0;
                     margin-bottom: 0;
                 }
                 h6:after {
                     content: " :";
-                    margin-right: 0.75rem;
+                    margin-right: 0.9rem;
                 }
 
                 blockquote {
-                    display: block;
                     font-size: 1em;
                     font-weight: 100;
-                    margin-bottom: 1.5rem;
+                    margin-bottom: 1.8rem;
                     border-left: 7px solid #ccc;
                     background: #f9f9f9;
 
-                    margin-left: calc(1.5rem - 7px);
                     margin-right: 0;
-                    padding: 0.75rem 1rem 0.75rem 1.3rem;
+                    padding: 0.9rem 1rem 0.9rem 1.3rem;
                 }
                 blockquote p {
                     display: inline;
@@ -716,9 +746,22 @@ html, body {
 
                     margin-top: 1.5rem;
                     margin-bottom: 1.5rem;
-
-                    padding: .75rem 1rem;
+                    padding: 0 1rem;
                     border: 1px solid @color-grey-300;
+
+                    will-change: opacity;
+
+                    -webkit-transition: opacity .2s ease;
+                    -moz-transition: opacity .2s ease;
+                    -ms-transition: opacity .2s ease;
+                    -o-transition: opacity .2s ease;
+                    transition: opacity .2s ease;
+
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: .8;
+                    }
                 }
 
                 .globaledit-memo {
