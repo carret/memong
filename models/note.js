@@ -9,7 +9,7 @@ var Note = {
         required: true,
         default: Date.now
     },
-    name: {
+    title: {
         type: String,
         required: true
     },
@@ -22,18 +22,19 @@ var Note = {
                     required: true,
                     default: Date.now
                 },
-                header: {
+                title: {
                     type: String,
                 },
-                main: {
+                text: {
                     type: String,
                     required: true
                 },
                 tag: {
                     type: Array
+                },
+                mtype : {
+                    type : String
                 }
-
-                // 타입 추가
             }
         ]
 };
