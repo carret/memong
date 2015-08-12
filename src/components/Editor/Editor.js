@@ -1,7 +1,7 @@
 //Component Type: Controll View
 
 var React = require('react');
-var MemoStore = require('../../stores/MemoStore');
+var NoteStore = require('../../stores/NoteStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
 var _ = require('underscore');
 
@@ -13,7 +13,7 @@ var NoneMemo = require('./NoneMemo');
 
 function getMemos() {
     return {
-        memos: MemoStore.getMemo()
+        memos: NoteStore.getMemo()
     };
 }
 
@@ -27,11 +27,11 @@ var Editor = React.createClass({
     componentDidMount: function() {
         EditorDOM = $(React.findDOMNode(this.refs._editor));
 
-        MemoStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
+        NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
     componentWillUnmount: function() {
-        MemoStore.removeChangeListener(this._onChange); //Listener 삭제
+        NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
     _preventFocusScroll: function(position) {
