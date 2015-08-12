@@ -1,20 +1,40 @@
 /**
- * Created by Jaewook on 2015-08-01.
+ * Created by cho on 2015-08-05.
  */
-var db = require('../db');
-var Note = db.model('Note', {
-    name : {
-        type : String,
-        required:true
+var Note = {
+
+    /* _id 자동생성 */
+    date: {
+        type: Date,
+        required: true,
+        default: Date.now
     },
-    body : {
-        type:String,
-        required:true
+    name: {
+        type: String,
+        required: true
     },
-    date : {
-        type : Date,
-        required : true,
-        default : Date.now
-    }
-})
-module.exports = Note
+
+    memos:
+        [
+            {
+                date: {
+                    type: Date,
+                    required: true,
+                    default: Date.now
+                },
+                header: {
+                    type: String,
+                    default: 'test h'
+                },
+                main: {
+                    type: String,
+                    required: true,
+                    default: 'test m'
+                },
+                tag: {
+                    type: Array
+                }
+            }
+        ]
+};
+module.exports = Note;

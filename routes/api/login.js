@@ -25,4 +25,10 @@ exports.doRoutes = function(app) {
             res.redirect('/');
         }
     }
+
+    function initNotes() // 로그인과 동시에 유저내 모든 노트 가져옴
+    {
+
+
+    }
 }
