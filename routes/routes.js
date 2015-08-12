@@ -13,5 +13,7 @@ exports.doRoutes = function(app) {
 }
 
 var index = function(req, res) {
+    //User is login
+    //console.log(req.session);
     res.render('index', {title : "memong"})
 }

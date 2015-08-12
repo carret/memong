@@ -14,26 +14,33 @@ exports.doRoutes = function(app) {
         res.send(req.user);
         res.redirect('/');
     });
-    app.get('/login/facebook', passport.authenticate('facebook'));
-    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/login/facebook/success', failureRedirect:'/login/facebook/fail'}));
-    app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {
-        res.send(req.user);
-    });
+    app.get('/login/facebook', passport.authenticate('facebook', {scope:['email']}));
+    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/', failureRedirect:'/login/facebook/fail'}));
+    //app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {
+    //    res.send(req.user);
+    //    res.redirect('/');
+    //});
     app.get('/logout', function(req, res){
         console.log('logout');
-        req.logOut();
-        //req.session.destroy(function (err) {
-        //    res.redirect('/'); //Inside a callback… bulletproof!
-        //});
+        console.log(req.session);
+        req.logout();
         res.redirect('/');
+        //req.session.destroy(function(err) {
+        //    if ( err )
+        //        console.log(err);
+        //    else
+        //        console.log('logout');
+        //});
+        //
+        //setTimeout(function() {
+        //    res.redirect ("/");
+        //}, 2000);
     });
 
     function ensureAuthenticated(req, res, next) {
-        // �α����� �Ǿ� ������, ���� �������������� ����
         if (req.isAuthenticated()) {
             return next();
         }
-        // �α����� �ȵǾ� ������, login �������� ����
         else {
             res.redirect('/');
         }

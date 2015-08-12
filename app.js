@@ -1,4 +1,5 @@
 var express = require('express');
+var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
@@ -11,6 +12,7 @@ var passports = require('./passports');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({secret:'my secret'}));
 app.engine('.ejs', require('ejs').__express);
 app.set('views', __dirname + '/build/views');
 app.set('view engine', 'ejs');

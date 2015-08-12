@@ -23,11 +23,12 @@ passport.deserializeUser(function (user, done) {
 passport.use(new FacebookStrategy({
         clientID: pkginfo.oauth.facebook.FACEBOOK_APP_ID,
         clientSecret: pkginfo.oauth.facebook.FACEBOOK_APP_SECRET,
-        callbackURL: pkginfo.oauth.facebook.callbackURL
+        callbackURL: pkginfo.oauth.facebook.callbackURL,
+        profileFields: ['id', 'displayName', 'email', 'birthday']
     },
     function (accessToken, refreshToken, profile, done) {
-        console.log(profile);
-        console.log(accessToken);
+        //console.log(profile);
+        //console.log(accessToken);
         return done(null, profile);
     }
 ));
@@ -38,8 +39,8 @@ passport.use(new GoogleStrategy({
         callbackURL: pkginfo.oauth.google.callbackURL
     },
     function (accessToken, refreshToken, profile, done) {
-        console.log(profile);
-        console.log(accessToken);
+        //console.log(profile);
+        //console.log(accessToken);
         return done(null, profile);
     }
 ));
