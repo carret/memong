@@ -13,7 +13,14 @@ var User = {
         type : String,
         required:true
     },
+<<<<<<< Updated upstream
 
+=======
+    servicetype:{
+        type:String,
+        required:true
+    },
+>>>>>>> Stashed changes
     category : [
         {
             /* file && note categories */

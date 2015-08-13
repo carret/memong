@@ -9,23 +9,14 @@
   "author": "Team. carret",
   "license": "MIT",
   "dependencies": {
-<<<<<<< HEAD
-=======
+    "async": "^1.4.2",
     "async-waterfall": "^0.1.5",
->>>>>>> 8dc388993e214fb6185d66c93e085ba076e7249a
     "body-parser": "~1.0.0",
     "cookie-parser": "~1.0.1",
     "ejs": "^2.3.3",
     "express": "^4.13.1",
     "express-session": "^1.11.3",
     "flux": "^2.0.3",
-<<<<<<< HEAD
-    "material-ui": "0.10.2",
-    "mongoose": "^4.0.7",
-    "passport": "0.2.2",
-    "passport-facebook": "2.0.0",
-    "react": "^0.13.3",
-=======
     "gulp-less": "^3.0.3",
     "material-ui": "0.10.2",
     "mongoose": "^4.1.0",
@@ -39,7 +30,6 @@
     "react-component-resizable": "^0.2.3",
     "react-ink": "^4.1.0",
     "react-tap-event-plugin": "^0.1.7",
->>>>>>> 8dc388993e214fb6185d66c93e085ba076e7249a
     "react-textarea-autosize": "^2.4.2",
     "react-ui-tree": "^2.2.1",
     "remarkable": "^1.6.0",

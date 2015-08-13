@@ -2,6 +2,11 @@
  * Created by Jaewook on 2015-08-01.
  */
 var passport=require('../../passports');
+var db = require('../../db');
+
+var User = db.model('User');
+
+var async = require('async');
 
 exports.doRoutes = function(app) {
     app.get('/login/google', passport.authenticate('google', {
@@ -11,42 +16,134 @@ exports.doRoutes = function(app) {
     }));
     app.get('/login/google/callback', passport.authenticate('google', {successRedirect:'/login/google/success', failureRedirect:'/login/google/fail'}));
     app.get('/login/google/success', ensureAuthenticated, function(req,res,next) {
-        res.send(req.user);
+        //res.send(req.user);
         res.redirect('/');
     });
     app.get('/login/facebook', passport.authenticate('facebook', {scope:['email']}));
-    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/', failureRedirect:'/login/facebook/fail'}));
-    //app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {
-    //    res.send(req.user);
-    //    res.redirect('/');
-    //});
-    app.get('/logout', function(req, res){
+    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/login/facebook/success', failureRedirect:'/login/facebook/fail'}));
+    app.get('/login/facebook/success', ensureAuthenticated, writeCookie, writeDB, function(req, res) {
+        console.log('login success');
+        //console.log(req.session);
+        res.redirect('/');
+    });
+
+    app.get('/logout', ensureAuthenticated, deleteDB, function(req, res){
         console.log('logout');
-        console.log(req.session);
+        res.clearCookie('token');
+        res.clearCookie('username');
         req.logout();
         res.redirect('/');
-        //req.session.destroy(function(err) {
-        //    if ( err )
-        //        console.log(err);
-        //    else
-        //        console.log('logout');
-        //});
-        //
-        //setTimeout(function() {
-        //    res.redirect ("/");
-        //}, 2000);
     });
 
     function ensureAuthenticated(req, res, next) {
+
         if (req.isAuthenticated()) {
+            // ë¡œê·¸ì¸ì´ ë˜ì–´ ìžˆìœ¼ë©´, ë‹¤ìŒ íŒŒì´í”„ë¼ì¸ìœ¼ë¡œ ì§„í–‰
+            console.log('hi');
             return next();
         }
         else {
+            // ë¡œê·¸ì¸ì´ ì•ˆë˜ì–´ ìžˆìœ¼ë©´, login íŽ˜ì´ì§€ë¡œ ì§„í–‰
+            res.clearCookie('username');
+            console.log('hello')
             res.redirect('/');
         }
+
+
+    function writeCookie(req,res,next) {
+        console.log('write cookie');
+        res.cookie('username', req.session.passport.user.email, {
+            expires:new Date(Date.now()+999999999),
+            httpOnly:true,
+            signed:true
+        });ã…‡ã…‡
+        res.cookie('token', req.session.passport.user.token, {
+            expires:new Date(Date.now()+9999999999),
+            httpOnly:true
+        });
+        res.cookie('servicetype', req.session.passport.user.servicetype, {
+            expires:new Date(Date.now()+9999999999),
+            httpOnly:true,
+            signed:true
+        })
+
+        next();
     }
 
-    function initNotes() // ·Î±×ÀÎ°ú µ¿½Ã¿¡ À¯Àú³» ¸ðµç ³ëÆ® °¡Á®¿È
+    function writeDB(req, res, next ) {
+        console.log('session token : ' + req.session.passport.user.token);
+        console.log('cookie token : ' + req.cookies.token);
+
+        async.waterfall([
+            function(callback) {
+                var model = {
+                    username : req.session.passport.user.email,
+                    servicetype : req.session.passport.user.servicetype
+                };
+                User.find(model, function(err, users) {
+                    callback(null, users);
+                })
+            },
+            function(users, callback) {
+                if ( users.length > 0 ) {
+                    console.log('update');
+                    var token = {
+                        token : {token : req.session.passport.user.token}
+                    };
+                    User.update({username:req.session.passport.user.email},token,function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            console.log("Successfully updated");
+                        }
+                        res.end();
+                    });
+
+                    //User.update({username:req.session.passport.user.email},{$set: {token:{token:req.signedCookies.token}}});
+                    next();
+                } else {
+                    console.log('save');
+                    console.log(req.cookies.token);
+                    var user = new User({
+                        token: {token : req.session.passport.user.token},
+                        username : req.session.passport.user.email,
+                        servicetype:req.session.passport.user.servicetype
+                    });
+
+                    user.save( function(err, user ) {
+                        if ( err ) {
+                            console.log(err);
+                            res.send(err);
+                        } else {
+                            next();
+                        }
+                    });
+                }
+            }
+        ])
+
+    }
+
+    function deleteDB(req, res, next ) {
+        console.log('deleteDB');
+        //console.log(req.session);
+        var token = {
+            token : {token:'1'}
+        };
+        User.update({username:req.session.passport.user.email},token,function(err){
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Successfully updated");
+            }
+            res.end();
+        });
+
+        //User.update({username:req.session.passport.user.email},{$set:{token:{token:'1'}}});
+        next();
+    }
+
+    function initNotes() // ï¿½Î±ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
 
 
