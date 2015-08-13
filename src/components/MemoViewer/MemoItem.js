@@ -1,9 +1,9 @@
 var React = require('react');
-var MemoActions = require('../../actions/MemoActions');
+var MemoActionCreator = require('../../actions/MemoActionCreator');
 
 var MemoItem = React.createClass({
     _onDelete: function() {
-        MemoActions.deleteMemo(this.props.memo);
+        MemoActionCreator.deleteMemo(this.props.memo);
     },
 
     render: function() {

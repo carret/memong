@@ -47,8 +47,8 @@ var Header = React.createClass({
                 </div>
                 <div className="header-right" >
                     <Exporter handleExport={this._handleExport}  />
-                    <MemoSearcher activeMemoSearcher={this._activeMemoSearcher} disableMemoSearcher={this._disableMemoSearcher} memoSearcherActive={this.state.memoSearcherActive} />
-                    <Logout handleLogout={this._handleLogout} logoutActive={this.state.logoutActive} />
+                    <MemoSearcher />
+                    <Login />
                 </div>
                 <NoteLoader />
             </div>

@@ -8,6 +8,7 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var source = require('vinyl-source-stream');
 
+
 var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync').create();
 
@@ -42,7 +43,6 @@ gulp.task('build-views', function() {
         .pipe(browserSync.stream());
 });
 
-
 gulp.task('run', ['build-js', 'build-less', 'build-views'], function(cb) {
     var called = false;
     browserSync.init({
@@ -74,11 +74,7 @@ gulp.task('run', ['build-js', 'build-less', 'build-views'], function(cb) {
     gulp.watch(paths.js, ['build-js']);
     gulp.watch(paths.styles, ['build-less']);
     gulp.watch(paths.views, ['build-views']);
+
 });
-
-
-
-
-
 //Default Task
 gulp.task('default', ['run']);

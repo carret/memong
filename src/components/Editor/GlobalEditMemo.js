@@ -1,7 +1,6 @@
 var React = require('react');
-var MemoActions = require('../../actions/MemoActions');
-var MemoActionConstants = require('../../constants/MemoActionConstants');
-var MemoTypeConstants = require('../../constants/MemoTypeConstants');
+var MemoActionCreator = require('../../actions/MemoActionCreator');
+var Constants = require('../../constants/Constants');
 var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
@@ -17,7 +16,7 @@ var GlobalEditMemo = React.createClass({
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: MemoActionConstants.END_EDIT_MEMO
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
         };
     },
 
@@ -40,7 +39,7 @@ var GlobalEditMemo = React.createClass({
 
             if (matches != undefined) {
                 if (matches.length >= 2) {
-                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
                         TextareaDOM.blur();
                     });
                 }
@@ -48,7 +47,7 @@ var GlobalEditMemo = React.createClass({
         }
         if (event.keyCode === 9) {
             event.preventDefault();
-            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
                 TextareaDOM.blur();
             });
         }
@@ -60,7 +59,7 @@ var GlobalEditMemo = React.createClass({
         var updateValue = "";
 
         switch(this.state.actionType) {
-            case MemoActionConstants.END_EDIT_MEMO :
+            case Constants.MemoActionTypes.END_EDIT_MEMO :
                 if (value == "") {
                     return;
                 }
@@ -68,7 +67,7 @@ var GlobalEditMemo = React.createClass({
                 this.setState({value: ""});
                 break;
 
-            case MemoActionConstants.ADD_MEMO :
+            case Constants.MemoActionTypes.ADD_MEMO :
                 var _arr;
                 var index = new Array();
                 while ((_arr = regEx.exec(value)) !== null) {
@@ -80,12 +79,12 @@ var GlobalEditMemo = React.createClass({
                 updateValue = value.slice(index[len-1], value.length);
                 this.setState({
                     value: updateValue,
-                    actionType: MemoActionConstants.END_EDIT_MEMO
+                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO
                 });
                 break;
         }
 
-        MemoActions.addMemo(_.extend(this.props.memo, {
+        MemoActionCreator.addMemo(_.extend(this.props.memo, {
             value: updateValue
         }), result);
         TextareaDOM.focus();

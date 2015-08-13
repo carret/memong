@@ -1,5 +1,5 @@
 var React = require('react');
-var MemoActions = require('../../actions/MemoActions');
+var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
 var md = new Remarkable({
     html:         false,        // Enable HTML tags in source
@@ -14,7 +14,7 @@ var md = new Remarkable({
 
 var CompleteMemo = React.createClass({
     startEditMemo: function() {
-        MemoActions.startEditMemo(this.props.memo);
+        MemoActionCreator.startEditMemo(this.props.memo);
     },
 
     render: function() {
