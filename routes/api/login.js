@@ -4,25 +4,51 @@
 var passport=require('../../passports');
 
 exports.doRoutes = function(app) {
-    app.get('/login/facebook', passport.authenticate('facebook'));
-    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/login/facebook/success', failureRedirect:'/login/facebook/fail'}));
-    app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {
+    app.get('/login/google', passport.authenticate('google', {
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    }));
+    app.get('/login/google/callback', passport.authenticate('google', {successRedirect:'/login/google/success', failureRedirect:'/login/google/fail'}));
+    app.get('/login/google/success', ensureAuthenticated, function(req,res,next) {
         res.send(req.user);
+        res.redirect('/');
     });
+    app.get('/login/facebook', passport.authenticate('facebook', {scope:['email']}));
+    app.get('/login/facebook/callback',passport.authenticate('facebook', {successRedirect:'/', failureRedirect:'/login/facebook/fail'}));
+    //app.get('/login/facebook/success', ensureAuthenticated, function(req, res) {
+    //    res.send(req.user);
+    //    res.redirect('/');
+    //});
     app.get('/logout', function(req, res){
         console.log('logout');
+        console.log(req.session);
         req.logout();
         res.redirect('/');
+        //req.session.destroy(function(err) {
+        //    if ( err )
+        //        console.log(err);
+        //    else
+        //        console.log('logout');
+        //});
+        //
+        //setTimeout(function() {
+        //    res.redirect ("/");
+        //}, 2000);
     });
 
     function ensureAuthenticated(req, res, next) {
-        // 로그인이 되어 있으면, 다음 파이프라인으로 진행
         if (req.isAuthenticated()) {
             return next();
         }
-        // 로그인이 안되어 있으면, login 페이지로 진행
         else {
             res.redirect('/');
         }
+    }
+
+    function initNotes() // 로그인과 동시에 유저내 모든 노트 가져옴
+    {
+
+
     }
 }

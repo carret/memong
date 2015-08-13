@@ -6,8 +6,10 @@ var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
 
+var TextareaDOM;
 
-var regEx = /^(#)[ \t].+/gm;
+
+var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 
@@ -21,23 +23,34 @@ var GlobalEditMemo = React.createClass({
 
     componentDidMount: function() {
         var value = this.props.memo.value;
-        React.findDOMNode(this.refs._textarea).selectionStart = value.length;
-        React.findDOMNode(this.refs._textarea).selectionEnd = value.length;
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM = React.findDOMNode(this.refs._textarea);
+        TextareaDOM.selectionStart = value.length;
+        TextareaDOM.selectionEnd = value.length;
+        TextareaDOM.focus();
     },
 
     _handleValueInput: function(_value) {
         this.setState({value: _value});
+    },
 
-        var value = this.state.value;
-        matches = value.match(regEx);
+    _handleKeyInput: function(event) {
+        if (event.keyCode === 13) {
+            var value = this.state.value;
+            matches = value.match(regEx);
 
-        if (matches != undefined) {
-            if (matches.length == 2) {
-                this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
-                    React.findDOMNode(this.refs._textarea).blur();
-                });
+            if (matches != undefined) {
+                if (matches.length >= 2) {
+                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                        TextareaDOM.blur();
+                    });
+                }
             }
+        }
+        if (event.keyCode === 9) {
+            event.preventDefault();
+            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+                TextareaDOM.blur();
+            });
         }
     },
 
@@ -56,19 +69,26 @@ var GlobalEditMemo = React.createClass({
                 break;
 
             case MemoActionConstants.ADD_MEMO :
-                matches = value.match(regEx);
-                result = value.slice(0, (value.indexOf(matches[1], matches[0].length)));
-                updateValue = value.slice(value.indexOf(matches[1], matches[0].length), value.length);
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(value)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                result = value.slice(0, index[len-1]);
+                updateValue = value.slice(index[len-1], value.length);
                 this.setState({
                     value: updateValue,
                     actionType: MemoActionConstants.END_EDIT_MEMO
                 });
                 break;
         }
+
         MemoActions.addMemo(_.extend(this.props.memo, {
             value: updateValue
         }), result);
-        React.findDOMNode(this.refs._textarea).focus();
+        TextareaDOM.focus();
     },
 
     render: function() {
@@ -77,10 +97,12 @@ var GlobalEditMemo = React.createClass({
             requestChange: this._handleValueInput
         };
         return(
-            <div className="global-edit-memo">
+            <div className="globaledit-memo">
                 <Textarea ref="_textarea"
+                          minRows={25}
                           className="global-edit-memo-textarea"
                           valueLink={valueLink}
+                          onKeyDown={this._handleKeyInput}
                           onBlur={this._handleAction}
                     />
             </div>

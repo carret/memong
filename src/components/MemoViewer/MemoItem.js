@@ -9,11 +9,13 @@ var MemoItem = React.createClass({
     render: function() {
         return (
         <div className="memo-viewer-item">
-            <div className="memo-viewer-item-name">
-                <h3>{this.props.memo.name}</h3>
-                </div>
+            <span className="title">
+                {this.props.memo.title}
+            </span>
             <div>
-                <button className="memo-viewer-item-button" onClick={this._onDelete}>삭제</button>
+                <button className="btn_delete" onClick={this._onDelete}>
+                    <i className="material-icons">&#xE872;</i>
+                </button>
             </div>
         </div>
         );

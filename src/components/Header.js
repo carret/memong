@@ -1,46 +1,59 @@
-var React = require('react'),
-    injectTapEventPlugin = require("react-tap-event-plugin"),
-    mui = require('material-ui'),
-    ThemeManager = new mui.Styles.ThemeManager(),
-    RaisedButton = mui.RaisedButton;
+var React = require('react');
 
-injectTapEventPlugin();
+var MemoSearcher = require('./MemoSearcher/MemoSearcher');
+var Login = require('./Account/Login');
+var Logout = require('./Account/Logout');
+var Exporter = require('./Exporter/Exporter');
+var NoteLoader = require('./NoteLoader/NoteLoader');
 
-//var MyAwesomeReactComponent = React.createClass({
-//
-//    childContextTypes: {
-//        muiTheme: React.PropTypes.object
-//    },
-//    getChildContext: function() {
-//        return {
-//            muiTheme: ThemeManager.getCurrentTheme()
-//        };
-//    },
-//    doLogin : function() {
-//        alert('hi');
-//    },
-//    render: function() {
-//        return (
-//            <RaisedButton onclick={this.doLogin} label="Default" />
-//        );
-//    }
-//});
-var LikeButton = React.createClass({
+
+var Header = React.createClass({
     getInitialState: function() {
-        return {liked: false};
+        return {
+            memoSearcherActive: false,
+            logoutActive: false
+        };
     },
-    handleClick: function(event) {
-        this.setState({liked: !this.state.liked});
+
+    _activeMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: true
+        });
     },
+    _disableMemoSearcher: function() {
+        this.setState({
+            memoSearcherActive: false
+        });
+    },
+
+    _handleExport: function() {
+    },
+
+    _handleLogout: function() {
+        this.setState({
+            logoutActive: true
+        });
+    },
+
+
     render: function() {
-        var text = this.state.liked ? 'like' : 'havent liked';
         return (
-            <p onClick={this.handleClick}>
-                You {text} this. Click to toggle.
-            </p>
+            <div id="header">
+                <div className="header-left">
+                    <div id="logo-icon">
+                        <img src="./libs/logo.svg" />
+                    </div>
+                    <a id="logo">memongade</a>
+                </div>
+                <div className="header-right" >
+                    <Exporter handleExport={this._handleExport}  />
+                    <MemoSearcher />
+                    <Login />
+                </div>
+                <NoteLoader />
+            </div>
         );
     }
 });
 
-
-module.exports = LikeButton;
+module.exports = Header;
