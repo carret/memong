@@ -27,9 +27,12 @@ passport.use(new FacebookStrategy({
         profileFields: ['id', 'displayName', 'email']
     },
     function (accessToken, refreshToken, profile, done) {
-        //console.log(profile);
-        //console.log(accessToken);
-        return done(null, profile);
+        var user = {
+            email : profile._json.email,
+            token : accessToken,
+            servicetype:'facebook'
+        };
+        return done(null, user);
     }
 ));
 
@@ -39,8 +42,6 @@ passport.use(new GoogleStrategy({
         callbackURL: pkginfo.oauth.google.callbackURL
     },
     function (accessToken, refreshToken, profile, done) {
-        //console.log(profile);
-        //console.log(accessToken);
         return done(null, profile);
     }
 ));

@@ -45,7 +45,7 @@ var index = function(req, res) {
         console.log('d')
         //세션에 로그인 정보가 있으므로 메모 작성 화면을 보여준다.
         console.log('login ok session not null');
-        res.render('index', {title : "memong"})
+        res.render('index', {title: "memong"})
     }
 
 }
