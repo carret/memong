@@ -1,7 +1,7 @@
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 
-var NoteActionCreator = require('../actions/NoteActionCreator');
+var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 
 
@@ -18,7 +18,7 @@ var WebPostUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    NoteActionCreator.requestNoteWithMemo(_noteID);
+                    ServerReceiveActionCreator.receiveMemoSaveComplete();
                 }
                 else {
                     // Show Notification

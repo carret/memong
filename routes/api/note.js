@@ -1,23 +1,33 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var db = require('../../db');
 var Note = db.model('Note');
 var User = db.model('User');
+
+var Constants = require('../../src/constants/Constants');
 
 var note = new Note();
 var user = new User();
 
 exports.doRoutes = function(app) {
-    app.get('/note', getNote)
+    app.get(Constants.API.GET_NOTE_WITH_MEMO , getNote)
     app.post('/note/dic', addDir)
     app.post('/note/add', addNote)
 };
 
 var getNote = function(req, res) {
+    var noteID = replaceXss(req.query.noteID);
 
-    // 로컬로 바꿈 -- '_id'를 통해  noteStore에서 가져옴
+    /*
+    Note.findOne({_id: noteID}, function(err, _Note) {
+
+    })
+    */
+    if (noteID == null) {
+        noteID = user.selectNote.id;
+    }
+
+
+
+    res.send('noteID: ' + noteID);
 };
 
 var addNote = function(req ,res) {
@@ -41,3 +51,15 @@ var addDir = function(req, res) {
 };
 
 
+function replaceXss(str){
+    if(str == null) {
+        return null;
+    } else {
+        str = str.replace(/&/gi, "&amp;")
+            .replace(/</gi, "&lt;")
+            .replace(/>/gi, "&gt;")
+            .replace(/\"/gi, "&quot;");
+    }
+
+    return str;
+}

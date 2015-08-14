@@ -48,16 +48,16 @@ var Editor = React.createClass({
             var type = memo.type;
             switch(type) {
                 case Constants.MemoType.COMPLETE_MEMO :
-                    return <CompleteMemo memo={memo} key={memo.id}/>;
+                    return <CompleteMemo memo={memo} key={memo.key}/>;
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return <EditMemo memo={memo} key={memo.id} scrolltoTarget={this._scrolltoTarget} />;
+                    return <EditMemo memo={memo} key={memo.key} scrolltoTarget={this._scrolltoTarget} />;
 
                 case Constants.MemoType.NONE_MEMO :
-                    return <NoneMemo memo={memo} key={memo.id}/>;
+                    return <NoneMemo memo={memo} key={memo.key}/>;
 
                 case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                    return <GlobalEditMemo memo={memo} key={memo.id} scrolltoTarget={this._scrolltoTarget} />;
+                    return <GlobalEditMemo memo={memo} key={memo.key} scrolltoTarget={this._scrolltoTarget} />;
             }
         }.bind(this));
 

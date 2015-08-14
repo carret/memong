@@ -18,11 +18,13 @@ module.exports = {
 
     // ActionTypes
     NoteActionTypes: keyMirror({
-        REQUEST_NOTE: null,
+        REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
     }),
 
     MemoActionTypes: keyMirror({
+        REQUEST_SAVE: null,
+        RECEIVE_SAVE: null,
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,
@@ -56,5 +58,10 @@ module.exports = {
     DirectoryItemType: keyMirror({
         NOTE: null,
         FOLDER: null
+    }),
+
+    AutoSaverStatusType: keyMirror({
+        COMPLETE: null,
+        SAVING: null
     })
 };

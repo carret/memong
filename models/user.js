@@ -1,7 +1,3 @@
-/**
- * Created by cho on 2015-08-05.
- */
-
 var User = {
 
     token : {
@@ -9,9 +5,14 @@ var User = {
         unique : true,
         required : true
     },
+
     username : {
         type : String,
         required:true
+    },
+
+    selecNote: {
+
     },
 
     category : [
@@ -31,7 +32,7 @@ var User = {
                 type: String /* null -- Root */
             }
         }
-        ]
+    ]
 };
 
 module.exports = User;

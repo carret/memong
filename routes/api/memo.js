@@ -1,9 +1,7 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var db = require('../../db');
 var Note = db.model('Note');
+
+
 
 var note = new Note();
 
@@ -35,7 +33,7 @@ var addMemo = function(req ,res) {
 
 var saveMemo = function(req, res) {
 
-    Note.findOne({'name':'update--'},function(err,test){ // ÀÌºÎºÐ Æú´õ , µð·ºÅä¸® ÇÑ ¹ø¿¡ ¹Þ¾Æ¿À¸é ÇÒ ÇÊ¿ä ¤¤¤¤
+    Note.findOne({'name':'update--'},function(err,test){ // ï¿½ÌºÎºï¿½ ï¿½ï¿½ï¿½ , ï¿½ï¿½ï¿½ä¸® ï¿½ï¿½ ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½
         if(err){
             console.err(err);
             throw err;
@@ -43,7 +41,7 @@ var saveMemo = function(req, res) {
 
         res.send(200,test);
 
-        /* test ¿ë
+        /* test ï¿½ï¿½
         test.memos.push({
             header : '77',
             main : '777'

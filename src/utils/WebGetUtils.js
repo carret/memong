@@ -6,7 +6,7 @@ var WebGetUtils = {
     getNoteWithMemos: function(_noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)
-            .query({noteID: _noteID.escape()})
+            .query({noteID: _noteID})
             .set('API-Key', 'GET_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {

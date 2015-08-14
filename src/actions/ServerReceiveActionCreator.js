@@ -28,6 +28,12 @@ var ServerReceiveActionCreator = {
             actionType: Constants.SearchActionTypes.RECEIVE_HASH_TABLE,
             hashTable: _hashTable
         });
+    },
+
+    receiveMemoSaveComplete: function() {
+        AppDispatcher.handleServerAction({
+            actionType: Constants.MemoActionTypes.RECEIVE_SAVE
+        });
     }
 };
 

@@ -27,6 +27,9 @@ var globalEditMemo = {
 
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
+    _.each(_memos, function(memo) {
+        memo.key = sui.generate(memo.value + memo.date.toString());
+    });
     memos = memos.concat(_memos);
     memos.push(_.extend({}, globalEditMemo));
 }
@@ -160,8 +163,24 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return memos;
     },
 
+    getNoteID: function() {
+        return selectNote.id;
+    },
+
+    getNoteTitle: function() {
+        return selectNote.title;
+    },
+
     emitChange: function() {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
+    },
+
+    emitMemoChange: function() {
+        this.emit('memo-change');
+    },
+
+    emitMemoSaveComplete: function() {
+        this.emit('memo-complete');
     },
 
     addChangeListener: function(callback) {
@@ -170,6 +189,22 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeChangeListener: function(callback) {
         this.removeListener('change', callback);
+    },
+
+    addMemoChangeListener: function(callback) {
+        this.on('memo-change', callback);
+    },
+
+    removeMemoChangeListener: function(callback) {
+        this.removeListener('memo-change', callback);
+    },
+
+    addMemoSaveCompleteListener: function(callback) {
+        this.on('memo-complete', callback);
+    },
+
+    removeMemoSaveCompleteListener: function(callback) {
+        this.removeListener('memo-complete', callback);
     }
 });
 
@@ -188,27 +223,36 @@ AppDispatcher.register(function(payload) {
             initMemo(action.memos);
             break;
 
+        case Constants.MemoActionTypes.RECEIVE_SAVE:
+            NoteStore.emitMemoSaveComplete();
+            break;
+
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
+            NoteStore.emitMemoChange();
             break;
 
         default:
             return true;
     }
 
-    NoteStore.emitChange(); //데이터가 변경됬음을 ControllView(components/Editor)에 알립니다.
+    NoteStore.emitChange();
+
     return true;
 });
 

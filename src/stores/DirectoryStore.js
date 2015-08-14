@@ -15,7 +15,6 @@ function init(_tree) {
 function addItem(_targetActiveItem, _name, _itemType) {
     var parent = (_targetActiveItem.parent == null) ? tree : _targetActiveItem;
     parent.children.push({
-        key: _name,
         module: _name,
         parent: parent.module,
         type: _itemType
