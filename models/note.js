@@ -2,8 +2,7 @@
  * Created by cho on 2015-08-05.
  */
 var Note = {
-
-    /* _id 자동생성 */
+    
     date: {
         type: Date,
         required: true,
