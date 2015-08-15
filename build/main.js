@@ -61266,6 +61266,25 @@ var Constants = require('../constants/Constants');
 
 var WebGetUtils = require('../utils/WebGetUtils');
 
+
+var DirectoryActionCreator = {
+    requestDirectory: function() {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.NoteActionTypes.REQUEST_NOTE
+        });
+        WebGetUtils.getDirectory();
+    }
+};
+
+module.exports = DirectoryActionCreator;
+
+},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"../utils/WebGetUtils":460}],435:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var Constants = require('../constants/Constants');
+
+var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
+
 var MemoActionCreator = {
     addMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
@@ -61294,12 +61313,19 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
+    },
+
+    requestMemoSave: function(_selectNoteID, _memos) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.REQUEST_SAVE
+        });
+        WebPostUtils.postNoteWithMemo(_selectNoteID, _memos);
     }
 };
 
 module.exports = MemoActionCreator;
 
-},{"../constants/Constants":455,"../dispatcher/AppDispatcher":456,"../utils/WebGetUtils":459}],435:[function(require,module,exports){
+},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"../utils/WebGetUtils":460,"../utils/WebPostUtils":461}],436:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -61330,12 +61356,18 @@ var ServerReceiveActionCreator = {
             actionType: Constants.SearchActionTypes.RECEIVE_HASH_TABLE,
             hashTable: _hashTable
         });
+    },
+
+    receiveMemoSaveComplete: function() {
+        AppDispatcher.handleServerAction({
+            actionType: Constants.MemoActionTypes.RECEIVE_SAVE
+        });
     }
 };
 
 module.exports = ServerReceiveActionCreator;
 
-},{"../constants/Constants":455,"../dispatcher/AppDispatcher":456}],436:[function(require,module,exports){
+},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457}],437:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -61400,7 +61432,7 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 
 module.exports = LoginBtn;
 
-},{"rc-dialog":174,"react":366}],437:[function(require,module,exports){
+},{"rc-dialog":174,"react":366}],438:[function(require,module,exports){
 var React = require('react');
 
 var Logout = React.createClass({displayName: "Logout",
@@ -61419,7 +61451,7 @@ var Logout = React.createClass({displayName: "Logout",
 
 module.exports = Logout;
 
-},{"react":366}],438:[function(require,module,exports){
+},{"react":366}],439:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
@@ -61435,7 +61467,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-},{"react":366}],439:[function(require,module,exports){
+},{"react":366}],440:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -61467,7 +61499,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActionCreator":434,"react":366,"remarkable":367}],440:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":435,"react":366,"remarkable":367}],441:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -61585,7 +61617,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActionCreator":434,"../../constants/Constants":455,"react":366,"react-textarea-autosize":204,"underscore":433}],441:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":435,"../../constants/Constants":456,"react":366,"react-textarea-autosize":204,"underscore":433}],442:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -61661,7 +61693,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/Constants":455,"../../stores/NoteStore":458,"./CompleteMemo":439,"./EditMemo":440,"./GlobalEditMemo":442,"./NoneMemo":443,"react":366,"underscore":433}],442:[function(require,module,exports){
+},{"../../constants/Constants":456,"../../stores/NoteStore":459,"./CompleteMemo":440,"./EditMemo":441,"./GlobalEditMemo":443,"./NoneMemo":444,"react":366,"underscore":433}],443:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -61775,7 +61807,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActionCreator":434,"../../constants/Constants":455,"react":366,"react-textarea-autosize":204,"underscore":433}],443:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":435,"../../constants/Constants":456,"react":366,"react-textarea-autosize":204,"underscore":433}],444:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -61807,7 +61839,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActionCreator":434,"react":366,"remarkable":367}],444:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":435,"react":366,"remarkable":367}],445:[function(require,module,exports){
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -61824,7 +61856,7 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
-},{"react":366}],445:[function(require,module,exports){
+},{"react":366}],446:[function(require,module,exports){
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -61885,7 +61917,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"./Account/Login":436,"./Account/Logout":437,"./Exporter/Exporter":444,"./MemoSearcher/MemoSearcher":447,"./NoteLoader/NoteLoader":454,"react":366}],446:[function(require,module,exports){
+},{"./Account/Login":437,"./Account/Logout":438,"./Exporter/Exporter":445,"./MemoSearcher/MemoSearcher":448,"./NoteLoader/NoteLoader":455,"react":366}],447:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -61929,6 +61961,7 @@ var Main = React.createClass({displayName: "Main",
     },
 
     _toggleAside: function() {
+        console.log("what");
         if (!this.state.asideVisible) {
             AsideDOM.removeClass('hide');
             SectionDOM.removeClass('hide');
@@ -61962,7 +61995,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-},{"./DirectoryViewer/DirectoryViewer":438,"./Editor/Editor":441,"./MemoViewer/MemoViewer":451,"./NoteHeader/NoteHeader":452,"react":366}],447:[function(require,module,exports){
+},{"./DirectoryViewer/DirectoryViewer":439,"./Editor/Editor":442,"./MemoViewer/MemoViewer":452,"./NoteHeader/NoteHeader":453,"react":366}],448:[function(require,module,exports){
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -62009,7 +62042,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
-},{"./utils":448,"react":366,"react-autosuggest":199}],448:[function(require,module,exports){
+},{"./utils":449,"react":366,"react-autosuggest":199}],449:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -62019,7 +62052,7 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
-},{}],449:[function(require,module,exports){
+},{}],450:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -62036,7 +62069,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":366}],450:[function(require,module,exports){
+},{"react":366}],451:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 
@@ -62063,7 +62096,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActionCreator":434,"react":366}],451:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":435,"react":366}],452:[function(require,module,exports){
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -62128,28 +62161,55 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/Constants":455,"../../stores/NoteStore":458,"./EditMemoItem":449,"./MemoItem":450,"react":366,"underscore":433}],452:[function(require,module,exports){
+},{"../../constants/Constants":456,"../../stores/NoteStore":459,"./EditMemoItem":450,"./MemoItem":451,"react":366,"underscore":433}],453:[function(require,module,exports){
 var React = require('react');
+
+var NoteStore = require('../../stores/NoteStore');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
 
+
+function getNoteTitle() {
+    return {
+        noteTitle: NoteStore.getNoteTitle()
+    }
+}
+
 var NoteHeader = React.createClass({displayName: "NoteHeader",
+    getInitialState: function() {
+        return {
+            noteTitle: NoteStore.getNoteTitle()
+        };
+    },
+
+    componentDidMount: function() {
+        NoteStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function() {
+        NoteStore.removeChangeListener(this._onChange);
+    },
+
     render: function() {
         return(
             React.createElement("div", {id: "note-header"}, 
                 React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
-                React.createElement("span", {className: "title"}, "노트 타이틀"), 
+                React.createElement("span", {className: "title"}, this.state.noteTitle), 
                 React.createElement("div", {className: "menu"}
                 )
             )
         );
+    },
+
+    _onChange: function() {
+        this.setState(getNoteTitle());
     }
 });
 
 
 module.exports = NoteHeader;
 
-},{"./ToggleAsideButton":453,"react":366}],453:[function(require,module,exports){
+},{"../../stores/NoteStore":459,"./ToggleAsideButton":454,"react":366}],454:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -62166,7 +62226,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-},{"react":366}],454:[function(require,module,exports){
+},{"react":366}],455:[function(require,module,exports){
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -62179,7 +62239,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-},{"react":366}],455:[function(require,module,exports){
+},{"react":366}],456:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -62200,11 +62260,13 @@ module.exports = {
 
     // ActionTypes
     NoteActionTypes: keyMirror({
-        REQUEST_NOTE: null,
+        REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
     }),
 
     MemoActionTypes: keyMirror({
+        REQUEST_SAVE: null,
+        RECEIVE_SAVE: null,
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,
@@ -62238,10 +62300,15 @@ module.exports = {
     DirectoryItemType: keyMirror({
         NOTE: null,
         FOLDER: null
+    }),
+
+    AutoSaverStatusType: keyMirror({
+        COMPLETE: null,
+        SAVING: null
     })
 };
 
-},{"react/lib/keyMirror":351}],456:[function(require,module,exports){
+},{"react/lib/keyMirror":351}],457:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -62262,7 +62329,7 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":169}],457:[function(require,module,exports){
+},{"flux":169}],458:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -62276,6 +62343,7 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
+
 WebGetUtils.getNoteWithMemos();
 
 
@@ -62287,7 +62355,7 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/MemoActionCreator":434,"./components/Editor/Editor":441,"./components/Header":445,"./components/Main":446,"./components/MemoViewer/MemoViewer":451,"./utils/WebGetUtils":459,"react":366,"react-ui-tree":209}],458:[function(require,module,exports){
+},{"./actions/MemoActionCreator":435,"./components/Editor/Editor":442,"./components/Header":446,"./components/Main":447,"./components/MemoViewer/MemoViewer":452,"./utils/WebGetUtils":460,"react":366,"react-ui-tree":209}],459:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -62453,8 +62521,24 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return memos;
     },
 
+    getNoteID: function() {
+        return selectNote.id;
+    },
+
+    getNoteTitle: function() {
+        return selectNote.title;
+    },
+
     emitChange: function() {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
+    },
+
+    emitMemoChange: function() {
+        this.emit('memo-change');
+    },
+
+    emitMemoSaveComplete: function() {
+        this.emit('memo-complete');
     },
 
     addChangeListener: function(callback) {
@@ -62463,6 +62547,22 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeChangeListener: function(callback) {
         this.removeListener('change', callback);
+    },
+
+    addMemoChangeListener: function(callback) {
+        this.on('memo-change', callback);
+    },
+
+    removeMemoChangeListener: function(callback) {
+        this.removeListener('memo-change', callback);
+    },
+
+    addMemoSaveCompleteListener: function(callback) {
+        this.on('memo-complete', callback);
+    },
+
+    removeMemoSaveCompleteListener: function(callback) {
+        this.removeListener('memo-complete', callback);
     }
 });
 
@@ -62481,34 +62581,43 @@ AppDispatcher.register(function(payload) {
             initMemo(action.memos);
             break;
 
+        case Constants.MemoActionTypes.RECEIVE_SAVE:
+            NoteStore.emitMemoSaveComplete();
+            break;
+
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
+            NoteStore.emitMemoChange();
             break;
 
         default:
             return true;
     }
 
-    NoteStore.emitChange(); //데이터가 변경됬음을 ControllView(components/Editor)에 알립니다.
+    NoteStore.emitChange();
+
     return true;
 });
 
 
 module.exports = NoteStore;
 
-},{"../constants/Constants":455,"../dispatcher/AppDispatcher":456,"events":148,"simple-unique-id":428,"underscore":433}],459:[function(require,module,exports){
+},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"events":148,"simple-unique-id":428,"underscore":433}],460:[function(require,module,exports){
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
@@ -62522,8 +62631,8 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    //ServerReceiveActionCreator.receiveNote(res.note);
-                    //ServerReceiveActionCreator.receiveMemo(res.memos);
+                    ServerReceiveActionCreator.receiveNote(res.note);
+                    ServerReceiveActionCreator.receiveMemo(res.memos);
                 }
                 else {
                     // Show Notification
@@ -62564,4 +62673,56 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
-},{"../actions/ServerReceiveActionCreator":435,"../constants/Constants":455,"superagent":430}]},{},[457]);
+},{"../actions/ServerReceiveActionCreator":436,"../constants/Constants":456,"superagent":430}],461:[function(require,module,exports){
+var Constants = require('../constants/Constants');
+var request = require('superagent');
+
+var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
+var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
+
+
+var WebPostUtils = {
+    postNoteWithMemo: function(_noteID, _memos) {
+        var _escapedMemos = (function() {
+
+        })(_memos);
+
+        request
+            .post(Constants.API.POST_NOTE_WITH_MEMO)
+            .send({noteID: _noteID.escape(), memos: _escapedMemos})
+            .set('API-Key', 'POST_NOTE_WITH_MEMO')
+            .set('Accept', 'application/json')
+            .end(function(err,res) {
+                if (res.ok) {
+                    ServerReceiveActionCreator.receiveMemoSaveComplete();
+                }
+                else {
+                    // Show Notification
+                }
+            });
+    },
+
+    postDirectory: function(_tree) {
+        var _escapedTree = (function() {
+
+        })(_tree);
+
+        request
+            .post(Constants.API.POST_DIRECTORY)
+            .send({tree: _escapedTree})
+            .set('API-Key', 'POST_DIRECTORY')
+            .set('Accept', 'application/json')
+            .end(function(err,res) {
+                if (res.ok) {
+                    DirectoryActionCreator.requestDirectory();
+                }
+                else {
+                    // Show Notification
+                }
+            });
+    }
+};
+
+module.exports = WebPostUtils;
+
+},{"../actions/DirectoryActionCreator":434,"../actions/ServerReceiveActionCreator":436,"../constants/Constants":456,"superagent":430}]},{},[458]);

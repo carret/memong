@@ -1,8 +1,4 @@
-/**
- * Created by cho on 2015-08-05.
- */
 var Note = {
-    
     date: {
         type: Date,
         required: true,

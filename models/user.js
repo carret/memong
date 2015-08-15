@@ -11,8 +11,13 @@ var User = {
         required:true
     },
 
-    selecNote: {
+    selectNoteId: {
+        type: Object
+    },
 
+    servicetype:{
+        type:String,
+        required:true
     },
 
     category : [
@@ -33,6 +38,7 @@ var User = {
             }
         }
     ]
+
 };
 
 module.exports = User;
