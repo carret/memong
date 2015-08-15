@@ -18,7 +18,7 @@ var CompleteMemo = React.createClass({
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             <div className="complete-memo" onClick={this.startEditMemo} >
                 <div dangerouslySetInnerHTML={{__html: context}} />

@@ -24,9 +24,6 @@ var Note = {
                     type: String,
                     required: true
                 },
-                tag: {
-                    type: Array
-                },
                 mtype : {
                     type : String
                 }

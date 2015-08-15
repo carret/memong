@@ -11,7 +11,6 @@ var async = require('async');
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
-    app.post('/note/add', addNote);
 
     //app.post('/test/addUser', testAddUser);
     //app.post('/test/addNote', testAddNote);
@@ -53,10 +52,13 @@ var getSelectNoteWithMemo = function(req, res) {
         async.waterfall([
             function(next) {
                 //유저 검색 및
-                User.findOne({token: userToken}, function(err, result) {
+                User.findOne({'token.token': userToken}, function(err, result) {
                     if (err) { return next(err); }
                     else {
-                        if (result == null) { return next("유저가 없습니다."); }
+                        if (result == null) {
+                            console.log("유저 없음");
+                            return next("유저가 없습니다.");
+                        }
                         else {
                             next(null, result.selectNoteId);
                         }
@@ -145,23 +147,27 @@ var saveMemo = function(req, res) {
     var noteId = req.body.noteId;
     var memos = req.body.memos;
 
-
+    async.waterfall([
+        function(next) {
+            Note.findOneAndUpdate(
+                {_id: mongoose.Types.ObjectId(noteId)},
+                {$set: {memos: memos}},
+                function(err, result) {
+                    if (err) {
+                        console.log(err);
+                        res.send(err);
+                    }
+                    else {
+                        next();
+                    }
+                }
+            )
+        }
+    ], function() {
+        res.end();
+    });
 };
 
-
-
-var addNote = function(req ,res) {
-
-    user.
-
-    note.name = 'child';
-
-    note.save(function(err, note) {
-        if ( err )
-            console.log (err)
-        res.json(201, note);
-    })
-};
 
 
 

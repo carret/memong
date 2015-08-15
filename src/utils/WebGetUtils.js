@@ -3,16 +3,20 @@ var request = require('superagent');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = {
-    getNoteWithMemos: function(_noteID) {
+    getNoteWithMemos: function(_token, _noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)
-            .query({noteID: _noteID})
+            .query({userToken: _token, noteId: _noteID})
             .set('API-Key', 'GET_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveNote(res.note);
-                    ServerReceiveActionCreator.receiveMemo(res.memos);
+                    console.log("받음");
+                    console.log(res);
+
+                    ServerReceiveActionCreator.receiveNote(res.body.note);
+                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
+
                 }
                 else {
                     // Show Notification

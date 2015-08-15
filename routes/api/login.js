@@ -131,7 +131,7 @@ exports.doRoutes = function(app) {
                         memos: [
                             {
                                 title: "새로운 메모",
-                                text: "이 메모를 클릭하여 편집하세요.",
+                                text: "# 새로운 메모\n이 메모를 클릭하여 편집하세요.",
                                 mtype: Constants.MemoType.COMPLETE_MEMO
                             }
                         ]
@@ -151,7 +151,7 @@ exports.doRoutes = function(app) {
             function(userId, newNoteId) {
                 User.findOneAndUpdate(
                     {_id: mongoose.Types.ObjectId(userId)},
-                    {selectNoteId: mongoose.Types.ObjectId(newNoteId)},
+                    {$set: {selectNoteId: mongoose.Types.ObjectId(newNoteId)}},
                     {upsert: true, 'new': true},
                     function(err, result) {
                         if (err) {

@@ -15,8 +15,8 @@ var memos = [];
 var globalEditMemo = {
     key: sui.generate("globalEditMemo"),
     title: null,
-    value: "",
-    type: Constants.MemoType.GLOBAL_EDIT_MEMO,
+    text: "",
+    mtype: Constants.MemoType.GLOBAL_EDIT_MEMO,
     date: null
 };
 
@@ -28,7 +28,7 @@ var globalEditMemo = {
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
     _.each(_memos, function(memo) {
-        memo.key = sui.generate(memo.value + memo.date.toString());
+        memo.key = sui.generate(memo.text + (new Date()).toString());
     });
     memos = memos.concat(_memos);
     memos.push(_.extend({}, globalEditMemo));
@@ -41,7 +41,7 @@ function initNote(_selectNote) {
 function addMemo(_targetEditMemo, _context) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     var newMemo = _.extend({}, {
-        value: _context
+        text: _context
     });
     var _newMemos = _parseMemo(newMemo);
     var len = _newMemos.length;
@@ -58,7 +58,8 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
-    _targetCompleteMemo.type = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    console.log(_targetCompleteMemo);
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
@@ -93,14 +94,14 @@ function _parseMemo(_unParsedMemo) {
     var protoMemo = {
         key: null,
         title: null,
-        value: "",
-        type: Constants.MemoType.NONE_MEMO,
+        text: "",
+        mtype: Constants.MemoType.NONE_MEMO,
         date: null
     };
 
     var regEx = /^[^#\s]?(#)[ \t].+/gm;
     var _arr, result = new Array();
-    while ((_arr = regEx.exec(_unParsedMemo.value)) !== null) {
+    while ((_arr = regEx.exec(_unParsedMemo.text)) !== null) {
         result.push({
             _title: _arr[0],
             _index: _arr.index
@@ -111,28 +112,28 @@ function _parseMemo(_unParsedMemo) {
     if (len == 0) {
         var memo = _.extend(protoMemo, {
             title: "(No Title)",
-            type: Constants.MemoType.NONE_MEMO,
-            value: _unParsedMemo.value,
+            mtype: Constants.MemoType.NONE_MEMO,
+            text: _unParsedMemo.text,
             date: new Date()
         });
         resultMemos.push(memo);
     }
     else {
         var index = 0;
-        var value;
+        var text;
         for (var idx=0; idx<len; idx++) {
             if (idx == len-1) {
-                value = (_unParsedMemo.value).slice(index, (_unParsedMemo.value).length);
+                text = (_unParsedMemo.text).slice(index, (_unParsedMemo.text).length);
             }
             else {
-                value = (_unParsedMemo.value).slice(index, result[idx + 1]._index);
+                text = (_unParsedMemo.text).slice(index, result[idx + 1]._index);
                 index = result[idx+1]._index;
             }
 
             var _memo = _.extend(protoMemo, {
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
-                value: value,
-                type: Constants.MemoType.COMPLETE_MEMO,
+                text: text,
+                mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
             resultMemos.push(_memo);
@@ -145,7 +146,7 @@ function _parseMemo(_unParsedMemo) {
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
             resultMemos[idx] = _.extend({}, resultMemos[idx], {
-                key: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+                key: sui.generate(resultMemos[idx].text + resultMemos[idx].date.toString())
             });
         }
     }
@@ -164,7 +165,7 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteID: function() {
-        return selectNote.id;
+        return selectNote.idAttribute;
     },
 
     getNoteTitle: function() {
@@ -175,12 +176,12 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },
 
-    emitMemoChange: function() {
-        this.emit('memo-change');
+    emitAutoSaveRequest: function() {
+        this.emit('auto-save-request');
     },
 
-    emitMemoSaveComplete: function() {
-        this.emit('memo-complete');
+    emitAutoSaveReceive: function() {
+        this.emit('auto-save-receive');
     },
 
     addChangeListener: function(callback) {
@@ -191,20 +192,20 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
 
-    addMemoChangeListener: function(callback) {
-        this.on('memo-change', callback);
+    addAutoSaveRequestListener: function(callback) {
+        this.on('auto-save-request', callback);
     },
 
-    removeMemoChangeListener: function(callback) {
-        this.removeListener('memo-change', callback);
+    removeAutoSaveRequestListener: function(callback) {
+        this.removeListener('auto-save-request', callback);
     },
 
-    addMemoSaveCompleteListener: function(callback) {
-        this.on('memo-complete', callback);
+    addAutoSaveReceiveListener: function(callback) {
+        this.on('auto-save-receive', callback);
     },
 
-    removeMemoSaveCompleteListener: function(callback) {
-        this.removeListener('memo-complete', callback);
+    removeAutoSaveReceiveListener: function(callback) {
+        this.removeListener('auto-save-receive', callback);
     }
 });
 
@@ -217,41 +218,44 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
+            console.log("initMemo");
             break;
 
-        case Constants.MemoActionTypes.RECEIVE_SAVE:
-            NoteStore.emitMemoSaveComplete();
+        case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
+            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
-            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         default:
             return true;
     }
 
-    NoteStore.emitChange();
+    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+        NoteStore.emitChange();
+    }
 
     return true;
 });

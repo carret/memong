@@ -61265,6 +61265,26 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
+
+
+var AutoSaveActionCreator = {
+    requestAutoSave: function(_selectNoteId, _memos) {
+        AppDispatcher.handleAutoSaveAction({
+            actionType: Constants.AutoSaveActionTypes.REQUEST_SAVE
+        });
+        console.log("requestAutoSave");
+        WebPostUtils.postNoteWithMemo(_selectNoteId, _memos);
+    }
+};
+
+module.exports = AutoSaveActionCreator;
+
+},{"../constants/Constants":458,"../dispatcher/AppDispatcher":459,"../utils/WebGetUtils":462,"../utils/WebPostUtils":463}],435:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var Constants = require('../constants/Constants');
+
+var WebGetUtils = require('../utils/WebGetUtils');
 
 
 var DirectoryActionCreator = {
@@ -61278,7 +61298,7 @@ var DirectoryActionCreator = {
 
 module.exports = DirectoryActionCreator;
 
-},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"../utils/WebGetUtils":460}],435:[function(require,module,exports){
+},{"../constants/Constants":458,"../dispatcher/AppDispatcher":459,"../utils/WebGetUtils":462}],436:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -61313,19 +61333,12 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
-    },
-
-    requestMemoSave: function(_selectNoteID, _memos) {
-        AppDispatcher.handleClientAction({
-            actionType: Constants.MemoActionTypes.REQUEST_SAVE
-        });
-        WebPostUtils.postNoteWithMemo(_selectNoteID, _memos);
     }
 };
 
 module.exports = MemoActionCreator;
 
-},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"../utils/WebGetUtils":460,"../utils/WebPostUtils":461}],436:[function(require,module,exports){
+},{"../constants/Constants":458,"../dispatcher/AppDispatcher":459,"../utils/WebGetUtils":462,"../utils/WebPostUtils":463}],437:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -61358,16 +61371,16 @@ var ServerReceiveActionCreator = {
         });
     },
 
-    receiveMemoSaveComplete: function() {
+    receiveAutoSaveComplete: function() {
         AppDispatcher.handleServerAction({
-            actionType: Constants.MemoActionTypes.RECEIVE_SAVE
+            actionType: Constants.AutoSaveActionTypes.RECEIVE_SAVE
         });
     }
 };
 
 module.exports = ServerReceiveActionCreator;
 
-},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457}],437:[function(require,module,exports){
+},{"../constants/Constants":458,"../dispatcher/AppDispatcher":459}],438:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -61432,7 +61445,7 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 
 module.exports = LoginBtn;
 
-},{"rc-dialog":174,"react":366}],438:[function(require,module,exports){
+},{"rc-dialog":174,"react":366}],439:[function(require,module,exports){
 var React = require('react');
 
 var Logout = React.createClass({displayName: "Logout",
@@ -61451,7 +61464,73 @@ var Logout = React.createClass({displayName: "Logout",
 
 module.exports = Logout;
 
-},{"react":366}],439:[function(require,module,exports){
+},{"react":366}],440:[function(require,module,exports){
+var React = require('react');
+
+var AutoSaveActionCreator = require('../../actions/AutoSaveActionCreator');
+var NoteStore = require('../../stores/NoteStore');
+var Constants = require('../../constants/Constants');
+
+
+var AutoSaver = React.createClass({displayName: "AutoSaver",
+    getInitialState: function() {
+        return {
+            status: Constants.AutoSaverStatusType.COMPLETE
+        };
+    },
+
+    componentDidMount: function() {
+        NoteStore.addAutoSaveRequestListener(this._onRequest);
+        NoteStore.addAutoSaveReceiveListener(this._onReceive);
+    },
+
+    componentWillUnmount: function() {
+        NoteStore.removeAutoSaveRequestListener(this._onRequest);
+        NoteStore.removeAutoSaveReceiveListener(this._onReceive);
+    },
+
+    render: function() {
+        var statusMessage;
+
+        switch(this.state.status) {
+            case Constants.AutoSaverStatusType.COMPLETE:
+                statusMessage = "저장됨";
+                break;
+
+            case Constants.AutoSaverStatusType.SAVING:
+                statusMessage = "저장중...";
+                break;
+        }
+
+        return (
+            React.createElement("span", {className: "auto-saver"}, statusMessage)
+        );
+    },
+
+    _onRequest: function() {
+        if (this.state.status == Constants.AutoSaverStatusType.SAVING) {
+            return ;
+        }
+        else {
+            this.setState({ status: Constants.AutoSaverStatusType.SAVING }, function() {
+                setTimeout(function() {
+                    AutoSaveActionCreator.requestAutoSave(NoteStore.getNoteID(), NoteStore.getMemo());
+                }, 1500);
+            });
+        }
+    },
+
+    _onReceive: function() {
+        console.log("hey");
+        this.setState({
+            status: Constants.AutoSaverStatusType.COMPLETE
+        });
+    }
+});
+
+module.exports = AutoSaver;
+
+},{"../../actions/AutoSaveActionCreator":434,"../../constants/Constants":458,"../../stores/NoteStore":461,"react":366}],441:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
@@ -61467,7 +61546,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-},{"react":366}],440:[function(require,module,exports){
+},{"react":366}],442:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -61488,7 +61567,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             React.createElement("div", {className: "complete-memo", onClick: this.startEditMemo}, 
                 React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
@@ -61499,7 +61578,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActionCreator":435,"react":366,"remarkable":367}],441:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"react":366,"remarkable":367}],443:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -61515,99 +61594,61 @@ var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
-    propTypes: {
-        scrolltoTarget: React.PropTypes.func.isRequired
-    },
-
     getInitialState: function() {
         return {
-            value: this.props.memo.value,
-            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
+            text: this.props.memo.text
         };
     },
 
     componentDidMount: function() {
-        var value = this.props.memo.value;
+        var text = this.props.memo.text;
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = value.length;
-        TextareaDOM.selectionEnd = value.length;
-        var offset = $(TextareaDOM).offset();
+        TextareaDOM.selectionStart = text.length;
+        TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
-        this.props.scrolltoTarget(offset.top);
-    },
 
-    _handleValueInput: function(_value) {
-        this.setState({value: _value});
-    },
+        $(TextareaDOM).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                var text = $(TextareaDOM).val();
+                matches = text.match(regEx);
 
-    _handleKeyInput: function(event) {
-        if (event.keyCode === 13) {
-            var value = this.state.value;
-            matches = value.match(regEx);
+                if (matches != undefined) {
+                    if (matches.length >= 2) {
+                        var result;
+                        var updateValue;
 
-            if (matches != undefined) {
-                if (matches.length >= 2) {
-                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
-                        TextareaDOM.blur();
-                    });
+                        var _arr;
+                        var index = new Array();
+                        while ((_arr = regEx.exec(text)) !== null) {
+                            index.push(_arr.index);
+                        }
+                        var len = index.length;
+
+                        result = text.slice(0, index[len-1]);
+                        updateValue = text.slice(index[len-1], text.length);
+
+                        MemoActionCreator.addMemo(this.props.memo, result);
+                        $(TextareaDOM).val(updateValue);
+                        TextareaDOM.focus();
+                    }
                 }
             }
-        }
-        if (event.keyCode === 9) {
-            event.preventDefault();
-            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
-                TextareaDOM.blur();
-            });
-        }
-    },
-
-    _handleAction: function() {
-        var value = this.state.value;
-        var result = "";
-        var updateValue = "";
-
-        switch(this.state.actionType) {
-            case Constants.MemoActionTypes.END_EDIT_MEMO :
-                result = value;
+            if (event.keyCode == 9) {
+                var text = $(TextareaDOM).val();
+                var result = text;
                 MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
-                    value: result
+                    text: result
                 }));
-                break;
-
-            case Constants.MemoActionTypes.ADD_MEMO :
-                var _arr;
-                var index = new Array();
-                while ((_arr = regEx.exec(value)) !== null) {
-                    index.push(_arr.index);
-                }
-                var len = index.length;
-
-                result = value.slice(0, index[len-1]);
-                updateValue = value.slice(index[len-1], value.length);
-                this.setState({
-                    value: updateValue,
-                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
-                });
-
-                MemoActionCreator.addMemo(this.props.memo, result);
-                TextareaDOM.focus();
-                break;
-        }
+            }
+        }.bind(this))
     },
 
     render: function () {
-        var valueLink = {
-            value: this.state.value,
-            requestChange: this._handleValueInput
-        };
-
         return (
             React.createElement("div", {className: "edit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
                           className: "edit-memo-textarea", 
-                          valueLink: valueLink, 
-                          onKeyDown: this._handleKeyInput, 
-                          onBlur: this._handleAction}
+                          defaultValue: this.props.memo.text}
                     )
             )
         );
@@ -61617,7 +61658,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActionCreator":435,"../../constants/Constants":456,"react":366,"react-textarea-autosize":204,"underscore":433}],442:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"../../constants/Constants":458,"react":366,"react-textarea-autosize":204,"underscore":433}],444:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -61646,7 +61687,6 @@ var Editor = React.createClass({displayName: "Editor",
 
     componentDidMount: function() {
         EditorDOM = $(React.findDOMNode(this.refs._editor));
-
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -61654,30 +61694,22 @@ var Editor = React.createClass({displayName: "Editor",
         NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
-    _preventFocusScroll: function(position) {
-        EditorDOM.scrollTop(position);
-    },
-
-    _scrolltoTarget: function(targetTop) {
-        console.log(targetTop);
-        console.log(EditorDOM.scrollTop());
-    },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            var type = memo.type;
+            var type = memo.mtype;
             switch(type) {
                 case Constants.MemoType.COMPLETE_MEMO :
                     return React.createElement(CompleteMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return React.createElement(EditMemo, {memo: memo, key: memo.key, scrolltoTarget: this._scrolltoTarget});
+                    return React.createElement(EditMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.NONE_MEMO :
                     return React.createElement(NoneMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.key, scrolltoTarget: this._scrolltoTarget});
+                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.key});
             }
         }.bind(this));
 
@@ -61688,12 +61720,13 @@ var Editor = React.createClass({displayName: "Editor",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+        console.log(this.state.memos);
     }
 });
 
 module.exports = Editor;
 
-},{"../../constants/Constants":456,"../../stores/NoteStore":459,"./CompleteMemo":440,"./EditMemo":441,"./GlobalEditMemo":443,"./NoneMemo":444,"react":366,"underscore":433}],443:[function(require,module,exports){
+},{"../../constants/Constants":458,"../../stores/NoteStore":461,"./CompleteMemo":442,"./EditMemo":443,"./GlobalEditMemo":445,"./NoneMemo":446,"react":366,"underscore":433}],445:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -61711,94 +61744,66 @@ var matches = new Array();
 var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     getInitialState: function() {
         return {
-            value: this.props.memo.value,
-            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
+            text: this.props.memo.text
         };
     },
 
     componentDidMount: function() {
-        var value = this.props.memo.value;
+        var text = this.props.memo.text;
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = value.length;
-        TextareaDOM.selectionEnd = value.length;
+        TextareaDOM.selectionStart = text.length;
+        TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
-    },
 
-    _handleValueInput: function(_value) {
-        this.setState({value: _value});
-    },
+        $(TextareaDOM).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                var text = $(TextareaDOM).val();
+                matches = text.match(regEx);
 
-    _handleKeyInput: function(event) {
-        if (event.keyCode === 13) {
-            var value = this.state.value;
-            matches = value.match(regEx);
+                if (matches != undefined) {
+                    if (matches.length >= 2) {
+                        var result;
+                        var updateValue;
 
-            if (matches != undefined) {
-                if (matches.length >= 2) {
-                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
-                        TextareaDOM.blur();
-                    });
+                        var _arr;
+                        var index = new Array();
+                        while ((_arr = regEx.exec(text)) !== null) {
+                            index.push(_arr.index);
+                        }
+                        var len = index.length;
+
+                        result = text.slice(0, index[len-1]);
+                        updateValue = text.slice(index[len-1], text.length);
+
+                        MemoActionCreator.addMemo(this.props.memo, result);
+                        $(TextareaDOM).val(updateValue);
+                        TextareaDOM.focus();
+                    }
                 }
             }
-        }
-        if (event.keyCode === 9) {
-            event.preventDefault();
-            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
-                TextareaDOM.blur();
-            });
-        }
-    },
-
-    _handleAction: function() {
-        var value = this.state.value;
-        var result = "";
-        var updateValue = "";
-
-        switch(this.state.actionType) {
-            case Constants.MemoActionTypes.END_EDIT_MEMO :
-                if (value == "") {
+            if (event.keyCode === 9) {
+                var text = $(TextareaDOM).val();
+                if (text == "") {
                     return;
                 }
-                result = value;
-                this.setState({value: ""});
-                break;
-
-            case Constants.MemoActionTypes.ADD_MEMO :
-                var _arr;
-                var index = new Array();
-                while ((_arr = regEx.exec(value)) !== null) {
-                    index.push(_arr.index);
+                else {
+                    var result = text;
+                    MemoActionCreator.addMemo(_.extend(this.props.memo, {
+                        text: ""
+                    }), result);
+                    $(TextareaDOM).val("");
+                    TextareaDOM.focus();
                 }
-                var len = index.length;
-
-                result = value.slice(0, index[len-1]);
-                updateValue = value.slice(index[len-1], value.length);
-                this.setState({
-                    value: updateValue,
-                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO
-                });
-                break;
-        }
-
-        MemoActionCreator.addMemo(_.extend(this.props.memo, {
-            value: updateValue
-        }), result);
-        TextareaDOM.focus();
+            }
+        }.bind(this));
     },
 
     render: function() {
-        var valueLink = {
-            value: this.state.value,
-            requestChange: this._handleValueInput
-        };
         return(
             React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
                           minRows: 25, 
-                          className: "global-edit-memo-textarea", 
-                          valueLink: valueLink, 
-                          onKeyDown: this._handleKeyInput, 
-                          onBlur: this._handleAction}
+                          className: "global-edit-memo-textarea"}
                     )
             )
         );
@@ -61807,7 +61812,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActionCreator":435,"../../constants/Constants":456,"react":366,"react-textarea-autosize":204,"underscore":433}],444:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"../../constants/Constants":458,"react":366,"react-textarea-autosize":204,"underscore":433}],446:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -61828,7 +61833,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             React.createElement("div", {className: "none-memo", onClick: this.startEditMemo}, 
                 React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
@@ -61839,7 +61844,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActionCreator":435,"react":366,"remarkable":367}],445:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"react":366,"remarkable":367}],447:[function(require,module,exports){
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -61856,7 +61861,7 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
-},{"react":366}],446:[function(require,module,exports){
+},{"react":366}],448:[function(require,module,exports){
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -61917,7 +61922,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"./Account/Login":437,"./Account/Logout":438,"./Exporter/Exporter":445,"./MemoSearcher/MemoSearcher":448,"./NoteLoader/NoteLoader":455,"react":366}],447:[function(require,module,exports){
+},{"./Account/Login":438,"./Account/Logout":439,"./Exporter/Exporter":447,"./MemoSearcher/MemoSearcher":450,"./NoteLoader/NoteLoader":457,"react":366}],449:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -61961,7 +61966,6 @@ var Main = React.createClass({displayName: "Main",
     },
 
     _toggleAside: function() {
-        console.log("what");
         if (!this.state.asideVisible) {
             AsideDOM.removeClass('hide');
             SectionDOM.removeClass('hide');
@@ -61995,7 +61999,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-},{"./DirectoryViewer/DirectoryViewer":439,"./Editor/Editor":442,"./MemoViewer/MemoViewer":452,"./NoteHeader/NoteHeader":453,"react":366}],448:[function(require,module,exports){
+},{"./DirectoryViewer/DirectoryViewer":441,"./Editor/Editor":444,"./MemoViewer/MemoViewer":454,"./NoteHeader/NoteHeader":455,"react":366}],450:[function(require,module,exports){
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -62042,7 +62046,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
-},{"./utils":449,"react":366,"react-autosuggest":199}],449:[function(require,module,exports){
+},{"./utils":451,"react":366,"react-autosuggest":199}],451:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -62052,7 +62056,7 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
-},{}],450:[function(require,module,exports){
+},{}],452:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -62069,7 +62073,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":366}],451:[function(require,module,exports){
+},{"react":366}],453:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 
@@ -62096,7 +62100,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActionCreator":435,"react":366}],452:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"react":366}],454:[function(require,module,exports){
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -62131,7 +62135,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            switch (memo.type) {
+            switch (memo.mtype) {
                 case Constants.MemoType.COMPLETE_MEMO:
                     return React.createElement(MemoItem, {memo: memo, key: memo.key});
 
@@ -62161,8 +62165,10 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/Constants":456,"../../stores/NoteStore":459,"./EditMemoItem":450,"./MemoItem":451,"react":366,"underscore":433}],453:[function(require,module,exports){
+},{"../../constants/Constants":458,"../../stores/NoteStore":461,"./EditMemoItem":452,"./MemoItem":453,"react":366,"underscore":433}],455:[function(require,module,exports){
 var React = require('react');
+
+var AutoSaver = require('../AutoSaver/AutoSaver');
 
 var NoteStore = require('../../stores/NoteStore');
 
@@ -62195,6 +62201,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
             React.createElement("div", {id: "note-header"}, 
                 React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
                 React.createElement("span", {className: "title"}, this.state.noteTitle), 
+                React.createElement(AutoSaver, null), 
                 React.createElement("div", {className: "menu"}
                 )
             )
@@ -62209,7 +62216,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-},{"../../stores/NoteStore":459,"./ToggleAsideButton":454,"react":366}],454:[function(require,module,exports){
+},{"../../stores/NoteStore":461,"../AutoSaver/AutoSaver":440,"./ToggleAsideButton":456,"react":366}],456:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -62226,7 +62233,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-},{"react":366}],455:[function(require,module,exports){
+},{"react":366}],457:[function(require,module,exports){
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -62239,7 +62246,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-},{"react":366}],456:[function(require,module,exports){
+},{"react":366}],458:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -62264,9 +62271,12 @@ module.exports = {
         RECEIVE_NOTE: null
     }),
 
-    MemoActionTypes: keyMirror({
+    AutoSaveActionTypes: keyMirror({
         REQUEST_SAVE: null,
-        RECEIVE_SAVE: null,
+        RECEIVE_SAVE: null
+    }),
+
+    MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,
@@ -62308,7 +62318,7 @@ module.exports = {
     })
 };
 
-},{"react/lib/keyMirror":351}],457:[function(require,module,exports){
+},{"react/lib/keyMirror":351}],459:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -62327,9 +62337,16 @@ AppDispatcher.handleServerAction = function(action) {
     });
 };
 
+AppDispatcher.handleAutoSaveAction = function(action) {
+    this.dispatch({
+        source: 'AUTO_SAVE_ACTION',
+        action: action
+    });
+};
+
 module.exports = AppDispatcher;
 
-},{"flux":169}],458:[function(require,module,exports){
+},{"flux":169}],460:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -62344,7 +62361,7 @@ var Header = require('./components/Header');
 var WebGetUtils = require('./utils/WebGetUtils');
 
 
-WebGetUtils.getNoteWithMemos();
+WebGetUtils.getNoteWithMemos("CAAM44zR7hJgBAEuKs0fyKduTBF9CKauvkhjcZAGQ9ZC57jivTgWtjAY1eSvcDOkj1ZAl4mYcqkwPkDYEOEpgt6cOccpJp25P2cT7Qx5GbqZAPoDhokHZBT2FYHbhwDhYCrrqX04IxQ7J3ZC9qBBIEz2Oy02zvRZAxhq2Yfs5AT6ZBo6xp4yXCgIJbCLZCxwx6L18ZD", null);
 
 
 React.render(
@@ -62355,7 +62372,7 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/MemoActionCreator":435,"./components/Editor/Editor":442,"./components/Header":446,"./components/Main":447,"./components/MemoViewer/MemoViewer":452,"./utils/WebGetUtils":460,"react":366,"react-ui-tree":209}],459:[function(require,module,exports){
+},{"./actions/MemoActionCreator":436,"./components/Editor/Editor":444,"./components/Header":448,"./components/Main":449,"./components/MemoViewer/MemoViewer":454,"./utils/WebGetUtils":462,"react":366,"react-ui-tree":209}],461:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -62373,8 +62390,8 @@ var memos = [];
 var globalEditMemo = {
     key: sui.generate("globalEditMemo"),
     title: null,
-    value: "",
-    type: Constants.MemoType.GLOBAL_EDIT_MEMO,
+    text: "",
+    mtype: Constants.MemoType.GLOBAL_EDIT_MEMO,
     date: null
 };
 
@@ -62386,7 +62403,7 @@ var globalEditMemo = {
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
     _.each(_memos, function(memo) {
-        memo.key = sui.generate(memo.value + memo.date.toString());
+        memo.key = sui.generate(memo.text + (new Date()).toString());
     });
     memos = memos.concat(_memos);
     memos.push(_.extend({}, globalEditMemo));
@@ -62399,7 +62416,7 @@ function initNote(_selectNote) {
 function addMemo(_targetEditMemo, _context) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     var newMemo = _.extend({}, {
-        value: _context
+        text: _context
     });
     var _newMemos = _parseMemo(newMemo);
     var len = _newMemos.length;
@@ -62416,7 +62433,8 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
-    _targetCompleteMemo.type = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    console.log(_targetCompleteMemo);
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
@@ -62451,14 +62469,14 @@ function _parseMemo(_unParsedMemo) {
     var protoMemo = {
         key: null,
         title: null,
-        value: "",
-        type: Constants.MemoType.NONE_MEMO,
+        text: "",
+        mtype: Constants.MemoType.NONE_MEMO,
         date: null
     };
 
     var regEx = /^[^#\s]?(#)[ \t].+/gm;
     var _arr, result = new Array();
-    while ((_arr = regEx.exec(_unParsedMemo.value)) !== null) {
+    while ((_arr = regEx.exec(_unParsedMemo.text)) !== null) {
         result.push({
             _title: _arr[0],
             _index: _arr.index
@@ -62469,28 +62487,28 @@ function _parseMemo(_unParsedMemo) {
     if (len == 0) {
         var memo = _.extend(protoMemo, {
             title: "(No Title)",
-            type: Constants.MemoType.NONE_MEMO,
-            value: _unParsedMemo.value,
+            mtype: Constants.MemoType.NONE_MEMO,
+            text: _unParsedMemo.text,
             date: new Date()
         });
         resultMemos.push(memo);
     }
     else {
         var index = 0;
-        var value;
+        var text;
         for (var idx=0; idx<len; idx++) {
             if (idx == len-1) {
-                value = (_unParsedMemo.value).slice(index, (_unParsedMemo.value).length);
+                text = (_unParsedMemo.text).slice(index, (_unParsedMemo.text).length);
             }
             else {
-                value = (_unParsedMemo.value).slice(index, result[idx + 1]._index);
+                text = (_unParsedMemo.text).slice(index, result[idx + 1]._index);
                 index = result[idx+1]._index;
             }
 
             var _memo = _.extend(protoMemo, {
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
-                value: value,
-                type: Constants.MemoType.COMPLETE_MEMO,
+                text: text,
+                mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
             resultMemos.push(_memo);
@@ -62503,7 +62521,7 @@ function _parseMemo(_unParsedMemo) {
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
             resultMemos[idx] = _.extend({}, resultMemos[idx], {
-                key: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+                key: sui.generate(resultMemos[idx].text + resultMemos[idx].date.toString())
             });
         }
     }
@@ -62522,7 +62540,7 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteID: function() {
-        return selectNote.id;
+        return selectNote.idAttribute;
     },
 
     getNoteTitle: function() {
@@ -62533,12 +62551,12 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },
 
-    emitMemoChange: function() {
-        this.emit('memo-change');
+    emitAutoSaveRequest: function() {
+        this.emit('auto-save-request');
     },
 
-    emitMemoSaveComplete: function() {
-        this.emit('memo-complete');
+    emitAutoSaveReceive: function() {
+        this.emit('auto-save-receive');
     },
 
     addChangeListener: function(callback) {
@@ -62549,20 +62567,20 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
 
-    addMemoChangeListener: function(callback) {
-        this.on('memo-change', callback);
+    addAutoSaveRequestListener: function(callback) {
+        this.on('auto-save-request', callback);
     },
 
-    removeMemoChangeListener: function(callback) {
-        this.removeListener('memo-change', callback);
+    removeAutoSaveRequestListener: function(callback) {
+        this.removeListener('auto-save-request', callback);
     },
 
-    addMemoSaveCompleteListener: function(callback) {
-        this.on('memo-complete', callback);
+    addAutoSaveReceiveListener: function(callback) {
+        this.on('auto-save-receive', callback);
     },
 
-    removeMemoSaveCompleteListener: function(callback) {
-        this.removeListener('memo-complete', callback);
+    removeAutoSaveReceiveListener: function(callback) {
+        this.removeListener('auto-save-receive', callback);
     }
 });
 
@@ -62575,41 +62593,44 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
+            console.log("initMemo");
             break;
 
-        case Constants.MemoActionTypes.RECEIVE_SAVE:
-            NoteStore.emitMemoSaveComplete();
+        case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
+            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
-            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-            NoteStore.emitMemoChange();
+            NoteStore.emitAutoSaveRequest();
             break;
 
         default:
             return true;
     }
 
-    NoteStore.emitChange();
+    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+        NoteStore.emitChange();
+    }
 
     return true;
 });
@@ -62617,22 +62638,26 @@ AppDispatcher.register(function(payload) {
 
 module.exports = NoteStore;
 
-},{"../constants/Constants":456,"../dispatcher/AppDispatcher":457,"events":148,"simple-unique-id":428,"underscore":433}],460:[function(require,module,exports){
+},{"../constants/Constants":458,"../dispatcher/AppDispatcher":459,"events":148,"simple-unique-id":428,"underscore":433}],462:[function(require,module,exports){
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = {
-    getNoteWithMemos: function(_noteID) {
+    getNoteWithMemos: function(_token, _noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)
-            .query({noteID: _noteID})
+            .query({userToken: _token, noteId: _noteID})
             .set('API-Key', 'GET_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveNote(res.note);
-                    ServerReceiveActionCreator.receiveMemo(res.memos);
+                    console.log("받음");
+                    console.log(res);
+
+                    ServerReceiveActionCreator.receiveNote(res.body.note);
+                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
+
                 }
                 else {
                     // Show Notification
@@ -62673,7 +62698,7 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
-},{"../actions/ServerReceiveActionCreator":436,"../constants/Constants":456,"superagent":430}],461:[function(require,module,exports){
+},{"../actions/ServerReceiveActionCreator":437,"../constants/Constants":458,"superagent":430}],463:[function(require,module,exports){
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 
@@ -62682,19 +62707,23 @@ var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 
 
 var WebPostUtils = {
-    postNoteWithMemo: function(_noteID, _memos) {
-        var _escapedMemos = (function() {
-
-        })(_memos);
+    postNoteWithMemo: function(_noteId, _memos) {
+        var memos = new Array();
+        for (var idx=0,len=_memos.length; idx<len; idx++) {
+            if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+                memos.push(_memos[idx]);
+            }
+        }
 
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
-            .send({noteID: _noteID.escape(), memos: _escapedMemos})
+            .send({noteId: _noteId, memos: memos})
             .set('API-Key', 'POST_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveMemoSaveComplete();
+                    ServerReceiveActionCreator.receiveAutoSaveComplete();
+                    console.log("receiveAutoSave");
                 }
                 else {
                     // Show Notification
@@ -62725,4 +62754,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-},{"../actions/DirectoryActionCreator":434,"../actions/ServerReceiveActionCreator":436,"../constants/Constants":456,"superagent":430}]},{},[458]);
+},{"../actions/DirectoryActionCreator":435,"../actions/ServerReceiveActionCreator":437,"../constants/Constants":458,"superagent":430}]},{},[460]);

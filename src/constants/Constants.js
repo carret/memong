@@ -22,9 +22,12 @@ module.exports = {
         RECEIVE_NOTE: null
     }),
 
-    MemoActionTypes: keyMirror({
+    AutoSaveActionTypes: keyMirror({
         REQUEST_SAVE: null,
-        RECEIVE_SAVE: null,
+        RECEIVE_SAVE: null
+    }),
+
+    MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,
