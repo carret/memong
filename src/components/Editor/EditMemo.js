@@ -1,7 +1,7 @@
 var React = require('react');
-var MemoActions = require('../../actions/MemoActions');
-var MemoTypeConstants = require('../../constants/MemoTypeConstants');
-var MemoActionConstants = require('../../constants/MemoActionConstants');
+var MemoActionCreator = require('../../actions/MemoActionCreator');
+var Constants = require('../../constants/Constants');
+
 var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
@@ -20,7 +20,7 @@ var EditMemo = React.createClass({
     getInitialState: function() {
         return {
             value: this.props.memo.value,
-            actionType: MemoActionConstants.END_EDIT_MEMO
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
         };
     },
 
@@ -45,7 +45,7 @@ var EditMemo = React.createClass({
 
             if (matches != undefined) {
                 if (matches.length >= 2) {
-                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
+                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
                         TextareaDOM.blur();
                     });
                 }
@@ -53,7 +53,7 @@ var EditMemo = React.createClass({
         }
         if (event.keyCode === 9) {
             event.preventDefault();
-            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
+            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
                 TextareaDOM.blur();
             });
         }
@@ -65,14 +65,14 @@ var EditMemo = React.createClass({
         var updateValue = "";
 
         switch(this.state.actionType) {
-            case MemoActionConstants.END_EDIT_MEMO :
+            case Constants.MemoActionTypes.END_EDIT_MEMO :
                 result = value;
-                MemoActions.completeEditMemo(_.extend({}, this.props.memo, {
+                MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
                     value: result
                 }));
                 break;
 
-            case MemoActionConstants.ADD_MEMO :
+            case Constants.MemoActionTypes.ADD_MEMO :
                 var _arr;
                 var index = new Array();
                 while ((_arr = regEx.exec(value)) !== null) {
@@ -84,10 +84,10 @@ var EditMemo = React.createClass({
                 updateValue = value.slice(index[len-1], value.length);
                 this.setState({
                     value: updateValue,
-                    actionType: MemoActionConstants.END_EDIT_MEMO,
+                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
                 });
 
-                MemoActions.addMemo(this.props.memo, result);
+                MemoActionCreator.addMemo(this.props.memo, result);
                 TextareaDOM.focus();
                 break;
         }

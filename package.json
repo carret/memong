@@ -2,7 +2,7 @@
   "name": "memong",
   "version": "1.0.0",
   "description": "Markdown Memo App",
-  "main": "app.¡s",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,14 +10,13 @@
   "license": "MIT",
   "dependencies": {
     "async": "^1.4.2",
-    "async-waterfall": "^0.1.5",
     "body-parser": "~1.0.0",
+    "classnames": "^2.1.3",
     "cookie-parser": "~1.0.1",
     "ejs": "^2.3.3",
     "express": "^4.13.1",
     "express-session": "^1.11.3",
     "flux": "^2.0.3",
-    "gulp-less": "^3.0.3",
     "material-ui": "0.10.2",
     "mongoose": "^4.1.2",
     "passport": "0.2.2",
@@ -26,13 +25,13 @@
     "rc-dialog": "^4.5.0",
     "react": "^0.13.3",
     "react-autosuggest": "1.18.3",
-    "react-bootstrap": "^0.24.3",
     "react-component-resizable": "^0.2.3",
-    "react-ink": "^4.1.0",
-    "react-tap-event-plugin": "^0.1.7",
+    "react-notification": "^2.0.0",
     "react-textarea-autosize": "^2.4.2",
+    "react-ui-tree": "^2.2.1",
     "remarkable": "^1.6.0",
     "simple-unique-id": "0.0.1",
+    "superagent": "^1.3.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -44,7 +43,6 @@
     "gulp-less": "^3.0.3",
     "gulp-minify-css": "^1.2.0",
     "gulp-nodemon": "^2.0.3",
-    "gulp-sass": "^2.0.4",
     "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0"
   },

@@ -50,7 +50,6 @@ exports.doRoutes = function(app) {
         }
     }
 
-
     function writeCookie(req,res,next) {
         console.log('write cookie');
         res.cookie('username', req.session.passport.user.email, {
@@ -100,7 +99,6 @@ exports.doRoutes = function(app) {
                         res.end();
                     });
 
-                    //User.update({username:req.session.passport.user.email},{$set: {token:{token:req.signedCookies.token}}});
                     next();
                 } else {
                     console.log('save');
@@ -140,7 +138,6 @@ exports.doRoutes = function(app) {
             res.end();
         });
 
-        //User.update({username:req.session.passport.user.email},{$set:{token:{token:'1'}}});
         next();
     }
 

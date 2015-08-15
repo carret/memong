@@ -1,17 +1,13 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
-var MemoActionConstants = require('../constants/MemoActionConstants');
+var Constants = require('../constants/Constants');
 
-var MemoActions = {
-    initMemo: function(_memos) {
-        AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.INIT_MEMO,
-            memos: _memos
-        });
-    },
+var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
 
+var MemoActionCreator = {
     addMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.ADD_MEMO,
+            actionType: Constants.MemoActionTypes.ADD_MEMO,
             targetEditMemo: _targetEditMemo,
             context: _context
         });
@@ -19,14 +15,14 @@ var MemoActions = {
 
     deleteMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.DELETE_MEMO,
+            actionType: Constants.MemoActionTypes.DELETE_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
     },
 
     startEditMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.START_EDIT_MEMO,
+            actionType: Constants.MemoActionTypes.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
 
@@ -34,10 +30,17 @@ var MemoActions = {
 
     completeEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.END_EDIT_MEMO,
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
+    },
+
+    requestMemoSave: function(_selectNoteID, _memos) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.REQUEST_SAVE
+        });
+        WebPostUtils.postNoteWithMemo(_selectNoteID, _memos);
     }
 };
 
-module.exports = MemoActions;
+module.exports = MemoActionCreator;

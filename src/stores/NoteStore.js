@@ -1,18 +1,22 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-var MemoActionConstants = require('../constants/MemoActionConstants');
-var MemoTypeConstants = require('../constants/MemoTypeConstants');
+
+var Constants = require('../constants/Constants');
+
 var _ = require('underscore');
 var sui = require('simple-unique-id');
 
 
+//Note Data
+var selectNote = {};
+
 //Memo Data
-var _memos = [];
+var memos = [];
 var globalEditMemo = {
-    id: sui.generate("globalEditMemo"),
+    key: sui.generate("globalEditMemo"),
     title: null,
     value: "",
-    type: MemoTypeConstants.GLOBAL_EDIT_MEMO,
+    type: Constants.MemoType.GLOBAL_EDIT_MEMO,
     date: null
 };
 
@@ -22,13 +26,20 @@ var globalEditMemo = {
 //비공개 함수 영역입니다. 데이터를 수정합니다.
 
 //서버로부터 불러온 초기 메모 데이터 설정
-function initMemo(memos) {
-    _memos = _memos.concat(memos);
-    _memos.push(_.extend({}, globalEditMemo));
+function initMemo(_memos) {
+    _.each(_memos, function(memo) {
+        memo.key = sui.generate(memo.value + memo.date.toString());
+    });
+    memos = memos.concat(_memos);
+    memos.push(_.extend({}, globalEditMemo));
+}
+
+function initNote(_selectNote) {
+    selectNote = _selectNote;
 }
 
 function addMemo(_targetEditMemo, _context) {
-    var index = _indexOf(_memos, _targetEditMemo.id, "id");
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
     var newMemo = _.extend({}, {
         value: _context
     });
@@ -36,31 +47,31 @@ function addMemo(_targetEditMemo, _context) {
     var len = _newMemos.length;
 
     for (var idx=0; idx<len; idx++) {
-        _memos.splice(index+idx, 0, _newMemos[idx]);
+        memos.splice(index+idx, 0, _newMemos[idx]);
     }
 }
 
 function deleteMemo(_targetMemo) {
-    var index = _indexOf(_memos, _targetMemo.id, "id");
-    _memos.splice(index, 1);
+    var index = _indexOf(memos, _targetMemo.key, "key");
+    memos.splice(index, 1);
 }
 
 function startEditMemo(_targetCompleteMemo) {
-    var index = _indexOf(_memos, _targetCompleteMemo.id, "id");
-    _targetCompleteMemo.type = MemoTypeConstants.EDIT_MEMO;
-    _memos[index] = _.extend({}, _memos[index], _targetCompleteMemo);
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+    _targetCompleteMemo.type = Constants.MemoType.EDIT_MEMO;
+    memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
 function endEditMemo(_targetEditMemo) {
-    var index = _indexOf(_memos, _targetEditMemo.id, "id");
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
     var _newMemos = _parseMemo(_targetEditMemo);
     var len = _newMemos.length;
 
     for (var idx=0; idx<len-1; idx++) {
-        _memos.splice(index+idx, 0, _newMemos[idx]);
+        memos.splice(index+idx, 0, _newMemos[idx]);
     }
 
-    _memos[index + len - 1] = _.extend({}, _memos[index + len - 1], _newMemos[len - 1]);
+    memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
 }
 
 
@@ -77,19 +88,19 @@ function _indexOf(arr, searchId, property) {
     return -1;
 }
 
-function _parseMemo(memo) {
+function _parseMemo(_unParsedMemo) {
     var resultMemos = new Array();
-    var _proto_memo = {
-        id: null,
+    var protoMemo = {
+        key: null,
         title: null,
         value: "",
-        type: MemoTypeConstants.NONE_MEMO,
+        type: Constants.MemoType.NONE_MEMO,
         date: null
     };
 
     var regEx = /^[^#\s]?(#)[ \t].+/gm;
     var _arr, result = new Array();
-    while ((_arr = regEx.exec(memo.value)) !== null) {
+    while ((_arr = regEx.exec(_unParsedMemo.value)) !== null) {
         result.push({
             _title: _arr[0],
             _index: _arr.index
@@ -98,30 +109,30 @@ function _parseMemo(memo) {
     var len = result.length;
 
     if (len == 0) {
-        var _memo = _.extend(_proto_memo, {
+        var memo = _.extend(protoMemo, {
             title: "(No Title)",
-            type: MemoTypeConstants.NONE_MEMO,
-            value: memo.value,
+            type: Constants.MemoType.NONE_MEMO,
+            value: _unParsedMemo.value,
             date: new Date()
         });
-        resultMemos.push(_memo);
+        resultMemos.push(memo);
     }
     else {
         var index = 0;
         var value;
         for (var idx=0; idx<len; idx++) {
             if (idx == len-1) {
-                value = (memo.value).slice(index, (memo.value).length);
+                value = (_unParsedMemo.value).slice(index, (_unParsedMemo.value).length);
             }
             else {
-                value = (memo.value).slice(index, result[idx + 1]._index);
+                value = (_unParsedMemo.value).slice(index, result[idx + 1]._index);
                 index = result[idx+1]._index;
             }
 
-            var _memo = _.extend(_proto_memo, {
+            var _memo = _.extend(protoMemo, {
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
                 value: value,
-                type: MemoTypeConstants.COMPLETE_MEMO,
+                type: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
             resultMemos.push(_memo);
@@ -134,7 +145,7 @@ function _parseMemo(memo) {
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
             resultMemos[idx] = _.extend({}, resultMemos[idx], {
-                id: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+                key: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
             });
         }
     }
@@ -147,13 +158,29 @@ function _parseMemo(memo) {
 
 //Public Function
 //공개 함수 영역입니다. 데이터를 반환합니다.
-var MemoStore = _.extend({}, EventEmitter.prototype, {
+var NoteStore = _.extend({}, EventEmitter.prototype, {
     getMemo: function() {
-        return _memos;
+        return memos;
+    },
+
+    getNoteID: function() {
+        return selectNote.id;
+    },
+
+    getNoteTitle: function() {
+        return selectNote.title;
     },
 
     emitChange: function() {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
+    },
+
+    emitMemoChange: function() {
+        this.emit('memo-change');
+    },
+
+    emitMemoSaveComplete: function() {
+        this.emit('memo-complete');
     },
 
     addChangeListener: function(callback) {
@@ -162,6 +189,22 @@ var MemoStore = _.extend({}, EventEmitter.prototype, {
 
     removeChangeListener: function(callback) {
         this.removeListener('change', callback);
+    },
+
+    addMemoChangeListener: function(callback) {
+        this.on('memo-change', callback);
+    },
+
+    removeMemoChangeListener: function(callback) {
+        this.removeListener('memo-change', callback);
+    },
+
+    addMemoSaveCompleteListener: function(callback) {
+        this.on('memo-complete', callback);
+    },
+
+    removeMemoSaveCompleteListener: function(callback) {
+        this.removeListener('memo-complete', callback);
     }
 });
 
@@ -172,33 +215,46 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
-        case MemoActionConstants.INIT_MEMO:
+        case Constants.NoteActionTypes.RECEIVE_NOTE:
+            initNote(action.selectNote);
+            break;
+
+        case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
             break;
 
-        case MemoActionConstants.ADD_MEMO:
+        case Constants.MemoActionTypes.RECEIVE_SAVE:
+            NoteStore.emitMemoSaveComplete();
+            break;
+
+        case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
+            NoteStore.emitMemoChange();
             break;
 
-        case MemoActionConstants.DELETE_MEMO:
+        case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
-        case MemoActionConstants.START_EDIT_MEMO:
+        case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
+            NoteStore.emitMemoChange();
             break;
 
-        case MemoActionConstants.END_EDIT_MEMO:
+        case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
+            NoteStore.emitMemoChange();
             break;
 
         default:
             return true;
     }
 
-    MemoStore.emitChange(); //데이터가 변경됬음을 ControllView(components/Editor)에 알립니다.
+    NoteStore.emitChange();
+
     return true;
 });
 
 
-module.exports = MemoStore;
+module.exports = NoteStore;
