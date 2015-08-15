@@ -57070,6 +57070,7 @@ var MemoActions = {
             actionType: MemoActionConstants.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
+
     },
 
     completeEditMemo: function(_targetEditMemo) {

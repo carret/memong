@@ -13,7 +13,7 @@ React.render(
     <div id="app-inner">
         <Header />
         <Main />
-    </div>,
+    </div>
     document.getElementById('app')
 );
 

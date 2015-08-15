@@ -35,7 +35,8 @@ var index = function(req, res) {
                         res.send(401);
                     }
                 } else {
-                    res.send('로그인 하세요');
+                    //res.send('로그인 하세요');
+                    res.render('login');
                 }
             })
         } else { //로그인을 한 적이 없는 경우이므로 로그인 창을 보여준다.
