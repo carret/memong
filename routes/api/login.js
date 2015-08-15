@@ -68,10 +68,13 @@ exports.doRoutes = function(app) {
             [
                 function (callback) {
 
-                    var user = new User();
-                    user.token = token;
-                    user.username = name;
-                    user.servicetype = servicetype;
+                    var user = new User(
+                        {
+                            token : token,
+                            username : name,
+                            servicetype : servicetype
+                        }
+                    );
 
                     user.save(function(err, user) {
                         if ( err )
@@ -117,7 +120,7 @@ exports.doRoutes = function(app) {
                     {
                         name : 'new note',
                         type : 'note',
-                        nid : note['id'],
+                        nid : note['_id'],
                         parent : 'root'
 
                     }}},{upsert:true},function(err){

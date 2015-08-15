@@ -1,18 +1,16 @@
 /**
  * Created by Jaewook on 2015-08-01.
  */
-
+var async = require('async');
 var db = require('../../db');
 var Note = db.model('Note');
 
 var note = new Note();
 
  exports.doRoutes = function(app) {
- app.post('/memo/add', addMemo)
- app.post('/memo/save', saveMemo)
-
+     app.post('/memo/add', addMemo)
+     app.post('/memo/save', saveMemo)
  };
-
 
 
 var addMemo = function(req ,res) {
