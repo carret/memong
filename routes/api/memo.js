@@ -8,14 +8,12 @@ var Note = db.model('Note');
 var note = new Note();
 
  exports.doRoutes = function(app) {
- //app.get('/memo', getMemo)
  app.post('/memo/add', addMemo)
  app.post('/memo/save', saveMemo)
+
  };
 
- var getMemo = function(req, res) {
 
-};
 
 var addMemo = function(req ,res) {
 
@@ -35,7 +33,7 @@ var addMemo = function(req ,res) {
 
 var saveMemo = function(req, res) {
 
-    Note.findOne({'name':'update--'},function(err,test){ // 이부분 폴더 , 디렉토리 한 번에 받아오면 할 필요 ㄴㄴ
+    Note.findOne({_id:'update--'},function(err,test){
         if(err){
             console.err(err);
             throw err;

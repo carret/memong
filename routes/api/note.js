@@ -9,11 +9,13 @@ var User = db.model('User');
 var note = new Note();
 var user = new User();
 
+
 exports.doRoutes = function(app) {
     app.get('/note', getNote)
     app.post('/note/dic', addDir)
     app.post('/note/add', addNote)
 };
+
 
 var getNote = function(req, res) {
 
@@ -22,7 +24,6 @@ var getNote = function(req, res) {
 
 var addNote = function(req ,res) {
 
-    user.
 
     note.name = 'child';
 

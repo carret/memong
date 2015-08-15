@@ -23,7 +23,7 @@ var Note = {
                     default: Date.now
                 },
                 title: {
-                    type: String,
+                    type: String
                 },
                 text: {
                     type: String,
