@@ -104,17 +104,16 @@ var addNote = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
 var loadNote = function(req ,res){
 
     var userToken = req.body.userToken;
-    var noteId = req.body.noteId;
+    var noteId = ObjectId(req.body.noteId);
 
     async.waterfall(
         [
             function (callback)
             {
-                User.findOne ( {token : userToken, category : { $all : [
-                { $elemMatch : { nid : ObjectId(noteId)} }]}} , function( err, validUser) {
+                User.findOne ( {token : userToken} , function( err, validUser) {
                     if (err)
                         callback(err);
-                    if (validUser === null) callback(true, 'invalid access');
+                    if (validUser === null) callback(true, 'unregistered User');
                     else callback(null);
                 });
             },
@@ -138,6 +137,15 @@ var loadNote = function(req ,res){
             else res.send(validNote);
         });
 };
+
+/*
+* User.findOne ( {token : userToken, category : { $all : [
+ { $elemMatch : { nid : noteId} }]}} , function( err, validUser) {
+ if (err)
+ callback(err);
+ if (validUser === null) callback(true, 'invalid access');
+ else callback(null);
+ });*/
 
 var removeNote = function(req ,res){
 
