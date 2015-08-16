@@ -137,7 +137,7 @@ var loadNote = function(req ,res){
             else res.send(validNote);
         });
 };
-
+//
 /*
 * User.findOne ( {token : userToken, category : { $all : [
  { $elemMatch : { nid : noteId} }]}} , function( err, validUser) {
