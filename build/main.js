@@ -59728,13 +59728,6 @@ var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
 
-var loginButton;
-
-if ( cookie.load('username') != null )
-    loginButton = React.createElement(Logout, null)
-else
-    loginButton = React.createElement(Login, null)
-
 var Header = React.createClass({displayName: "Header",
 
     getInitialState: function() {
@@ -59742,6 +59735,16 @@ var Header = React.createClass({displayName: "Header",
             memoSearcherActive: false,
             logoutActive: false
         };
+    },
+    componentDidMount: function() {
+
+        if ( cookie.load('username') != null ) {
+            this.setState({isLogin:true})
+        }
+        else {
+            this.setState({isLogin:false})
+        }
+
     },
 
     _activeMemoSearcher: function() {
@@ -59777,7 +59780,7 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("div", {className: "header-right"}, 
                     React.createElement(Exporter, {handleExport: this._handleExport}), 
                     React.createElement(MemoSearcher, null), 
-                    loginButton
+                    this.state.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
                 ), 
                 React.createElement(NoteLoader, null)
             )
@@ -59819,11 +59822,9 @@ var Main = React.createClass({displayName: "Main",
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
-            console.log('login');
             this.setState({isLogin:true})
         }
         else {
-            console.log('not login');
             this.setState({isLogin:false})
         }
 

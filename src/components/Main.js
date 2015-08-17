@@ -29,11 +29,9 @@ var Main = React.createClass({
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
-            console.log('login');
             this.setState({isLogin:true})
         }
         else {
-            console.log('not login');
             this.setState({isLogin:false})
         }
 
