@@ -26,7 +26,6 @@ var Editor = React.createClass({
 
     componentDidMount: function() {
         EditorDOM = $(React.findDOMNode(this.refs._editor));
-
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -34,30 +33,22 @@ var Editor = React.createClass({
         NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
-    _preventFocusScroll: function(position) {
-        EditorDOM.scrollTop(position);
-    },
-
-    _scrolltoTarget: function(targetTop) {
-        console.log(targetTop);
-        console.log(EditorDOM.scrollTop());
-    },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            var type = memo.type;
+            var type = memo.mtype;
             switch(type) {
                 case Constants.MemoType.COMPLETE_MEMO :
                     return <CompleteMemo memo={memo} key={memo.key}/>;
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return <EditMemo memo={memo} key={memo.key} scrolltoTarget={this._scrolltoTarget} />;
+                    return <EditMemo memo={memo} key={memo.key}  />;
 
                 case Constants.MemoType.NONE_MEMO :
                     return <NoneMemo memo={memo} key={memo.key}/>;
 
                 case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                    return <GlobalEditMemo memo={memo} key={memo.key} scrolltoTarget={this._scrolltoTarget} />;
+                    return <GlobalEditMemo memo={memo} key={memo.key} />;
             }
         }.bind(this));
 
@@ -68,6 +59,7 @@ var Editor = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+        console.log(this.state.memos);
     }
 });
 

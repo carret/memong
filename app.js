@@ -11,7 +11,7 @@ var passports = require('./passports');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('myKey'));
 app.use(session({secret:'my secret'}));
 app.engine('.ejs', require('ejs').__express);
 app.set('views', __dirname + '/build/views');

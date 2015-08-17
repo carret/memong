@@ -32,7 +32,7 @@ var MemoViewer = React.createClass({
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            switch (memo.type) {
+            switch (memo.mtype) {
                 case Constants.MemoType.COMPLETE_MEMO:
                     return <MemoItem memo={memo} key={memo.key} />;
 

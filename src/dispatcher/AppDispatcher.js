@@ -16,4 +16,11 @@ AppDispatcher.handleServerAction = function(action) {
     });
 };
 
+AppDispatcher.handleAutoSaveAction = function(action) {
+    this.dispatch({
+        source: 'AUTO_SAVE_ACTION',
+        action: action
+    });
+};
+
 module.exports = AppDispatcher;

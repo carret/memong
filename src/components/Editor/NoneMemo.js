@@ -18,7 +18,7 @@ var NoneMemo = React.createClass({
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             <div className="none-memo" onClick={this.startEditMemo} >
                 <div dangerouslySetInnerHTML={{__html: context}} />
