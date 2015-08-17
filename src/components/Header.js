@@ -6,8 +6,17 @@ var Logout = require('./Account/Logout');
 var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
+var cookie = require('react-cookie');
+
+var loginButton;
+
+if ( cookie.load('username') != null )
+    loginButton = <Logout />
+else
+    loginButton = <Login />
 
 var Header = React.createClass({
+
     getInitialState: function() {
         return {
             memoSearcherActive: false,
@@ -48,7 +57,7 @@ var Header = React.createClass({
                 <div className="header-right" >
                     <Exporter handleExport={this._handleExport}  />
                     <MemoSearcher />
-                    <Login />
+                    {loginButton}
                 </div>
                 <NoteLoader />
             </div>

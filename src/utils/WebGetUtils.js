@@ -3,6 +3,7 @@ var request = require('superagent');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = {
+
     getNoteWithMemos: function(_token, _noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)

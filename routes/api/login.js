@@ -34,7 +34,7 @@ exports.doRoutes = function(app) {
 
     app.get('/logout', ensureAuthenticated, deleteDB, function(req, res){
         console.log('logout');
-        res.clearCookie('token');
+        //res.clearCookie('token');
         res.clearCookie('username');
         req.logout();
         res.redirect('/');
@@ -49,7 +49,7 @@ exports.doRoutes = function(app) {
         }
         else {
             // 로그인이 안되어 있으면, login 페이지로 진행
-            res.clearCookie('username');
+            //res.clearCookie('username');
             console.log('hello')
             res.redirect('/');
         }
@@ -58,18 +58,18 @@ exports.doRoutes = function(app) {
     function writeCookie(req,res,next) {
         console.log('write cookie');
         res.cookie('username', req.session.passport.user.email, {
-            expires:new Date(Date.now()+9999999999),
-            httpOnly:true,
-            signed:true
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:true,
+            //signed:true
         });
         res.cookie('token', req.session.passport.user.token, {
-            expires:new Date(Date.now()+9999999999),
-            httpOnly:true
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:trueㅇ
         });
         res.cookie('servicetype', req.session.passport.user.servicetype, {
-            expires:new Date(Date.now()+9999999999),
-            httpOnly:true,
-            signed:true
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:true,
+            //signed:true
         });
 
         next();
@@ -101,10 +101,10 @@ exports.doRoutes = function(app) {
                         }else{
                             console.log("Successfully updated");
                         }
-                        res.end();
+                        //res.end();
+                        next();
                     });
 
-                    //User.update({username:req.session.passport.user.email},{$set: {token:{token:req.signedCookies.token}}});
                 } else {
                     console.log('save');
                     console.log(req.cookies.token);
