@@ -17,8 +17,7 @@ exports.doRoutes = function(app) {
     app.post('/folder/add', addFolder)
     app.post('/folder/rename', renameFolder)
     app.post('/folder/remove', removeFolder)
-
-    app.post('/note/test', testNote)
+    
     app.post('/note',allNote)
     app.post('/user',allUser)
 };
