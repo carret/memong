@@ -11,15 +11,12 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
-
-WebGetUtils.getNoteWithMemos();
-
-
 React.render(
+
     <div id="app-inner">
-        <Header />
-        <Main />
-    </div>
+        <Header/>
+        <Main/>
+    </div>,
     document.getElementById('app')
 );
 
