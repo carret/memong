@@ -14,10 +14,13 @@ exports.doRoutes = function(app) {
     app.post('/note/rename', renameNote)
     app.post('/note/remove', removeNote)
 
-    app.post('/note/dic', addDir)
-    app.post('/note/test', testNote)
-    app.post('/note/folder/add', addFolder)
+    app.post('/folder/add', addFolder)
+    app.post('/folder/rename', renameFolder)
+    app.post('/folder/remove', removeFolder)
 
+    app.post('/note/test', testNote)
+    app.post('/note',allNote)
+    app.post('/user',allUser)
 };
 
 var updateTree =  function(existingCate, updatedCate){
@@ -27,25 +30,47 @@ var updateTree =  function(existingCate, updatedCate){
     return updatedCate;
 }
 
+/*Test API*/
+var allNote =  function(req ,res){
 
+    Note.find(function(err,test) {
+        if (err) {
+            console.err(err);
+            throw err;
+        }
+        res.send(test);
+    });
+}
 
-var addNote = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
+var allUser =  function(req ,res){
 
-    var userToken = req.body.userToken;
-    var userCategory = req.body.userCategory;
+    User.find(function(err,test) {
+        if (err) {
+            console.err(err);
+            throw err;
+        }
+        res.send(test);
+    });
+}
+
+/*Note API*/
+var addNote = function(req ,res) {
+
     var noteTitle = req.body.noteTitle;
     var noteParent = req.body.noteParent;
+    var userToken = req.body.userToken;
+    var userCategory ;
 
     async.waterfall(
         [
-            function (callback)
-            {
+            function (callback) {
                 User.findOne({ token: userToken }, function( err, validUser) {
-                    if (err)
-                        console.log(err);
-
+                    if (err) callback(err);
                     if (validUser === null) callback(true, false);
-                    else callback(null);
+                    else {
+                        userCategory = validUser.category;
+                        callback(null);
+                    }
                 });
             },
 
@@ -61,25 +86,22 @@ var addNote = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
                 newNote.save(function (err, savedNote) {
                     if (err)
                         callback(err);
-                    callback(null, savedNote);
-                });
-            },
 
-            function (savedNote, callback) {
-
-                User.update({token: userToken}, {
-                    $push: {
-                        category: {
-                            name: noteTitle,
-                            type: 'note',
-                            nid: savedNote['_id'],
-                            parent: noteParent
+                    User.update({token: userToken}, {
+                        $push: {
+                            category: {
+                                name: noteTitle,
+                                type: 'note',
+                                nid: savedNote['_id'],
+                                parent: noteParent
+                            }
                         }
-                    }
-                }, {upsert: true}, function (err, user) {
-                    if (err)
-                        callback(err);
-                    callback(null, savedNote);
+                    }, {upsert: true}, function (err, user) {
+                        if (err)
+                            callback(err);
+                        callback(null, savedNote);
+                    });
+
                 });
             },
 
@@ -88,14 +110,16 @@ var addNote = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
                     if (err)
                         callback(err);
                     callback(null, savedNote, updatedUser);
-                });
-            }
+                }); }
         ],
 
         function (err, savedNote, updatedUser) {
             if (err) {
                 if(savedNote == false) res.send('Unregistered User');
-                else console.log(err);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
             }
             else res.send(savedNote + '|' + updateTree(userCategory, updatedUser.category));
         });
@@ -104,13 +128,13 @@ var addNote = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
 var loadNote = function(req ,res){
 
     var userToken = req.body.userToken;
-    var noteId = ObjectId(req.body.noteId);
+    var noteId =req.body.noteId;
 
     async.waterfall(
         [
             function (callback)
             {
-                User.findOne ( {token : userToken} , function( err, validUser) {
+                User.findOne ( {token : userToken } , function( err, validUser) {
                     if (err)
                         callback(err);
                     if (validUser === null) callback(true, 'unregistered User');
@@ -132,51 +156,36 @@ var loadNote = function(req ,res){
         function (err, validNote) {
             if (err) {
                 if(validNote != null) res.send(validNote);
-                else console.log(err);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
             }
             else res.send(validNote);
         });
 };
-//
-/*
-* User.findOne ( {token : userToken, category : { $all : [
- { $elemMatch : { nid : noteId} }]}} , function( err, validUser) {
- if (err)
- callback(err);
- if (validUser === null) callback(true, 'invalid access');
- else callback(null);
- });*/
 
 var removeNote = function(req ,res){
 
     var userToken = req.body.userToken;
     var noteId = req.body.noteId;
+    var userCategory ;
 
     async.waterfall(
         [
             function (callback)
             {
-                User.findOne( {token : userToken, category : { $all : [
-                { $elemMatch : { nid : ObjectId(noteId)} }]}} ,
-                function( err, validUser) {
-                    if (err)
-                        callback(err);
-
-                    if (validUser === null) callback(true, 'invalid access');
+                User.findOne({ token: userToken }, function( err, validUser) {
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, false);
                     else {
                         userCategory = validUser.category;
-                        console.log(validUser);
-                        callback(null, validUser);
+                        Note.findOne({ _id : ObjectId(noteId)}, function( err, validNote) {
+                            if (err) callback(err);
+                            if (validNote === null) callback(true, 'unregistered Note');
+                            else callback(null, validUser, validNote);
+                        });
                     }
-                });
-            },
-
-            function (validUser,callback) {
-                Note.findOne({ _id : ObjectId(noteId)}, function( err, validNote) {
-                    if (err)
-                        callback(err);
-                    if (validNote === null) callback(true, 'unregistered Note');
-                    else callback(null, validUser, validNote);
                 });
             },
 
@@ -188,20 +197,9 @@ var removeNote = function(req ,res){
                 });
             },
 
-            function (validUser,callback) {
-                User.update({token : userToken},{ $pull : { category: { }}}, {upsert: true}, function (err) {
-                    if (err)
-                        callback(err);
-                    callback(null, validUser);
-                });
-            },
-
             function (validUser, callback) {
-
-                for(var i=validUser.category.length-1; i >=0 ;  i--){
-                    console.log(i);
+                for(var i=validUser.category.length-1; i >=0 ;  i--)
                     if(validUser.category[i].nid == noteId) validUser.category.splice(i, 1);
-                }
 
                 User.update({token : userToken},validUser, {upsert: true}, function (err) {
                     if (err)
@@ -222,7 +220,10 @@ var removeNote = function(req ,res){
         function (err, updatedUser) {
             if (err) {
                 if(updatedUser != null) res.send(updatedUser);
-                else console.log(err);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
             }
             else res.send(updateTree(userCategory, updatedUser.category));
         });
@@ -234,145 +235,227 @@ var renameNote =  function(req ,res) {
     var userToken = req.body.userToken;
     var noteId = req.body.noteId;
 
-    Note.findOne({ _id : req.body.noteId  }, function( err, validNote) {
-        if (err)
-            console.log(err);
-        console.log( validNote);
-    });
-
-    Note.update({ _id : noteId }, {$set : {title : newTitle}} , function(err,w) {
-        if ( err )
-            console.log (err);
-        console.log (w);
-    });
-
-    res.end();
-
-    /*
-
     async.waterfall(
         [
             function (callback)
             {
-                User.findOne( { token: userToken, category : {$all : [
-                    {"$elemMatch" : {nid : noteId
-                    } }]}} , function( err, validUser) {
+                User.findOne ( {token : userToken } , function( err, validUser) {
                     if (err)
                         callback(err);
 
-                    if (validUser === null) callback(true, 'invalid access');
-                    else callback(null);
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else {
+                        Note.findOne({ _id : noteId}, function( err, validNote) {
+                            if (err)
+                                callback(err);
+                            if (validNote === null) callback(true, 'unregistered Note');
+                            else callback(null, validUser);
+                        });
+                    }
+                });
+            },
+
+            function (validUser,callback) {
+
+                for(var i=0;i<validUser.category.length;i++)
+                    if(validUser.category[i].nid == noteId) validUser.category[i].name = newTitle;
+
+                User.update({token : userToken},validUser, {upsert: true}, function (err) {
+                    if ( err ) callback(err);
+                    else {
+                        Note.update({ _id : noteId }, {$set:{title : newTitle}} ,{upsert:true}, function(err) {
+                            if ( err ) callback(err);
+                            else callback(null);
+                        }); }
                 });
             },
 
             function (callback) {
-                Note.findOne({ _id : noteId}, function( err, validNote) {
-                    if (err)
-                        callback(err);
-
-                    if (validNote === null) callback(true, 'unregistered Note');
-                    else callback(null, validNote);
+                User.findOne ( {token : userToken } , function( err, validUser) {
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else callback(null, validUser.category);
                 });
-            },
-
-            function (callack) {
-
-                Note.update({ _id : noteId }, {$set : {title : newTitle}} ,{upsert: true}, function(err) {
-                    if ( err )
-                        console.log (err);
-
-                });
-
             }
         ],
-
-        function (err, validNote) {
+        function (err, updatedCate) {
             if (err) {
                 if(validNote != null) res.send(validNote);
-                else console.log(err);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
             }
-            else res.send(validNote);
-        });*/
+            else res.send(updatedCate);
+        });
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-var addFolder = function(req ,res) { ///// 트리뷰에 추가하는 작업 필요
+/*Folder API*/
+var addFolder = function(req ,res) {
 
     var userToken = req.body.userToken;
-    var userCategory = req.body.userCategory;
-    var folderTitle = req.body.folderTitle;
+    var newTitle = req.body.newTitle;
     var folderParent = req.body.folderParent;
+    var userCategory;
 
     async.waterfall(
         [
-            function (callback)
-            {
+            function (callback) {
                 User.findOne({ token: userToken }, function( err, validUser) {
-                    if (err)
-                        console.log(err);
-
-                    if (validUser === null) callback(true, false);
-                    else callback(null);
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, 'Unregistered User');
+                    else {
+                        userCategory = validUser.category;
+                        callback(null);
+                    }
                 });
             },
 
             function (callback) {
-
                 User.update({token: userToken}, {
                     $push: {
                         category: {
-                            name: folderTitle,
+                            name: newTitle,
                             type: 'folder',
                             parent: folderParent
-                        }
-                    }
+                        } }
                 }, {upsert: true}, function (err, user) {
-                    if (err)
-                        callback(err);
+                    if (err) callback(err);
                     callback(null);
                 });
             },
 
             function (callback) {
                 User.findOne({token: userToken}, function (err, updatedUser) {
-                    if (err)
-                        callback(err);
+                    if (err) callback(err);
                     callback(null, updatedUser);
                 });
             }
         ],
-
-        function (err,updatedUser) {
+        function (err, updatedUser) {
             if (err) {
-                if(savedNote == false) res.send('Unregistered User');
-                else console.log(err);
+                if(updatedUser !=  null) res.send('Unregistered User');
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
             }
             else res.send(updateTree(userCategory, updatedUser.category));
         });
 };
 
+var removeFolder = function(req ,res){
+    var userToken = req.body.userToken;
+    var folderId = req.body.folderId;
+    var userCategory ;
+    var i;
 
+    async.waterfall(
+        [
+            function (callback) {
+                User.findOne({ token: userToken }, function( err, validUser) {
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else {
+                        userCategory = validUser.category;
+                        for(i=validUser.category.length-1; i>=0 ;i--) {
+                            console.log(validUser.category[i]);
+                            if (validUser.category[i]._id == folderId) {
+                                validUser.category.splice(i, 1);
+                                break;
+                            }
+                        }
+                        if(i >= 0) callback(null, validUser);
+                        else callback(true, 'unregistered Folder');
+                    }
+                });
+            },
+            function (validUser, callback) {
+                User.update({token : userToken},validUser, {upsert: true}, function (err) {
+                    if (err) callback(err);
+                    callback(null);
+                });
+            },
+            function (callback) {
+                User.findOne({token: userToken}, function (err, updatedUser) {
+                    if (err)  callback(err);
+                    callback(null,updatedUser);
+                });
+            }
+        ],
 
-var testNote = function(req, res) {
-
-    console.log(req.body.title);
-
-    var l;
-    User.findOne({ username: req.body.title},function(err,loginuser){
-        if(err)
-            console.err(err);
-
-        console.log(loginuser);
-    });
+        function (err, updatedUser) {
+            if (err) {
+                if(updatedUser != null) res.send(updatedUser);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
+            }
+            else res.send(updateTree(userCategory, updatedUser.category));
+        });
 };
 
+var renameFolder =  function(req ,res) {
 
-var addDir = function(req, res) {
+    var userToken = req.body.userToken;
+    var folderId = req.body.folderId;
+    var newTitle = req.body.newTitle;
+    var userCategory ;
+    var i;
 
-    user.category.push({
+    async.waterfall(
+        [
+            function (callback) {
+                User.findOne({ token: userToken }, function( err, validUser) {
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else {
+                        userCategory = validUser.category;
+                        for(i=validUser.category.length-1; i>=0 ;i--) {
+                            if (validUser.category[i]._id == folderId) {
+                                validUser.category[i].name = newTitle;
+                                break;
+                            }
+                        }
+                        if(i >= 0) callback(null, validUser);
+                        else callback(true, 'unregistered Folder');
+                    }
+                });
+            },
+            function (validUser, callback) {
+                User.update({token : userToken},validUser, {upsert: true}, function (err) {
+                    if (err) callback(err);
+                    callback(null);
+                });
+            },
+            function (callback) {
+                User.findOne({token: userToken}, function (err, updatedUser) {
+                    if (err)  callback(err);
+                    callback(null,updatedUser);
+                });
+            }
+        ],
 
-    });
+        function (err, updatedUser) {
+            if (err) {
+                if(updatedUser != null) res.send(updatedUser);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
+            }
+            else res.send(updateTree(userCategory, updatedUser.category));
+        });
 };
 
-
+/*
+ * User.findOne ( {token : userToken, category : { $all : [
+ { $elemMatch : { nid : noteId} }]}} , function( err, validUser) {
+ if (err)
+ callback(err);
+ if (validUser === null) callback(true, 'invalid access');
+ else callback(null);
+ });*/

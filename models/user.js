@@ -8,6 +8,7 @@ var Schema = mongoose.Schema,
 
 var User = {
 
+
     token : {
         type : Object,
         unique : true,
