@@ -6,17 +6,26 @@
 .
 ├── /build/                     # 컴파일 아웃풋(Compile Output)
 ├── /node_modules/              # 노드 모듈들
+├── /routes/                    # 서버 라우터
+│   ├── /api/                   # WebAPI
+│   └── /routes.js              # 라우터
+├── /models/                    # MongoDB Models
 ├── /src/                       # 앱의 소스 코드
-│   ├── /actions/               # Flux - 액션
+│   ├── /actions/               # Flux - 액션 생성기(action creator)
 │   ├── /components/            # Flux - React 컴포넌트들
 │   ├── /constants/             # Flux - 액션 상수
 │   ├── /dispatcher/            # Flux - Dispathcer
 │   ├── /stores/                # Flux - Store
-│   ├── /css/                   # CSS
+│   ├── /styles/                # Less Stylesheet
+│   ├── /utils/                 # WebAPI 유틸리티, 서버로부터 데이터를 받고 보냅니다.
 │   ├── /views/                 # EJS
 │   └── /main.js                # 클라이언트 사이드 Startup 스크립트
+│── .gitnore                    # .gitnore
 │── gulpfile.js                 # Gulp 빌드 구성
+│── db.js                       # MongoDB Connect
+│── passports.js                # Facebook/Google Login Connect
 │── app.js                      # 서버 사이드 Startup 스크립트
+│── trash.js                    # 휴지통
 └── package.json                # 노드 모듈 구성
 ```
 

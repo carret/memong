@@ -5,6 +5,11 @@ var passport=require('../../passports');
 var db = require('../../db');
 
 var User = db.model('User');
+var Note = db.model('Note');
+
+var mongoose = require('mongoose');
+
+var Constants = require('../../src/constants/Constants');
 
 var async = require('async');
 
@@ -29,7 +34,7 @@ exports.doRoutes = function(app) {
 
     app.get('/logout', ensureAuthenticated, deleteDB, function(req, res){
         console.log('logout');
-        res.clearCookie('token');
+        //res.clearCookie('token');
         res.clearCookie('username');
         req.logout();
         res.redirect('/');
@@ -44,28 +49,28 @@ exports.doRoutes = function(app) {
         }
         else {
             // 로그인이 안되어 있으면, login 페이지로 진행
-            res.clearCookie('username');
+            //res.clearCookie('username');
             console.log('hello')
             res.redirect('/');
         }
-
+    }
 
     function writeCookie(req,res,next) {
         console.log('write cookie');
         res.cookie('username', req.session.passport.user.email, {
-            expires:new Date(Date.now()+999999999),
-            httpOnly:true,
-            signed:true
-        });ㅇㅇ
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:true,
+            //signed:true
+        });
         res.cookie('token', req.session.passport.user.token, {
-            expires:new Date(Date.now()+9999999999),
-            httpOnly:true
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:trueㅇ
         });
         res.cookie('servicetype', req.session.passport.user.servicetype, {
-            expires:new Date(Date.now()+9999999999),
-            httpOnly:true,
-            signed:true
-        })
+            expires:new Date(Date.now()+9999999999)
+            //httpOnly:true,
+            //signed:true
+        });
 
         next();
     }
@@ -96,11 +101,10 @@ exports.doRoutes = function(app) {
                         }else{
                             console.log("Successfully updated");
                         }
-                        res.end();
+                        //res.end();
+                        next();
                     });
 
-                    //User.update({username:req.session.passport.user.email},{$set: {token:{token:req.signedCookies.token}}});
-                    next();
                 } else {
                     console.log('save');
                     console.log(req.cookies.token);
@@ -115,12 +119,54 @@ exports.doRoutes = function(app) {
                             console.log(err);
                             res.send(err);
                         } else {
-                            next();
+                            callback(null, user._id, true);
                         }
                     });
                 }
+            },
+            function(userId, isFirstUser, callback) {
+                if (isFirstUser) {
+                    var newNote = new Note({
+                        title: "새로운 노트",
+                        memos: [
+                            {
+                                title: "새로운 메모",
+                                text: "# 새로운 메모\n이 메모를 클릭하여 편집하세요.",
+                                mtype: Constants.MemoType.COMPLETE_MEMO
+                            }
+                        ]
+                    });
+                    newNote.save(function(err, result) {
+                        if (err) {
+                            console.log(err);
+                            res.send(err);
+                        }
+                        else {
+                            console.log("새로운 노트 저장 성공");
+                            callback(null, userId, result._id);
+                        }
+                    })
+                }
+            },
+            function(userId, newNoteId) {
+                User.findOneAndUpdate(
+                    {_id: mongoose.Types.ObjectId(userId)},
+                    {$set: {selectNoteId: mongoose.Types.ObjectId(newNoteId)}},
+                    {upsert: true, 'new': true},
+                    function(err, result) {
+                        if (err) {
+                            console.log(err);
+                            res.send(err);
+                        }
+                        else {
+                            console.log("새로운 노트: \n"+result);
+                            //res.end();
+                            next();
+                        }
+                    }
+                )
             }
-        ])
+        ]);
 
     }
 
@@ -143,9 +189,4 @@ exports.doRoutes = function(app) {
         next();
     }
 
-    function initNotes() // �α��ΰ� ���ÿ� ���� ��� ��Ʈ ������
-    {
-
-
-    }
-}
+};
