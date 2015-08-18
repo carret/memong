@@ -1,6 +1,3 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
 var passport=require('../../passports');
 var db = require('../../db');
 
@@ -50,7 +47,6 @@ exports.doRoutes = function(app) {
         else {
             // 로그인이 안되어 있으면, login 페이지로 진행
             res.clearCookie('username');
-            console.log('hello')
             res.redirect('/');
         }
     }
@@ -62,6 +58,7 @@ exports.doRoutes = function(app) {
             //httpOnly:true,
             //signed:true
         });
+
         res.cookie('token', req.session.passport.user.token, {
             expires:new Date(Date.now()+9999999999)
             //httpOnly:trueㅇ
@@ -71,7 +68,6 @@ exports.doRoutes = function(app) {
             //httpOnly:true,
             //signed:true
         });
-
         next();
     }
 
@@ -160,8 +156,7 @@ exports.doRoutes = function(app) {
                         }
                         else {
                             console.log("새로운 노트: \n"+result);
-                            //res.end();
-                            next();
+                            callback();
                         }
                     }
                 )

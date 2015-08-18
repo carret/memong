@@ -19,6 +19,6 @@ var Logout = React.createClass({
             <a href='/logout'>로그아웃</a>
         )
     }
-})
+});
 
 module.exports = Logout;

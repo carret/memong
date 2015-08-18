@@ -16,16 +16,6 @@ var Header = React.createClass({
             logoutActive: false
         };
     },
-    componentDidMount: function() {
-
-        if ( cookie.load('username') != null ) {
-            this.setState({isLogin:true})
-        }
-        else {
-            this.setState({isLogin:false})
-        }
-
-    },
 
     _activeMemoSearcher: function() {
         this.setState({
@@ -60,7 +50,7 @@ var Header = React.createClass({
                 <div className="header-right" >
                     <Exporter handleExport={this._handleExport}  />
                     <MemoSearcher />
-                    {this.state.isLogin ? <Logout /> : <Login />}
+                    {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
                 <NoteLoader />
             </div>

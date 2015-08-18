@@ -9,16 +9,14 @@ var pkginfo = require('./package');
 //Serialize
 //인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
-    console.log('serialize');
     done(null, user);
-})
+});
 
 //deserialize
 //인증후, 사용자 정보를 세션에서 읽어서 reqeust.user에 저장
 passport.deserializeUser(function (user, done) {
-    console.log('deserialize');
     done(null, user);
-})
+});
 
 passport.use(new FacebookStrategy({
         clientID: pkginfo.oauth.facebook.FACEBOOK_APP_ID,

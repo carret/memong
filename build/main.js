@@ -59167,6 +59167,14 @@ var MemoActionCreator = {
         });
     },
 
+    addNewMemo: function(_targetEditMemo, _context) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.ADD_NEW_MEMO,
+            targetEditMemo: _targetEditMemo,
+            context: _context
+        });
+    },
+
     deleteMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
             actionType: Constants.MemoActionTypes.DELETE_MEMO,
@@ -59321,7 +59329,7 @@ var Logout = React.createClass({displayName: "Logout",
             React.createElement("a", {href: "/logout"}, "로그아웃")
         )
     }
-})
+});
 
 module.exports = Logout;
 
@@ -59376,13 +59384,12 @@ var AutoSaver = React.createClass({displayName: "AutoSaver",
             this.setState({ status: Constants.AutoSaverStatusType.SAVING }, function() {
                 setTimeout(function() {
                     AutoSaveActionCreator.requestAutoSave(NoteStore.getNoteID(), NoteStore.getMemo());
-                }, 1500);
+                }, 2000);
             });
         }
     },
 
     _onReceive: function() {
-        console.log("hey");
         this.setState({
             status: Constants.AutoSaverStatusType.COMPLETE
         });
@@ -59430,10 +59437,21 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
     render: function() {
         var context = md.render(this.props.memo.text);
         return (
-            React.createElement("div", {className: "complete-memo", onClick: this.startEditMemo}, 
-                React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
+            React.createElement("div", {className: "complete-memo"}, 
+                React.createElement("div", {className: "complete-memo-inner", onClick: this.startEditMemo}, 
+                    React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
+                ), 
+                React.createElement("div", {className: "toolbar"}, 
+                    React.createElement("i", {onClick: this._handleAddMemo, className: "material-icons"}, ""), 
+                    React.createElement("span", {onClick: this._handleAddMemo}, "새로운 메모 추가하기")
+                )
             )
         );
+    },
+
+    _handleAddMemo: function() {
+        var newMemoContext = "# 새로운 메모\n이 메모를 클릭하여 편집하세요.";
+        MemoActionCreator.addNewMemo(this.props.memo, newMemoContext);
     }
 });
 
@@ -59452,7 +59470,7 @@ var TextareaDOM;
 
 
 var regEx = /^[^#\s]?(#)[ \t].+/gm;
-var matches = new Array();
+var headerOneMatches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
     getInitialState: function() {
@@ -59463,46 +59481,77 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
     componentDidMount: function() {
         var text = this.props.memo.text;
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
 
         $(TextareaDOM).on("keydown", function(event) {
-            if (event.keyCode == 13) {
-                var text = $(TextareaDOM).val();
-                matches = text.match(regEx);
-
-                if (matches != undefined) {
-                    if (matches.length >= 2) {
-                        var result;
-                        var updateValue;
-
-                        var _arr;
-                        var index = new Array();
-                        while ((_arr = regEx.exec(text)) !== null) {
-                            index.push(_arr.index);
-                        }
-                        var len = index.length;
-
-                        result = text.slice(0, index[len-1]);
-                        updateValue = text.slice(index[len-1], text.length);
-
-                        MemoActionCreator.addMemo(this.props.memo, result);
-                        $(TextareaDOM).val(updateValue);
-                        TextareaDOM.focus();
-                    }
-                }
+            var keyCode = event.keyCode;
+            if (keyCode == Constants.KeyCode.ENTER) {
+                this._handleAddMemo();
             }
-            if (event.keyCode == 9) {
-                var text = $(TextareaDOM).val();
-                var result = text;
-                MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
-                    text: result
-                }));
+            if (keyCode == Constants.KeyCode.TAB) {
+                $(TextareaDOM).focusout();
             }
-        }.bind(this))
+        }.bind(this));
+
+        $(TextareaDOM).focusout(function() {
+            this._handleCompleteMemo();
+        }.bind(this));
     },
+
+    _handleAddMemo: function() {
+        var text = $(TextareaDOM).val();
+        headerOneMatches = text.match(regEx);
+
+        if (headerOneMatches != undefined) {
+            if (this.__checkIfHeaderAreTwo(headerOneMatches)) {
+                var resultContext;
+                var updateValue;
+
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(text)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                resultContext = text.slice(0, index[len-1]);
+                updateValue = text.slice(index[len-1], text.length);
+
+                MemoActionCreator.addMemo(this.props.memo, resultContext);
+                $(TextareaDOM).val(updateValue);
+                TextareaDOM.focus();
+            }
+        }
+    },
+
+    _handleCompleteMemo: function(e) {
+        if (e != undefined) {
+            e.preventDefault();
+        }
+
+        var text = $(TextareaDOM).val();
+        if (text == "") {
+            MemoActionCreator.deleteMemo(this.props.memo);
+        }
+        else {
+            MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
+        }
+    },
+
+
+
+
+    __checkIfHeaderAreTwo: function(_headerOneMatches) {
+        if (_headerOneMatches.length >= 2) return true;
+        return false;
+    },
+
 
     render: function () {
         return (
@@ -59599,7 +59648,7 @@ var TextareaDOM;
 
 
 var regEx = /^[^#\s]?(#)[ \t].+/gm;
-var matches = new Array();
+var headerOneMatches = new Array();
 
 
 var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
@@ -59611,52 +59660,69 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
     componentDidMount: function() {
         var text = this.props.memo.text;
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
 
         $(TextareaDOM).on("keydown", function(event) {
-            if (event.keyCode == 13) {
-                var text = $(TextareaDOM).val();
-                matches = text.match(regEx);
+            var keyCode = event.keyCode;
+            if (keyCode == Constants.KeyCode.ENTER) {
 
-                if (matches != undefined) {
-                    if (matches.length >= 2) {
-                        var result;
-                        var updateValue;
-
-                        var _arr;
-                        var index = new Array();
-                        while ((_arr = regEx.exec(text)) !== null) {
-                            index.push(_arr.index);
-                        }
-                        var len = index.length;
-
-                        result = text.slice(0, index[len-1]);
-                        updateValue = text.slice(index[len-1], text.length);
-
-                        MemoActionCreator.addMemo(this.props.memo, result);
-                        $(TextareaDOM).val(updateValue);
-                        TextareaDOM.focus();
-                    }
-                }
             }
-            if (event.keyCode === 9) {
-                var text = $(TextareaDOM).val();
-                if (text == "") {
-                    return;
-                }
-                else {
-                    var result = text;
-                    MemoActionCreator.addMemo(_.extend(this.props.memo, {
-                        text: ""
-                    }), result);
-                    $(TextareaDOM).val("");
-                    TextareaDOM.focus();
-                }
+            if (keyCode == Constants.KeyCode.TAB) {
+
             }
         }.bind(this));
+    },
+
+    _handleAddMemo: function() {
+        var text = $(TextareaDOM).val();
+        headerOneMatches = text.match(regEx);
+
+        if (headerOneMatches != undefined) {
+            if (this.__checkIfHeaderAreTwo(headerOneMatches)) {
+                var resultContext;
+                var updateValue;
+
+                var _arr;
+                var index = new Array();
+                while ((_arr = regEx.exec(text)) !== null) {
+                    index.push(_arr.index);
+                }
+                var len = index.length;
+
+                resultContext = text.slice(0, index[len-1]);
+                updateValue = text.slice(index[len-1], text.length);
+
+                MemoActionCreator.addMemo(this.props.memo, resultContext);
+                $(TextareaDOM).val(updateValue);
+                TextareaDOM.focus();
+            }
+        }
+    },
+
+    _handleCompleteMemo: function() {
+        event.preventDefault();
+        var text = $(TextareaDOM).val();
+        if (text == "") {
+            return;
+        }
+        else {
+            var result = text;
+            MemoActionCreator.addMemo(_.extend(this.props.memo, {
+                text: ""
+            }), result);
+            $(TextareaDOM).val("");
+            TextareaDOM.focus();
+        }
+    },
+
+
+    __checkIfHeaderAreTwo: function(_headerOneMatches) {
+        if (_headerOneMatches.length >= 2) return true;
+        return false;
     },
 
     render: function() {
@@ -59741,16 +59807,6 @@ var Header = React.createClass({displayName: "Header",
             logoutActive: false
         };
     },
-    componentDidMount: function() {
-
-        if ( cookie.load('username') != null ) {
-            this.setState({isLogin:true})
-        }
-        else {
-            this.setState({isLogin:false})
-        }
-
-    },
 
     _activeMemoSearcher: function() {
         this.setState({
@@ -59785,7 +59841,7 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("div", {className: "header-right"}, 
                     React.createElement(Exporter, {handleExport: this._handleExport}), 
                     React.createElement(MemoSearcher, null), 
-                    this.state.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
+                    this.props.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
                 ), 
                 React.createElement(NoteLoader, null)
             )
@@ -59869,7 +59925,6 @@ var Main = React.createClass({displayName: "Main",
     },
 
     render: function() {
-        console.log(this.props.isLogin);
         var item = (this.props.isLogin) ?
             (React.createElement("div", null, 
                 React.createElement("div", {ref: "_aside", id: "aside"}, 
@@ -59958,9 +60013,9 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
     render: function() {
         return (
             React.createElement("div", {className: "memo-viewer-edit-item"}, 
-                React.createElement("div", {className: "memo-viewer-edit-item-name"}, 
-                    React.createElement("h3", null, this.props.memo.name)
-                )
+                React.createElement("div", {className: "memo-viewer-overlay"}), 
+                React.createElement("span", {className: "title"}, this.props.memo.title), 
+                React.createElement("span", {className: "editing"}, "편집중...")
             )
         );
     }
@@ -59970,32 +60025,105 @@ module.exports = EditMemoItem;
 
 },{"react":367}],454:[function(require,module,exports){
 var React = require('react');
+var Dialog = require('rc-dialog');
+
 var MemoActionCreator = require('../../actions/MemoActionCreator');
+
+
+var container;
+
+function showDialog(content, props) {
+    if (!container) {
+        container = document.createElement('div');
+        container.setAttribute("id", "memoDeleteDialog");
+        document.body.appendChild(container);
+    }
+
+    var close = props.onClose;
+    props.onClose = function() {
+        if(close)
+            close();
+        React.unmountComponentAtNode(container);
+    };
+
+    var dialog = React.render(React.createElement(Dialog, React.__spread({},  props, {renderToBody: false}), content), container);
+    dialog.show();
+    return dialog;
+}
+
+var DialogContent = React.createClass({displayName: "DialogContent",
+    getInitialState : function() {
+        return {
+            value:''
+        }
+    },
+
+    componentDidMount: function() {
+        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
+            event.preventDefault();
+            if (event.keyCode == 13) {
+                this.props.deleteItem();
+            }
+        });
+    },
+
+    _deleteItem: function() {
+        this.props.deleteItem();
+        this.props.handleClose();
+    },
+
+    render : function() {
+        return (
+            React.createElement("div", {ref: "_dialog"}, 
+                React.createElement("div", {className: "memoDeleteDialog-text"}, React.createElement("span", null, "정말로 삭제하시겠습니까?")), 
+                React.createElement("div", {className: "memoDeleteDialog-btnMenu"}, 
+                    React.createElement("button", {onClick: this._deleteItem}, "예"), 
+                    React.createElement("button", {onClick: this.props.handleClose}, "아니요")
+                )
+            )
+        );
+    }
+});
+
 
 var MemoItem = React.createClass({displayName: "MemoItem",
     _onDelete: function() {
         MemoActionCreator.deleteMemo(this.props.memo);
     },
 
+    _onClose: function() {
+        this.d.close();
+    },
+
+    handleTrigger: function () {
+        this.d = showDialog(React.createElement(DialogContent, {deleteItem: this._onDelete, handleClose: this._onClose}),{
+            title: React.createElement("p", {className: "memoDeleteDialog-title"}, "메모 삭제"),
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+
     render: function() {
         return (
-        React.createElement("div", {className: "memo-viewer-item"}, 
-            React.createElement("span", {className: "title"}, 
-                this.props.memo.title
-            ), 
-            React.createElement("div", null, 
-                React.createElement("button", {className: "btn_delete", onClick: this._onDelete}, 
-                    React.createElement("i", {className: "material-icons"}, "")
+            React.createElement("div", {className: "memo-viewer-item"}, 
+                React.createElement("span", {className: "title"}, 
+                    this.props.memo.title
+                ), 
+                React.createElement("div", null, 
+                    React.createElement("button", {className: "btn_delete", onClick: this.handleTrigger}, 
+                        React.createElement("i", {className: "material-icons"}, "")
+                    )
                 )
             )
-        )
         );
     }
 });
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActionCreator":437,"react":367}],455:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":437,"rc-dialog":174,"react":367}],455:[function(require,module,exports){
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -60171,6 +60299,7 @@ module.exports = {
     MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
+        ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
         END_EDIT_MEMO: null
@@ -60207,7 +60336,13 @@ module.exports = {
     AutoSaverStatusType: keyMirror({
         COMPLETE: null,
         SAVING: null
-    })
+    }),
+
+
+    KeyCode: {
+        ENTER: 13,
+        TAB: 9
+    }
 };
 
 },{"react/lib/keyMirror":352}],460:[function(require,module,exports){
@@ -60255,12 +60390,12 @@ var WebGetUtils = require('./utils/WebGetUtils');
 var cookie = require('react-cookie');
 
 WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
+var LoginState = (cookie.load('username') == null) ? false : true;
 
 React.render(
-
     React.createElement("div", {id: "app-inner"}, 
-        React.createElement(Header, null), 
-        React.createElement(Main, null)
+        React.createElement(Header, {isLogin: LoginState}), 
+        React.createElement(Main, {isLogin: LoginState})
     ),
     document.getElementById('app')
 );
@@ -60316,6 +60451,19 @@ function addMemo(_targetEditMemo, _context) {
 
     for (var idx=0; idx<len; idx++) {
         memos.splice(index+idx, 0, _newMemos[idx]);
+    }
+}
+
+function addNewMemo(_targetEditMemo, _context) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    var newMemo = _.extend({}, {
+        text: _context
+    });
+    var _newMemos = _parseMemo(newMemo);
+    var len = _newMemos.length;
+
+    for (var idx=0; idx<len; idx++) {
+        memos.splice(index+idx+1, 0, _newMemos[idx]);
     }
 }
 
@@ -60501,6 +60649,11 @@ AppDispatcher.register(function(payload) {
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
             NoteStore.emitAutoSaveRequest();
+            break;
+
+        case Constants.MemoActionTypes.ADD_NEW_MEMO:
+            addNewMemo(action.targetEditMemo, action.context);
+            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
