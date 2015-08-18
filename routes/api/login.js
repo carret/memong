@@ -49,7 +49,7 @@ exports.doRoutes = function(app) {
         }
         else {
             // 로그인이 안되어 있으면, login 페이지로 진행
-            //res.clearCookie('username');
+            res.clearCookie('username');
             console.log('hello')
             res.redirect('/');
         }

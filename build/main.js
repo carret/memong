@@ -59114,8 +59114,6 @@ module.exports = function(arr, fn, initial){
 }.call(this));
 
 },{}],435:[function(require,module,exports){
-<<<<<<< HEAD
-=======
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -59154,26 +59152,6 @@ var DirectoryActionCreator = {
 module.exports = DirectoryActionCreator;
 
 },{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"../utils/WebGetUtils":463}],437:[function(require,module,exports){
->>>>>>> seokju
-var AppDispatcher = require('../dispatcher/AppDispatcher');
-var Constants = require('../constants/Constants');
-
-var WebGetUtils = require('../utils/WebGetUtils');
-var WebPostUtils = require('../utils/WebPostUtils');
-
-
-var DirectoryActionCreator = {
-    requestDirectory: function() {
-        AppDispatcher.handleClientAction({
-            actionType: Constants.NoteActionTypes.REQUEST_NOTE
-        });
-        WebGetUtils.getDirectory();
-    }
-};
-
-module.exports = DirectoryActionCreator;
-
-},{"../constants/Constants":457,"../dispatcher/AppDispatcher":458,"../utils/WebGetUtils":461}],436:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -59209,23 +59187,12 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
-    },
-
-    requestMemoSave: function(_selectNoteID, _memos) {
-        AppDispatcher.handleClientAction({
-            actionType: Constants.MemoActionTypes.REQUEST_SAVE
-        });
-        WebPostUtils.postNoteWithMemo(_selectNoteID, _memos);
     }
 };
 
 module.exports = MemoActionCreator;
 
-<<<<<<< HEAD
-},{"../constants/Constants":457,"../dispatcher/AppDispatcher":458,"../utils/WebGetUtils":461,"../utils/WebPostUtils":462}],437:[function(require,module,exports){
-=======
 },{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"../utils/WebGetUtils":463,"../utils/WebPostUtils":464}],438:[function(require,module,exports){
->>>>>>> seokju
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -59258,26 +59225,16 @@ var ServerReceiveActionCreator = {
         });
     },
 
-<<<<<<< HEAD
-    receiveMemoSaveComplete: function() {
-        AppDispatcher.handleServerAction({
-            actionType: Constants.MemoActionTypes.RECEIVE_SAVE
-=======
     receiveAutoSaveComplete: function() {
         AppDispatcher.handleServerAction({
             actionType: Constants.AutoSaveActionTypes.RECEIVE_SAVE
->>>>>>> seokju
         });
     }
 };
 
 module.exports = ServerReceiveActionCreator;
 
-<<<<<<< HEAD
-},{"../constants/Constants":457,"../dispatcher/AppDispatcher":458}],438:[function(require,module,exports){
-=======
 },{"../constants/Constants":459,"../dispatcher/AppDispatcher":460}],439:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -59342,11 +59299,7 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 
 module.exports = LoginBtn;
 
-<<<<<<< HEAD
-},{"rc-dialog":174,"react":367}],439:[function(require,module,exports){
-=======
 },{"rc-dialog":174,"react":367}],440:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 //var Logout = React.createClass({
@@ -59367,14 +59320,6 @@ var Logout = React.createClass({displayName: "Logout",
         return (
             React.createElement("a", {href: "/logout"}, "로그아웃")
         )
-<<<<<<< HEAD
-    }
-})
-
-module.exports = Logout;
-
-},{"react":367}],440:[function(require,module,exports){
-=======
     }
 })
 
@@ -59447,7 +59392,6 @@ var AutoSaver = React.createClass({displayName: "AutoSaver",
 module.exports = AutoSaver;
 
 },{"../../actions/AutoSaveActionCreator":435,"../../constants/Constants":459,"../../stores/NoteStore":462,"react":367}],442:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
@@ -59463,11 +59407,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-<<<<<<< HEAD
-},{"react":367}],441:[function(require,module,exports){
-=======
 },{"react":367}],443:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -59499,11 +59439,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-<<<<<<< HEAD
-},{"../../actions/MemoActionCreator":436,"react":367,"remarkable":368}],442:[function(require,module,exports){
-=======
 },{"../../actions/MemoActionCreator":437,"react":367,"remarkable":368}],444:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -59583,11 +59519,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-<<<<<<< HEAD
-},{"../../actions/MemoActionCreator":436,"../../constants/Constants":457,"react":367,"react-textarea-autosize":206,"underscore":434}],443:[function(require,module,exports){
-=======
 },{"../../actions/MemoActionCreator":437,"../../constants/Constants":459,"react":367,"react-textarea-autosize":206,"underscore":434}],445:[function(require,module,exports){
->>>>>>> seokju
 //Component Type: Controll View
 
 var React = require('react');
@@ -59655,11 +59587,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-<<<<<<< HEAD
-},{"../../constants/Constants":457,"../../stores/NoteStore":460,"./CompleteMemo":441,"./EditMemo":442,"./GlobalEditMemo":444,"./NoneMemo":445,"react":367,"underscore":434}],444:[function(require,module,exports){
-=======
 },{"../../constants/Constants":459,"../../stores/NoteStore":462,"./CompleteMemo":443,"./EditMemo":444,"./GlobalEditMemo":446,"./NoneMemo":447,"react":367,"underscore":434}],446:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -59745,11 +59673,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-<<<<<<< HEAD
-},{"../../actions/MemoActionCreator":436,"../../constants/Constants":457,"react":367,"react-textarea-autosize":206,"underscore":434}],445:[function(require,module,exports){
-=======
 },{"../../actions/MemoActionCreator":437,"../../constants/Constants":459,"react":367,"react-textarea-autosize":206,"underscore":434}],447:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -59781,11 +59705,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-<<<<<<< HEAD
-},{"../../actions/MemoActionCreator":436,"react":367,"remarkable":368}],446:[function(require,module,exports){
-=======
 },{"../../actions/MemoActionCreator":437,"react":367,"remarkable":368}],448:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -59802,11 +59722,7 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
-<<<<<<< HEAD
-},{"react":367}],447:[function(require,module,exports){
-=======
 },{"react":367}],449:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -59816,16 +59732,6 @@ var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
-<<<<<<< HEAD
-=======
-
-var loginButton;
-
-if ( cookie.load('username') != null )
-    loginButton = React.createElement(Logout, null)
-else
-    loginButton = React.createElement(Login, null)
->>>>>>> seokju
 
 var Header = React.createClass({displayName: "Header",
 
@@ -59879,11 +59785,7 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("div", {className: "header-right"}, 
                     React.createElement(Exporter, {handleExport: this._handleExport}), 
                     React.createElement(MemoSearcher, null), 
-<<<<<<< HEAD
                     this.state.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
-=======
-                    loginButton
->>>>>>> seokju
                 ), 
                 React.createElement(NoteLoader, null)
             )
@@ -59893,11 +59795,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-<<<<<<< HEAD
-},{"./Account/Login":438,"./Account/Logout":439,"./Exporter/Exporter":446,"./MemoSearcher/MemoSearcher":449,"./NoteLoader/NoteLoader":456,"react":367,"react-cookie":204}],448:[function(require,module,exports){
-=======
 },{"./Account/Login":439,"./Account/Logout":440,"./Exporter/Exporter":448,"./MemoSearcher/MemoSearcher":451,"./NoteLoader/NoteLoader":458,"react":367,"react-cookie":204}],450:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -59929,17 +59827,9 @@ var Main = React.createClass({displayName: "Main",
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
-<<<<<<< HEAD
             this.setState({isLogin:true})
         }
         else {
-=======
-            console.log('login');
-            this.setState({isLogin:true})
-        }
-        else {
-            console.log('not login');
->>>>>>> seokju
             this.setState({isLogin:false})
         }
 
@@ -59990,13 +59880,8 @@ var Main = React.createClass({displayName: "Main",
                         React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
                         React.createElement(Editor, null)
                     )
-<<<<<<< HEAD
                 )
                 )
-=======
-                )
-                )
->>>>>>> seokju
             :
                 React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다.")
             
@@ -60008,11 +59893,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-<<<<<<< HEAD
-},{"./DirectoryViewer/DirectoryViewer":440,"./Editor/Editor":443,"./MemoViewer/MemoViewer":453,"./NoteHeader/NoteHeader":454,"react":367,"react-cookie":204}],449:[function(require,module,exports){
-=======
 },{"./DirectoryViewer/DirectoryViewer":442,"./Editor/Editor":445,"./MemoViewer/MemoViewer":455,"./NoteHeader/NoteHeader":456,"react":367,"react-cookie":204}],451:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -60059,11 +59940,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
-<<<<<<< HEAD
-},{"./utils":450,"react":367,"react-autosuggest":199}],450:[function(require,module,exports){
-=======
 },{"./utils":452,"react":367,"react-autosuggest":199}],452:[function(require,module,exports){
->>>>>>> seokju
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -60073,11 +59950,7 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
-<<<<<<< HEAD
-},{}],451:[function(require,module,exports){
-=======
 },{}],453:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -60094,11 +59967,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-<<<<<<< HEAD
-},{"react":367}],452:[function(require,module,exports){
-=======
 },{"react":367}],454:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 
@@ -60125,11 +59994,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-<<<<<<< HEAD
-},{"../../actions/MemoActionCreator":436,"react":367}],453:[function(require,module,exports){
-=======
 },{"../../actions/MemoActionCreator":437,"react":367}],455:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -60194,17 +60059,11 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-<<<<<<< HEAD
-},{"../../constants/Constants":457,"../../stores/NoteStore":460,"./EditMemoItem":451,"./MemoItem":452,"react":367,"underscore":434}],454:[function(require,module,exports){
-var React = require('react');
-
-=======
 },{"../../constants/Constants":459,"../../stores/NoteStore":462,"./EditMemoItem":453,"./MemoItem":454,"react":367,"underscore":434}],456:[function(require,module,exports){
 var React = require('react');
 
 var AutoSaver = require('../AutoSaver/AutoSaver');
 
->>>>>>> seokju
 var NoteStore = require('../../stores/NoteStore');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
@@ -60236,10 +60095,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
             React.createElement("div", {id: "note-header"}, 
                 React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
                 React.createElement("span", {className: "title"}, this.state.noteTitle), 
-<<<<<<< HEAD
-=======
                 React.createElement(AutoSaver, null), 
->>>>>>> seokju
                 React.createElement("div", {className: "menu"}
                 )
             )
@@ -60254,11 +60110,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-<<<<<<< HEAD
-},{"../../stores/NoteStore":460,"./ToggleAsideButton":455,"react":367}],455:[function(require,module,exports){
-=======
 },{"../../stores/NoteStore":462,"../AutoSaver/AutoSaver":441,"./ToggleAsideButton":457,"react":367}],457:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -60275,11 +60127,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-<<<<<<< HEAD
-},{"react":367}],456:[function(require,module,exports){
-=======
 },{"react":367}],458:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -60292,11 +60140,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-<<<<<<< HEAD
-},{"react":367}],457:[function(require,module,exports){
-=======
 },{"react":367}],459:[function(require,module,exports){
->>>>>>> seokju
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -60312,20 +60156,7 @@ module.exports = {
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory"
         // 나머지...
-<<<<<<< HEAD
     },
-
-    // ActionTypes
-
-    AccountActionTypes : keyMirror({
-        REQUEST_ACCOUNT : null
-    }),
-
-=======
-
-    },
-
->>>>>>> seokju
     NoteActionTypes: keyMirror({
         REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
@@ -60337,8 +60168,6 @@ module.exports = {
     }),
 
     MemoActionTypes: keyMirror({
-        REQUEST_SAVE: null,
-        RECEIVE_SAVE: null,
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,
@@ -60380,11 +60209,7 @@ module.exports = {
     })
 };
 
-<<<<<<< HEAD
-},{"react/lib/keyMirror":352}],458:[function(require,module,exports){
-=======
 },{"react/lib/keyMirror":352}],460:[function(require,module,exports){
->>>>>>> seokju
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -60412,11 +60237,7 @@ AppDispatcher.handleAutoSaveAction = function(action) {
 
 module.exports = AppDispatcher;
 
-<<<<<<< HEAD
-},{"flux":169}],459:[function(require,module,exports){
-=======
 },{"flux":169}],461:[function(require,module,exports){
->>>>>>> seokju
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -60430,13 +60251,10 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
-<<<<<<< HEAD
 var cookie = require('react-cookie');
 
 WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
 
-=======
->>>>>>> seokju
 React.render(
 
     React.createElement("div", {id: "app-inner"}, 
@@ -60446,11 +60264,7 @@ React.render(
     document.getElementById('app')
 );
 
-<<<<<<< HEAD
-},{"./actions/MemoActionCreator":436,"./components/Editor/Editor":443,"./components/Header":447,"./components/Main":448,"./components/MemoViewer/MemoViewer":453,"./utils/WebGetUtils":461,"react":367,"react-cookie":204,"react-ui-tree":211}],460:[function(require,module,exports){
-=======
-},{"./actions/MemoActionCreator":437,"./components/Editor/Editor":445,"./components/Header":449,"./components/Main":450,"./components/MemoViewer/MemoViewer":455,"./utils/WebGetUtils":463,"react":367,"react-ui-tree":211}],462:[function(require,module,exports){
->>>>>>> seokju
+},{"./actions/MemoActionCreator":437,"./components/Editor/Editor":445,"./components/Header":449,"./components/Main":450,"./components/MemoViewer/MemoViewer":455,"./utils/WebGetUtils":463,"react":367,"react-cookie":204,"react-ui-tree":211}],462:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -60618,11 +60432,7 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteID: function() {
-<<<<<<< HEAD
-        return selectNote.id;
-=======
         return selectNote.idAttribute;
->>>>>>> seokju
     },
 
     getNoteTitle: function() {
@@ -60633,21 +60443,12 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },
 
-<<<<<<< HEAD
-    emitMemoChange: function() {
-        this.emit('memo-change');
-    },
-
-    emitMemoSaveComplete: function() {
-        this.emit('memo-complete');
-=======
     emitAutoSaveRequest: function() {
         this.emit('auto-save-request');
     },
 
     emitAutoSaveReceive: function() {
         this.emit('auto-save-receive');
->>>>>>> seokju
     },
 
     addChangeListener: function(callback) {
@@ -60658,22 +60459,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
 
-<<<<<<< HEAD
-    addMemoChangeListener: function(callback) {
-        this.on('memo-change', callback);
-    },
-
-    removeMemoChangeListener: function(callback) {
-        this.removeListener('memo-change', callback);
-    },
-
-    addMemoSaveCompleteListener: function(callback) {
-        this.on('memo-complete', callback);
-    },
-
-    removeMemoSaveCompleteListener: function(callback) {
-        this.removeListener('memo-complete', callback);
-=======
     addAutoSaveRequestListener: function(callback) {
         this.on('auto-save-request', callback);
     },
@@ -60688,7 +60473,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeAutoSaveReceiveListener: function(callback) {
         this.removeListener('auto-save-receive', callback);
->>>>>>> seokju
     }
 });
 
@@ -60713,53 +60497,32 @@ AppDispatcher.register(function(payload) {
             NoteStore.emitAutoSaveReceive();
             break;
 
-        case Constants.MemoActionTypes.RECEIVE_SAVE:
-            NoteStore.emitMemoSaveComplete();
-            break;
-
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-<<<<<<< HEAD
-            NoteStore.emitMemoChange();
-=======
             NoteStore.emitAutoSaveRequest();
->>>>>>> seokju
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-<<<<<<< HEAD
-            NoteStore.emitMemoChange();
-=======
             NoteStore.emitAutoSaveRequest();
->>>>>>> seokju
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
-            NoteStore.emitMemoChange();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-<<<<<<< HEAD
-            NoteStore.emitMemoChange();
-=======
             NoteStore.emitAutoSaveRequest();
->>>>>>> seokju
             break;
 
         default:
             return true;
     }
 
-<<<<<<< HEAD
-    NoteStore.emitChange();
-=======
     if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
     }
->>>>>>> seokju
 
     return true;
 });
@@ -60767,11 +60530,7 @@ AppDispatcher.register(function(payload) {
 
 module.exports = NoteStore;
 
-<<<<<<< HEAD
-},{"../constants/Constants":457,"../dispatcher/AppDispatcher":458,"events":147,"simple-unique-id":429,"underscore":434}],461:[function(require,module,exports){
-=======
 },{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"events":147,"simple-unique-id":429,"underscore":434}],463:[function(require,module,exports){
->>>>>>> seokju
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
@@ -60786,18 +60545,10 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-<<<<<<< HEAD
-                    console.log(res);
-                    ServerReceiveActionCreator.receiveNote(res.body.note);
-                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
-=======
                     console.log("받음");
                     console.log(res);
-
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
-
->>>>>>> seokju
                 }
                 else {
                     // Show Notification
@@ -60838,11 +60589,7 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
-<<<<<<< HEAD
-},{"../actions/ServerReceiveActionCreator":437,"../constants/Constants":457,"superagent":431}],462:[function(require,module,exports){
-=======
 },{"../actions/ServerReceiveActionCreator":438,"../constants/Constants":459,"superagent":431}],464:[function(require,module,exports){
->>>>>>> seokju
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 
@@ -60851,16 +60598,6 @@ var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 
 
 var WebPostUtils = {
-<<<<<<< HEAD
-    postNoteWithMemo: function(_noteID, _memos) {
-        var _escapedMemos = (function() {
-
-        })(_memos);
-
-        request
-            .post(Constants.API.POST_NOTE_WITH_MEMO)
-            .send({noteID: _noteID.escape(), memos: _escapedMemos})
-=======
     postNoteWithMemo: function(_noteId, _memos) {
         var memos = new Array();
         for (var idx=0,len=_memos.length; idx<len; idx++) {
@@ -60872,17 +60609,12 @@ var WebPostUtils = {
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
             .send({noteId: _noteId, memos: memos})
->>>>>>> seokju
             .set('API-Key', 'POST_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-<<<<<<< HEAD
-                    ServerReceiveActionCreator.receiveMemoSaveComplete();
-=======
                     ServerReceiveActionCreator.receiveAutoSaveComplete();
                     console.log("receiveAutoSave");
->>>>>>> seokju
                 }
                 else {
                     // Show Notification
@@ -60913,8 +60645,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-<<<<<<< HEAD
-},{"../actions/DirectoryActionCreator":435,"../actions/ServerReceiveActionCreator":437,"../constants/Constants":457,"superagent":431}]},{},[459]);
-=======
 },{"../actions/DirectoryActionCreator":436,"../actions/ServerReceiveActionCreator":438,"../constants/Constants":459,"superagent":431}]},{},[461]);
->>>>>>> seokju
