@@ -8,8 +8,6 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var source = require('vinyl-source-stream');
 
-var less = require('gulp-less');
-
 
 var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync').create();

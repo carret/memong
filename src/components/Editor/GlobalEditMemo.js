@@ -1,7 +1,6 @@
 var React = require('react');
-var MemoActions = require('../../actions/MemoActions');
-var MemoActionConstants = require('../../constants/MemoActionConstants');
-var MemoTypeConstants = require('../../constants/MemoTypeConstants');
+var MemoActionCreator = require('../../actions/MemoActionCreator');
+var Constants = require('../../constants/Constants');
 var _ = require('underscore');
 
 var Textarea = require('react-textarea-autosize');
@@ -10,100 +9,89 @@ var TextareaDOM;
 
 
 var regEx = /^[^#\s]?(#)[ \t].+/gm;
-var matches = new Array();
+var headerOneMatches = new Array();
 
 
 var GlobalEditMemo = React.createClass({
     getInitialState: function() {
         return {
-            value: this.props.memo.value,
-            actionType: MemoActionConstants.END_EDIT_MEMO
+            text: this.props.memo.text
         };
     },
 
     componentDidMount: function() {
-        var value = this.props.memo.value;
+        var text = this.props.memo.text;
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = value.length;
-        TextareaDOM.selectionEnd = value.length;
+        TextareaDOM.selectionStart = text.length;
+        TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
-    },
 
-    _handleValueInput: function(_value) {
-        this.setState({value: _value});
-    },
+        $(TextareaDOM).on("keydown", function(event) {
+            var keyCode = event.keyCode;
+            if (keyCode == Constants.KeyCode.ENTER) {
 
-    _handleKeyInput: function(event) {
-        if (event.keyCode === 13) {
-            var value = this.state.value;
-            matches = value.match(regEx);
-
-            if (matches != undefined) {
-                if (matches.length >= 2) {
-                    this.setState({actionType: MemoActionConstants.ADD_MEMO}, function () {
-                        TextareaDOM.blur();
-                    });
-                }
             }
-        }
-        if (event.keyCode === 9) {
-            event.preventDefault();
-            this.setState({actionType: MemoActionConstants.END_EDIT_MEMO}, function() {
-                TextareaDOM.blur();
-            });
-        }
+            if (keyCode == Constants.KeyCode.TAB) {
+
+            }
+        }.bind(this));
     },
 
-    _handleAction: function() {
-        var value = this.state.value;
-        var result = "";
-        var updateValue = "";
+    _handleAddMemo: function() {
+        var text = $(TextareaDOM).val();
+        headerOneMatches = text.match(regEx);
 
-        switch(this.state.actionType) {
-            case MemoActionConstants.END_EDIT_MEMO :
-                if (value == "") {
-                    return;
-                }
-                result = value;
-                this.setState({value: ""});
-                break;
+        if (headerOneMatches != undefined) {
+            if (this.__checkIfHeaderAreTwo(headerOneMatches)) {
+                var resultContext;
+                var updateValue;
 
-            case MemoActionConstants.ADD_MEMO :
                 var _arr;
                 var index = new Array();
-                while ((_arr = regEx.exec(value)) !== null) {
+                while ((_arr = regEx.exec(text)) !== null) {
                     index.push(_arr.index);
                 }
                 var len = index.length;
 
-                result = value.slice(0, index[len-1]);
-                updateValue = value.slice(index[len-1], value.length);
-                this.setState({
-                    value: updateValue,
-                    actionType: MemoActionConstants.END_EDIT_MEMO
-                });
-                break;
-        }
+                resultContext = text.slice(0, index[len-1]);
+                updateValue = text.slice(index[len-1], text.length);
 
-        MemoActions.addMemo(_.extend(this.props.memo, {
-            value: updateValue
-        }), result);
-        TextareaDOM.focus();
+                MemoActionCreator.addMemo(this.props.memo, resultContext);
+                $(TextareaDOM).val(updateValue);
+                TextareaDOM.focus();
+            }
+        }
+    },
+
+    _handleCompleteMemo: function() {
+        event.preventDefault();
+        var text = $(TextareaDOM).val();
+        if (text == "") {
+            return;
+        }
+        else {
+            var result = text;
+            MemoActionCreator.addMemo(_.extend(this.props.memo, {
+                text: ""
+            }), result);
+            $(TextareaDOM).val("");
+            TextareaDOM.focus();
+        }
+    },
+
+
+    __checkIfHeaderAreTwo: function(_headerOneMatches) {
+        if (_headerOneMatches.length >= 2) return true;
+        return false;
     },
 
     render: function() {
-        var valueLink = {
-            value: this.state.value,
-            requestChange: this._handleValueInput
-        };
         return(
             <div className="globaledit-memo">
                 <Textarea ref="_textarea"
                           minRows={25}
                           className="global-edit-memo-textarea"
-                          valueLink={valueLink}
-                          onKeyDown={this._handleKeyInput}
-                          onBlur={this._handleAction}
                     />
             </div>
         );

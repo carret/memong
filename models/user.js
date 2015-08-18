@@ -1,7 +1,3 @@
-/**
- * Created by cho on 2015-08-05.
- */
-
 var User = {
 
     token : {
@@ -13,14 +9,10 @@ var User = {
         type : String,
         required:true
     },
-<<<<<<< Updated upstream
-
-=======
     servicetype:{
         type:String,
         required:true
     },
->>>>>>> Stashed changes
     category : [
         {
             /* file && note categories */
@@ -38,7 +30,7 @@ var User = {
                 type: String /* null -- Root */
             }
         }
-        ]
+    ]
 };
 
 module.exports = User;

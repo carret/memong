@@ -1,17 +1,21 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
-var MemoActionConstants = require('../constants/MemoActionConstants');
+var Constants = require('../constants/Constants');
 
-var MemoActions = {
-    initMemo: function(_memos) {
+var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
+
+var MemoActionCreator = {
+    addMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.INIT_MEMO,
-            memos: _memos
+            actionType: Constants.MemoActionTypes.ADD_MEMO,
+            targetEditMemo: _targetEditMemo,
+            context: _context
         });
     },
 
-    addMemo: function(_targetEditMemo, _context) {
+    addNewMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.ADD_MEMO,
+            actionType: Constants.MemoActionTypes.ADD_NEW_MEMO,
             targetEditMemo: _targetEditMemo,
             context: _context
         });
@@ -19,24 +23,25 @@ var MemoActions = {
 
     deleteMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.DELETE_MEMO,
+            actionType: Constants.MemoActionTypes.DELETE_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
     },
 
     startEditMemo: function(_targetCompleteMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.START_EDIT_MEMO,
+            actionType: Constants.MemoActionTypes.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
+
     },
 
     completeEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
-            actionType: MemoActionConstants.END_EDIT_MEMO,
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
     }
 };
 
-module.exports = MemoActions;
+module.exports = MemoActionCreator;

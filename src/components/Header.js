@@ -6,8 +6,10 @@ var Logout = require('./Account/Logout');
 var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
+var cookie = require('react-cookie');
 
 var Header = React.createClass({
+
     getInitialState: function() {
         return {
             memoSearcherActive: false,
@@ -41,14 +43,14 @@ var Header = React.createClass({
             <div id="header">
                 <div className="header-left">
                     <div id="logo-icon">
-                        <img src="./libs/logo.svg" />
+                        <img src="./logo.svg" />
                     </div>
                     <a id="logo">memongade</a>
                 </div>
                 <div className="header-right" >
                     <Exporter handleExport={this._handleExport}  />
                     <MemoSearcher />
-                    <Login />
+                    {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
                 <NoteLoader />
             </div>

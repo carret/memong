@@ -1,6 +1,6 @@
 var React = require('react');
-var MemoStore = require('../../stores/MemoStore');
-var MemoTypeConstants = require('../../constants/MemoTypeConstants');
+var NoteStore = require('../../stores/NoteStore');
+var Constants = require('../../constants/Constants');
 var _ = require('underscore');
 
 var MemoItem = require('./MemoItem');
@@ -9,7 +9,7 @@ var EditMemoItem = require('./EditMemoItem');
 
 function getMemos() {
     return {
-        memos: MemoStore.getMemo()
+        memos: NoteStore.getMemo()
     };
 }
 
@@ -19,11 +19,11 @@ var MemoViewer = React.createClass({
     },
 
     componentDidMount: function() {
-        MemoStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
+        NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
     componentWillUnmount: function() {
-        MemoStore.removeChangeListener(this._onChange); //Listener 삭제
+        NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
     _onChange: function() {
@@ -32,15 +32,15 @@ var MemoViewer = React.createClass({
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            switch (memo.type) {
-                case MemoTypeConstants.COMPLETE_MEMO:
-                    return <MemoItem memo={memo} key={memo.id} />;
+            switch (memo.mtype) {
+                case Constants.MemoType.COMPLETE_MEMO:
+                    return <MemoItem memo={memo} key={memo.key} />;
 
-                case MemoTypeConstants.NONE_MEMO:
-                    return <MemoItem memo={memo} key={memo.id} />;
+                case Constants.MemoType.NONE_MEMO:
+                    return <MemoItem memo={memo} key={memo.key} />;
 
-                case MemoTypeConstants.EDIT_MEMO:
-                    return <EditMemoItem memo={memo} key={memo.id} />;
+                case Constants.MemoType.EDIT_MEMO:
+                    return <EditMemoItem memo={memo} key={memo.key} />;
             }
         });
 
