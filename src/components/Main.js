@@ -20,6 +20,7 @@ var Main = React.createClass({
         }
     },
 
+
     componentDidMount: function() {
         AsideDOM = $(React.findDOMNode(this.refs._aside));
         SectionDOM = $(React.findDOMNode(this.refs._section));
@@ -29,9 +30,11 @@ var Main = React.createClass({
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
+            console.log('login');
             this.setState({isLogin:true})
         }
         else {
+            console.log('not login');
             this.setState({isLogin:false})
         }
 
@@ -68,26 +71,24 @@ var Main = React.createClass({
     },
 
     render: function() {
+        console.log(this.props.isLogin);
+        var item = (this.props.isLogin) ?
+            (<div>
+                <div ref="_aside" id="aside">
+                    <DirectoryViewer />
+                    <MemoViewer />
+                </div>
+                <div ref="_section" id="section">
+                    <NoteHeader toggleAsideVisible={this._toggleAside} asideVisible={this.state.asideVisible} />
+                    <Editor />
+                </div>
+            </div>)
+            :
+            (<div>memong은 클라우드 기반 다크다운 메모장입니다.</div>);
+
         return(
             <div ref="_main" id="main">
-            {
-                this.state.isLogin ?
-                (
-                <div>
-                    <div ref="_aside" id="aside">
-                        <DirectoryViewer />
-                        <MemoViewer />
-                    </div>
-                    <div ref="_section" id="section">
-                        <NoteHeader toggleAsideVisible={this._toggleAside} asideVisible={this.state.asideVisible} />
-                        <Editor />
-                    </div>
-                </div>
-                )
-            :
-                <div>memong은 클라우드 기반 다크다운 메모장입니다.</div>
-            }
-
+                {item}
             </div>
         );
     }

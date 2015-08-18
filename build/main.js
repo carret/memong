@@ -59818,6 +59818,7 @@ var Main = React.createClass({displayName: "Main",
         }
     },
 
+
     componentDidMount: function() {
         AsideDOM = $(React.findDOMNode(this.refs._aside));
         SectionDOM = $(React.findDOMNode(this.refs._section));
@@ -59827,9 +59828,11 @@ var Main = React.createClass({displayName: "Main",
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
+            console.log('login');
             this.setState({isLogin:true})
         }
         else {
+            console.log('not login');
             this.setState({isLogin:false})
         }
 
@@ -59866,26 +59869,24 @@ var Main = React.createClass({displayName: "Main",
     },
 
     render: function() {
+        console.log(this.props.isLogin);
+        var item = (this.props.isLogin) ?
+            (React.createElement("div", null, 
+                React.createElement("div", {ref: "_aside", id: "aside"}, 
+                    React.createElement(DirectoryViewer, null), 
+                    React.createElement(MemoViewer, null)
+                ), 
+                React.createElement("div", {ref: "_section", id: "section"}, 
+                    React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
+                    React.createElement(Editor, null)
+                )
+            ))
+            :
+            (React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다."));
+
         return(
             React.createElement("div", {ref: "_main", id: "main"}, 
-            
-                this.state.isLogin ?
-                (
-                React.createElement("div", null, 
-                    React.createElement("div", {ref: "_aside", id: "aside"}, 
-                        React.createElement(DirectoryViewer, null), 
-                        React.createElement(MemoViewer, null)
-                    ), 
-                    React.createElement("div", {ref: "_section", id: "section"}, 
-                        React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
-                        React.createElement(Editor, null)
-                    )
-                )
-                )
-            :
-                React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다.")
-            
-
+                item
             )
         );
     }
