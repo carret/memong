@@ -43,7 +43,7 @@ var Header = React.createClass({
             <div id="header">
                 <div className="header-left">
                     <div id="logo-icon">
-                        <img src="./libs/logo.svg" />
+                        <img src="./logo.svg" />
                     </div>
                     <a id="logo">memongade</a>
                 </div>

@@ -1,7 +1,6 @@
 node_modules/
 .idea/
-build/main.js
-build/css/main.css
+build/
 .DS_Store*
 ehthumbs.db
 Icon?
