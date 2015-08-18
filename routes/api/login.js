@@ -59,16 +59,16 @@ exports.doRoutes = function(app) {
         console.log('write cookie');
         res.cookie('username', req.session.passport.user.email, {
             expires:new Date(Date.now()+9999999999),
-            httpOnly:true,
+            //httpOnly:true,
             signed:true
         });
         res.cookie('token', req.session.passport.user.token, {
             expires:new Date(Date.now()+9999999999),
-            httpOnly:true
+            //httpOnly:true
         });
         res.cookie('servicetype', req.session.passport.user.servicetype, {
             expires:new Date(Date.now()+9999999999),
-            httpOnly:true,
+            //httpOnly:true,
             signed:true
         });
 
@@ -101,7 +101,7 @@ exports.doRoutes = function(app) {
                         }else{
                             console.log("Successfully updated");
                         }
-                        res.end();
+                        next();
                     });
 
                     //User.update({username:req.session.passport.user.email},{$set: {token:{token:req.signedCookies.token}}});
@@ -148,7 +148,7 @@ exports.doRoutes = function(app) {
                     })
                 }
             },
-            function(userId, newNoteId) {
+            function(userId, newNoteId, callback) {
                 User.findOneAndUpdate(
                     {_id: mongoose.Types.ObjectId(userId)},
                     {$set: {selectNoteId: mongoose.Types.ObjectId(newNoteId)}},
@@ -161,7 +161,7 @@ exports.doRoutes = function(app) {
                         else {
                             console.log("새로운 노트: \n"+result);
                             //res.end();
-                            next();
+                            callback();
                         }
                     }
                 )
