@@ -1,8 +1,6 @@
 node_modules/
-.idea/workspace.xml
 .idea/
-build/main.js
-build/css/main.css
+build/
 .DS_Store*
 ehthumbs.db
 Icon?
