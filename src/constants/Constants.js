@@ -15,8 +15,12 @@ module.exports = {
         // 나머지...
     },
 
-
     // ActionTypes
+
+    AccountActionTypes : keyMirror({
+        REQUEST_ACCOUNT : null
+    }),
+
     NoteActionTypes: keyMirror({
         REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
@@ -30,6 +34,7 @@ module.exports = {
     MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
+        ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
         END_EDIT_MEMO: null

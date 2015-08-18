@@ -51,6 +51,19 @@ function addMemo(_targetEditMemo, _context) {
     }
 }
 
+function addNewMemo(_targetEditMemo, _context) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    var newMemo = _.extend({}, {
+        text: _context
+    });
+    var _newMemos = _parseMemo(newMemo);
+    var len = _newMemos.length;
+
+    for (var idx=0; idx<len; idx++) {
+        memos.splice(index+idx+1, 0, _newMemos[idx]);
+    }
+}
+
 function deleteMemo(_targetMemo) {
     var index = _indexOf(memos, _targetMemo.key, "key");
     memos.splice(index, 1);
@@ -233,6 +246,11 @@ AppDispatcher.register(function(payload) {
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
             NoteStore.emitAutoSaveRequest();
+            break;
+
+        case Constants.MemoActionTypes.ADD_NEW_MEMO:
+            addNewMemo(action.targetEditMemo, action.context);
+            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:

@@ -20,10 +20,21 @@ var CompleteMemo = React.createClass({
     render: function() {
         var context = md.render(this.props.memo.text);
         return (
-            <div className="complete-memo" onClick={this.startEditMemo} >
-                <div dangerouslySetInnerHTML={{__html: context}} />
+            <div className="complete-memo" >
+                <div className="complete-memo-inner" onClick={this.startEditMemo}>
+                    <div dangerouslySetInnerHTML={{__html: context}} />
+                </div>
+                <div className="toolbar">
+                    <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>
+                    <span onClick={this._handleAddMemo}>새로운 메모 추가하기</span>
+                </div>
             </div>
         );
+    },
+
+    _handleAddMemo: function() {
+        var newMemoContext = "# 새로운 메모\n이 메모를 클릭하여 편집하세요.";
+        MemoActionCreator.addNewMemo(this.props.memo, newMemoContext);
     }
 });
 

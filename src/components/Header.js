@@ -8,13 +8,6 @@ var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
 
-var loginButton;
-
-if ( cookie.load('username') != null )
-    loginButton = <Logout />
-else
-    loginButton = <Login />
-
 var Header = React.createClass({
 
     getInitialState: function() {
@@ -57,7 +50,7 @@ var Header = React.createClass({
                 <div className="header-right" >
                     <Exporter handleExport={this._handleExport}  />
                     <MemoSearcher />
-                    {loginButton}
+                    {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
                 <NoteLoader />
             </div>

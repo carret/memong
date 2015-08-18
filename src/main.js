@@ -15,13 +15,13 @@ var cookie = require('react-cookie');
 
 
 WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
-console.log(cookie.load('token'));
+var LoginState = (cookie.load('username') == null) ? false : true;
 
 
 React.render(
     <div id="app-inner">
-        <Header />
-        <Main />
+        <Header isLogin={LoginState} />
+        <Main isLogin={LoginState} />
     </div>,
     document.getElementById('app')
 );

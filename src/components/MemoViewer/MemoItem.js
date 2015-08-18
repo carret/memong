@@ -32,6 +32,15 @@ var DialogContent = React.createClass({
         }
     },
 
+    componentDidMount: function() {
+        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
+            event.preventDefault();
+            if (event.keyCode == 13) {
+                this.props.deleteItem();
+            }
+        });
+    },
+
     _deleteItem: function() {
         this.props.deleteItem();
         this.props.handleClose();
@@ -39,7 +48,7 @@ var DialogContent = React.createClass({
 
     render : function() {
         return (
-            <div>
+            <div ref="_dialog">
                 <div className="memoDeleteDialog-text"><span>정말로 삭제하시겠습니까?</span></div>
                 <div className="memoDeleteDialog-btnMenu">
                     <button onClick={this._deleteItem} >예</button>

@@ -16,7 +16,6 @@ var WebGetUtils = {
 
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
-
                 }
                 else {
                     // Show Notification

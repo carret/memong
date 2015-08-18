@@ -788,26 +788,63 @@ html, body {
 
 
                 .complete-memo {
-                    padding: .5rem;
-                    background-color: #DEDEDE;
-
-                    margin-top: 1.5rem;
+                    margin-top: 2.5rem;
                     margin-bottom: 1.5rem;
-                    padding: 0 1rem;
-                    border: 1px solid @color-grey-300;
 
-                    will-change: opacity;
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: -moz-box;
+                    display: -ms-flexbox;
+                    display: flex;
 
-                    -webkit-transition: opacity .2s ease;
-                    -moz-transition: opacity .2s ease;
-                    -ms-transition: opacity .2s ease;
-                    -o-transition: opacity .2s ease;
-                    transition: opacity .2s ease;
+                    -webkit-box-orient: vertical;
+                    -webkit-box-direction: normal;
+                    -webkit-flex-direction: column;
+                    -moz-box-orient: vertical;
+                    -moz-box-direction: normal;
+                    -ms-flex-direction: column;
+                    flex-direction: column;
 
-                    cursor: pointer;
+                    .complete-memo-inner {
+                        padding: 0 1rem;
+                        background-color: #DEDEDE;
+                        border: 1px solid @color-grey-300;
 
-                    &:hover {
-                        opacity: .8;
+                        will-change: opacity;
+
+                        -webkit-transition: opacity .2s ease;
+                        -moz-transition: opacity .2s ease;
+                        -ms-transition: opacity .2s ease;
+                        -o-transition: opacity .2s ease;
+                        transition: opacity .2s ease;
+
+                        cursor: pointer;
+
+                        &:hover {
+                            opacity: .8;
+                        }
+                    }
+
+                    .toolbar {
+                        margin-top: .75rem;
+
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: -moz-box;
+                        display: -ms-flexbox;
+                        display: flex;
+
+                        color: @color-teal-500;
+
+                        i {
+                            cursor: pointer;
+                            margin-right: .5rem;
+                        }
+                        span {
+                            cursor: pointer;
+
+                            &:hover { text-decoration: underline; }
+                        }
                     }
                 }
 
@@ -852,6 +889,27 @@ html, body {
                         outline: none;
                         border: none;
                         box-shadow: none;
+                    }
+                }
+
+                .none-memo {
+                    padding: 0 1rem;
+                    padding-top: 1.8rem;
+                    background-color: #DEDEDE;
+                    border: 1px solid @color-grey-300;
+
+                    will-change: opacity;
+
+                    -webkit-transition: opacity .2s ease;
+                    -moz-transition: opacity .2s ease;
+                    -ms-transition: opacity .2s ease;
+                    -o-transition: opacity .2s ease;
+                    transition: opacity .2s ease;
+
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: .8;
                     }
                 }
             }

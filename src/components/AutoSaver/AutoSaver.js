@@ -48,13 +48,12 @@ var AutoSaver = React.createClass({
             this.setState({ status: Constants.AutoSaverStatusType.SAVING }, function() {
                 setTimeout(function() {
                     AutoSaveActionCreator.requestAutoSave(NoteStore.getNoteID(), NoteStore.getMemo());
-                }, 1500);
+                }, 2000);
             });
         }
     },
 
     _onReceive: function() {
-        console.log("hey");
         this.setState({
             status: Constants.AutoSaverStatusType.COMPLETE
         });
