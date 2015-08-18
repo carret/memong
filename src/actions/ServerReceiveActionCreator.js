@@ -30,9 +30,9 @@ var ServerReceiveActionCreator = {
         });
     },
 
-    receiveMemoSaveComplete: function() {
+    receiveAutoSaveComplete: function() {
         AppDispatcher.handleServerAction({
-            actionType: Constants.MemoActionTypes.RECEIVE_SAVE
+            actionType: Constants.AutoSaveActionTypes.RECEIVE_SAVE
         });
     }
 };

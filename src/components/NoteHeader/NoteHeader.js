@@ -1,5 +1,7 @@
 var React = require('react');
 
+var AutoSaver = require('../AutoSaver/AutoSaver');
+
 var NoteStore = require('../../stores/NoteStore');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
@@ -31,6 +33,7 @@ var NoteHeader = React.createClass({
             <div id="note-header">
                 <ToggleAsideButton toggleAsideVisible={this.props.toggleAsideVisible} asideVisible={this.props.asideVisible} />
                 <span className="title">{this.state.noteTitle}</span>
+                <AutoSaver />
                 <div className="menu">
                 </div>
             </div>

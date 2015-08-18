@@ -13,22 +13,18 @@ module.exports = {
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory"
         // 나머지...
-    },
-
-    // ActionTypes
-
-    AccountActionTypes : keyMirror({
-        REQUEST_ACCOUNT : null
-    }),
 
     NoteActionTypes: keyMirror({
         REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
     }),
 
-    MemoActionTypes: keyMirror({
+    AutoSaveActionTypes: keyMirror({
         REQUEST_SAVE: null,
-        RECEIVE_SAVE: null,
+        RECEIVE_SAVE: null
+    }),
+
+    MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
         DELETE_MEMO: null,

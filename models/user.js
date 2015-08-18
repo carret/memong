@@ -9,14 +9,13 @@ var User = {
         type : String,
         required:true
     },
+    selectNoteId: {
+        type: Object
+    },
     servicetype:{
         type:String,
         required:true
     },
-    selecNote: {
-
-    },
-
     category : [
         {
             /* file && note categories */

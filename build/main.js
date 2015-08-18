@@ -59114,10 +59114,52 @@ module.exports = function(arr, fn, initial){
 }.call(this));
 
 },{}],435:[function(require,module,exports){
+<<<<<<< HEAD
+=======
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
+
+
+var AutoSaveActionCreator = {
+    requestAutoSave: function(_selectNoteId, _memos) {
+        AppDispatcher.handleAutoSaveAction({
+            actionType: Constants.AutoSaveActionTypes.REQUEST_SAVE
+        });
+        console.log("requestAutoSave");
+        WebPostUtils.postNoteWithMemo(_selectNoteId, _memos);
+    }
+};
+
+module.exports = AutoSaveActionCreator;
+
+},{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"../utils/WebGetUtils":463,"../utils/WebPostUtils":464}],436:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var Constants = require('../constants/Constants');
+
+var WebGetUtils = require('../utils/WebGetUtils');
+
+
+var DirectoryActionCreator = {
+    requestDirectory: function() {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.NoteActionTypes.REQUEST_NOTE
+        });
+        WebGetUtils.getDirectory();
+    }
+};
+
+module.exports = DirectoryActionCreator;
+
+},{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"../utils/WebGetUtils":463}],437:[function(require,module,exports){
+>>>>>>> seokju
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var Constants = require('../constants/Constants');
+
+var WebGetUtils = require('../utils/WebGetUtils');
+var WebPostUtils = require('../utils/WebPostUtils');
 
 
 var DirectoryActionCreator = {
@@ -59179,7 +59221,11 @@ var MemoActionCreator = {
 
 module.exports = MemoActionCreator;
 
+<<<<<<< HEAD
 },{"../constants/Constants":457,"../dispatcher/AppDispatcher":458,"../utils/WebGetUtils":461,"../utils/WebPostUtils":462}],437:[function(require,module,exports){
+=======
+},{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"../utils/WebGetUtils":463,"../utils/WebPostUtils":464}],438:[function(require,module,exports){
+>>>>>>> seokju
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -59212,16 +59258,26 @@ var ServerReceiveActionCreator = {
         });
     },
 
+<<<<<<< HEAD
     receiveMemoSaveComplete: function() {
         AppDispatcher.handleServerAction({
             actionType: Constants.MemoActionTypes.RECEIVE_SAVE
+=======
+    receiveAutoSaveComplete: function() {
+        AppDispatcher.handleServerAction({
+            actionType: Constants.AutoSaveActionTypes.RECEIVE_SAVE
+>>>>>>> seokju
         });
     }
 };
 
 module.exports = ServerReceiveActionCreator;
 
+<<<<<<< HEAD
 },{"../constants/Constants":457,"../dispatcher/AppDispatcher":458}],438:[function(require,module,exports){
+=======
+},{"../constants/Constants":459,"../dispatcher/AppDispatcher":460}],439:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -59286,7 +59342,11 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 
 module.exports = LoginBtn;
 
+<<<<<<< HEAD
 },{"rc-dialog":174,"react":367}],439:[function(require,module,exports){
+=======
+},{"rc-dialog":174,"react":367}],440:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 //var Logout = React.createClass({
@@ -59307,12 +59367,87 @@ var Logout = React.createClass({displayName: "Logout",
         return (
             React.createElement("a", {href: "/logout"}, "로그아웃")
         )
+<<<<<<< HEAD
     }
 })
 
 module.exports = Logout;
 
 },{"react":367}],440:[function(require,module,exports){
+=======
+    }
+})
+
+module.exports = Logout;
+
+},{"react":367}],441:[function(require,module,exports){
+var React = require('react');
+
+var AutoSaveActionCreator = require('../../actions/AutoSaveActionCreator');
+var NoteStore = require('../../stores/NoteStore');
+var Constants = require('../../constants/Constants');
+
+
+var AutoSaver = React.createClass({displayName: "AutoSaver",
+    getInitialState: function() {
+        return {
+            status: Constants.AutoSaverStatusType.COMPLETE
+        };
+    },
+
+    componentDidMount: function() {
+        NoteStore.addAutoSaveRequestListener(this._onRequest);
+        NoteStore.addAutoSaveReceiveListener(this._onReceive);
+    },
+
+    componentWillUnmount: function() {
+        NoteStore.removeAutoSaveRequestListener(this._onRequest);
+        NoteStore.removeAutoSaveReceiveListener(this._onReceive);
+    },
+
+    render: function() {
+        var statusMessage;
+
+        switch(this.state.status) {
+            case Constants.AutoSaverStatusType.COMPLETE:
+                statusMessage = "저장됨";
+                break;
+
+            case Constants.AutoSaverStatusType.SAVING:
+                statusMessage = "저장중...";
+                break;
+        }
+
+        return (
+            React.createElement("span", {className: "auto-saver"}, statusMessage)
+        );
+    },
+
+    _onRequest: function() {
+        if (this.state.status == Constants.AutoSaverStatusType.SAVING) {
+            return ;
+        }
+        else {
+            this.setState({ status: Constants.AutoSaverStatusType.SAVING }, function() {
+                setTimeout(function() {
+                    AutoSaveActionCreator.requestAutoSave(NoteStore.getNoteID(), NoteStore.getMemo());
+                }, 1500);
+            });
+        }
+    },
+
+    _onReceive: function() {
+        console.log("hey");
+        this.setState({
+            status: Constants.AutoSaverStatusType.COMPLETE
+        });
+    }
+});
+
+module.exports = AutoSaver;
+
+},{"../../actions/AutoSaveActionCreator":435,"../../constants/Constants":459,"../../stores/NoteStore":462,"react":367}],442:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
@@ -59328,7 +59463,11 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
+<<<<<<< HEAD
 },{"react":367}],441:[function(require,module,exports){
+=======
+},{"react":367}],443:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -59349,7 +59488,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             React.createElement("div", {className: "complete-memo", onClick: this.startEditMemo}, 
                 React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
@@ -59360,7 +59499,11 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
+<<<<<<< HEAD
 },{"../../actions/MemoActionCreator":436,"react":367,"remarkable":368}],442:[function(require,module,exports){
+=======
+},{"../../actions/MemoActionCreator":437,"react":367,"remarkable":368}],444:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -59376,99 +59519,61 @@ var regEx = /^[^#\s]?(#)[ \t].+/gm;
 var matches = new Array();
 
 var EditMemo = React.createClass({displayName: "EditMemo",
-    propTypes: {
-        scrolltoTarget: React.PropTypes.func.isRequired
-    },
-
     getInitialState: function() {
         return {
-            value: this.props.memo.value,
-            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
+            text: this.props.memo.text
         };
     },
 
     componentDidMount: function() {
-        var value = this.props.memo.value;
+        var text = this.props.memo.text;
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = value.length;
-        TextareaDOM.selectionEnd = value.length;
-        var offset = $(TextareaDOM).offset();
+        TextareaDOM.selectionStart = text.length;
+        TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
-        this.props.scrolltoTarget(offset.top);
-    },
 
-    _handleValueInput: function(_value) {
-        this.setState({value: _value});
-    },
+        $(TextareaDOM).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                var text = $(TextareaDOM).val();
+                matches = text.match(regEx);
 
-    _handleKeyInput: function(event) {
-        if (event.keyCode === 13) {
-            var value = this.state.value;
-            matches = value.match(regEx);
+                if (matches != undefined) {
+                    if (matches.length >= 2) {
+                        var result;
+                        var updateValue;
 
-            if (matches != undefined) {
-                if (matches.length >= 2) {
-                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
-                        TextareaDOM.blur();
-                    });
+                        var _arr;
+                        var index = new Array();
+                        while ((_arr = regEx.exec(text)) !== null) {
+                            index.push(_arr.index);
+                        }
+                        var len = index.length;
+
+                        result = text.slice(0, index[len-1]);
+                        updateValue = text.slice(index[len-1], text.length);
+
+                        MemoActionCreator.addMemo(this.props.memo, result);
+                        $(TextareaDOM).val(updateValue);
+                        TextareaDOM.focus();
+                    }
                 }
             }
-        }
-        if (event.keyCode === 9) {
-            event.preventDefault();
-            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
-                TextareaDOM.blur();
-            });
-        }
-    },
-
-    _handleAction: function() {
-        var value = this.state.value;
-        var result = "";
-        var updateValue = "";
-
-        switch(this.state.actionType) {
-            case Constants.MemoActionTypes.END_EDIT_MEMO :
-                result = value;
+            if (event.keyCode == 9) {
+                var text = $(TextareaDOM).val();
+                var result = text;
                 MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
-                    value: result
+                    text: result
                 }));
-                break;
-
-            case Constants.MemoActionTypes.ADD_MEMO :
-                var _arr;
-                var index = new Array();
-                while ((_arr = regEx.exec(value)) !== null) {
-                    index.push(_arr.index);
-                }
-                var len = index.length;
-
-                result = value.slice(0, index[len-1]);
-                updateValue = value.slice(index[len-1], value.length);
-                this.setState({
-                    value: updateValue,
-                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
-                });
-
-                MemoActionCreator.addMemo(this.props.memo, result);
-                TextareaDOM.focus();
-                break;
-        }
+            }
+        }.bind(this))
     },
 
     render: function () {
-        var valueLink = {
-            value: this.state.value,
-            requestChange: this._handleValueInput
-        };
-
         return (
             React.createElement("div", {className: "edit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
                           className: "edit-memo-textarea", 
-                          valueLink: valueLink, 
-                          onKeyDown: this._handleKeyInput, 
-                          onBlur: this._handleAction}
+                          defaultValue: this.props.memo.text}
                     )
             )
         );
@@ -59478,7 +59583,11 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
+<<<<<<< HEAD
 },{"../../actions/MemoActionCreator":436,"../../constants/Constants":457,"react":367,"react-textarea-autosize":206,"underscore":434}],443:[function(require,module,exports){
+=======
+},{"../../actions/MemoActionCreator":437,"../../constants/Constants":459,"react":367,"react-textarea-autosize":206,"underscore":434}],445:[function(require,module,exports){
+>>>>>>> seokju
 //Component Type: Controll View
 
 var React = require('react');
@@ -59507,7 +59616,6 @@ var Editor = React.createClass({displayName: "Editor",
 
     componentDidMount: function() {
         EditorDOM = $(React.findDOMNode(this.refs._editor));
-
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -59515,30 +59623,22 @@ var Editor = React.createClass({displayName: "Editor",
         NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
-    _preventFocusScroll: function(position) {
-        EditorDOM.scrollTop(position);
-    },
-
-    _scrolltoTarget: function(targetTop) {
-        console.log(targetTop);
-        console.log(EditorDOM.scrollTop());
-    },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            var type = memo.type;
+            var type = memo.mtype;
             switch(type) {
                 case Constants.MemoType.COMPLETE_MEMO :
                     return React.createElement(CompleteMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return React.createElement(EditMemo, {memo: memo, key: memo.key, scrolltoTarget: this._scrolltoTarget});
+                    return React.createElement(EditMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.NONE_MEMO :
                     return React.createElement(NoneMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.key, scrolltoTarget: this._scrolltoTarget});
+                    return React.createElement(GlobalEditMemo, {memo: memo, key: memo.key});
             }
         }.bind(this));
 
@@ -59549,12 +59649,17 @@ var Editor = React.createClass({displayName: "Editor",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+        console.log(this.state.memos);
     }
 });
 
 module.exports = Editor;
 
+<<<<<<< HEAD
 },{"../../constants/Constants":457,"../../stores/NoteStore":460,"./CompleteMemo":441,"./EditMemo":442,"./GlobalEditMemo":444,"./NoneMemo":445,"react":367,"underscore":434}],444:[function(require,module,exports){
+=======
+},{"../../constants/Constants":459,"../../stores/NoteStore":462,"./CompleteMemo":443,"./EditMemo":444,"./GlobalEditMemo":446,"./NoneMemo":447,"react":367,"underscore":434}],446:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -59572,94 +59677,66 @@ var matches = new Array();
 var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     getInitialState: function() {
         return {
-            value: this.props.memo.value,
-            actionType: Constants.MemoActionTypes.END_EDIT_MEMO
+            text: this.props.memo.text
         };
     },
 
     componentDidMount: function() {
-        var value = this.props.memo.value;
+        var text = this.props.memo.text;
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = value.length;
-        TextareaDOM.selectionEnd = value.length;
+        TextareaDOM.selectionStart = text.length;
+        TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
-    },
 
-    _handleValueInput: function(_value) {
-        this.setState({value: _value});
-    },
+        $(TextareaDOM).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                var text = $(TextareaDOM).val();
+                matches = text.match(regEx);
 
-    _handleKeyInput: function(event) {
-        if (event.keyCode === 13) {
-            var value = this.state.value;
-            matches = value.match(regEx);
+                if (matches != undefined) {
+                    if (matches.length >= 2) {
+                        var result;
+                        var updateValue;
 
-            if (matches != undefined) {
-                if (matches.length >= 2) {
-                    this.setState({actionType: Constants.MemoActionTypes.ADD_MEMO}, function () {
-                        TextareaDOM.blur();
-                    });
+                        var _arr;
+                        var index = new Array();
+                        while ((_arr = regEx.exec(text)) !== null) {
+                            index.push(_arr.index);
+                        }
+                        var len = index.length;
+
+                        result = text.slice(0, index[len-1]);
+                        updateValue = text.slice(index[len-1], text.length);
+
+                        MemoActionCreator.addMemo(this.props.memo, result);
+                        $(TextareaDOM).val(updateValue);
+                        TextareaDOM.focus();
+                    }
                 }
             }
-        }
-        if (event.keyCode === 9) {
-            event.preventDefault();
-            this.setState({actionType: Constants.MemoActionTypes.END_EDIT_MEMO}, function() {
-                TextareaDOM.blur();
-            });
-        }
-    },
-
-    _handleAction: function() {
-        var value = this.state.value;
-        var result = "";
-        var updateValue = "";
-
-        switch(this.state.actionType) {
-            case Constants.MemoActionTypes.END_EDIT_MEMO :
-                if (value == "") {
+            if (event.keyCode === 9) {
+                var text = $(TextareaDOM).val();
+                if (text == "") {
                     return;
                 }
-                result = value;
-                this.setState({value: ""});
-                break;
-
-            case Constants.MemoActionTypes.ADD_MEMO :
-                var _arr;
-                var index = new Array();
-                while ((_arr = regEx.exec(value)) !== null) {
-                    index.push(_arr.index);
+                else {
+                    var result = text;
+                    MemoActionCreator.addMemo(_.extend(this.props.memo, {
+                        text: ""
+                    }), result);
+                    $(TextareaDOM).val("");
+                    TextareaDOM.focus();
                 }
-                var len = index.length;
-
-                result = value.slice(0, index[len-1]);
-                updateValue = value.slice(index[len-1], value.length);
-                this.setState({
-                    value: updateValue,
-                    actionType: Constants.MemoActionTypes.END_EDIT_MEMO
-                });
-                break;
-        }
-
-        MemoActionCreator.addMemo(_.extend(this.props.memo, {
-            value: updateValue
-        }), result);
-        TextareaDOM.focus();
+            }
+        }.bind(this));
     },
 
     render: function() {
-        var valueLink = {
-            value: this.state.value,
-            requestChange: this._handleValueInput
-        };
         return(
             React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
                           minRows: 25, 
-                          className: "global-edit-memo-textarea", 
-                          valueLink: valueLink, 
-                          onKeyDown: this._handleKeyInput, 
-                          onBlur: this._handleAction}
+                          className: "global-edit-memo-textarea"}
                     )
             )
         );
@@ -59668,7 +59745,11 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
+<<<<<<< HEAD
 },{"../../actions/MemoActionCreator":436,"../../constants/Constants":457,"react":367,"react-textarea-autosize":206,"underscore":434}],445:[function(require,module,exports){
+=======
+},{"../../actions/MemoActionCreator":437,"../../constants/Constants":459,"react":367,"react-textarea-autosize":206,"underscore":434}],447:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -59689,7 +59770,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
     },
 
     render: function() {
-        var context = md.render(this.props.memo.value);
+        var context = md.render(this.props.memo.text);
         return (
             React.createElement("div", {className: "none-memo", onClick: this.startEditMemo}, 
                 React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
@@ -59700,7 +59781,11 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
+<<<<<<< HEAD
 },{"../../actions/MemoActionCreator":436,"react":367,"remarkable":368}],446:[function(require,module,exports){
+=======
+},{"../../actions/MemoActionCreator":437,"react":367,"remarkable":368}],448:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -59717,7 +59802,11 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
+<<<<<<< HEAD
 },{"react":367}],447:[function(require,module,exports){
+=======
+},{"react":367}],449:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -59727,6 +59816,16 @@ var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
+<<<<<<< HEAD
+=======
+
+var loginButton;
+
+if ( cookie.load('username') != null )
+    loginButton = React.createElement(Logout, null)
+else
+    loginButton = React.createElement(Login, null)
+>>>>>>> seokju
 
 var Header = React.createClass({displayName: "Header",
 
@@ -59780,7 +59879,11 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("div", {className: "header-right"}, 
                     React.createElement(Exporter, {handleExport: this._handleExport}), 
                     React.createElement(MemoSearcher, null), 
+<<<<<<< HEAD
                     this.state.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
+=======
+                    loginButton
+>>>>>>> seokju
                 ), 
                 React.createElement(NoteLoader, null)
             )
@@ -59790,7 +59893,11 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
+<<<<<<< HEAD
 },{"./Account/Login":438,"./Account/Logout":439,"./Exporter/Exporter":446,"./MemoSearcher/MemoSearcher":449,"./NoteLoader/NoteLoader":456,"react":367,"react-cookie":204}],448:[function(require,module,exports){
+=======
+},{"./Account/Login":439,"./Account/Logout":440,"./Exporter/Exporter":448,"./MemoSearcher/MemoSearcher":451,"./NoteLoader/NoteLoader":458,"react":367,"react-cookie":204}],450:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -59822,9 +59929,17 @@ var Main = React.createClass({displayName: "Main",
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
+<<<<<<< HEAD
             this.setState({isLogin:true})
         }
         else {
+=======
+            console.log('login');
+            this.setState({isLogin:true})
+        }
+        else {
+            console.log('not login');
+>>>>>>> seokju
             this.setState({isLogin:false})
         }
 
@@ -59875,8 +59990,13 @@ var Main = React.createClass({displayName: "Main",
                         React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
                         React.createElement(Editor, null)
                     )
+<<<<<<< HEAD
                 )
                 )
+=======
+                )
+                )
+>>>>>>> seokju
             :
                 React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다.")
             
@@ -59888,7 +60008,11 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
+<<<<<<< HEAD
 },{"./DirectoryViewer/DirectoryViewer":440,"./Editor/Editor":443,"./MemoViewer/MemoViewer":453,"./NoteHeader/NoteHeader":454,"react":367,"react-cookie":204}],449:[function(require,module,exports){
+=======
+},{"./DirectoryViewer/DirectoryViewer":442,"./Editor/Editor":445,"./MemoViewer/MemoViewer":455,"./NoteHeader/NoteHeader":456,"react":367,"react-cookie":204}],451:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -59935,7 +60059,11 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
+<<<<<<< HEAD
 },{"./utils":450,"react":367,"react-autosuggest":199}],450:[function(require,module,exports){
+=======
+},{"./utils":452,"react":367,"react-autosuggest":199}],452:[function(require,module,exports){
+>>>>>>> seokju
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -59945,7 +60073,11 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
+<<<<<<< HEAD
 },{}],451:[function(require,module,exports){
+=======
+},{}],453:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -59962,7 +60094,11 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
+<<<<<<< HEAD
 },{"react":367}],452:[function(require,module,exports){
+=======
+},{"react":367}],454:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 
@@ -59989,7 +60125,11 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
+<<<<<<< HEAD
 },{"../../actions/MemoActionCreator":436,"react":367}],453:[function(require,module,exports){
+=======
+},{"../../actions/MemoActionCreator":437,"react":367}],455:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -60024,7 +60164,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
-            switch (memo.type) {
+            switch (memo.mtype) {
                 case Constants.MemoType.COMPLETE_MEMO:
                     return React.createElement(MemoItem, {memo: memo, key: memo.key});
 
@@ -60054,9 +60194,17 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
+<<<<<<< HEAD
 },{"../../constants/Constants":457,"../../stores/NoteStore":460,"./EditMemoItem":451,"./MemoItem":452,"react":367,"underscore":434}],454:[function(require,module,exports){
 var React = require('react');
 
+=======
+},{"../../constants/Constants":459,"../../stores/NoteStore":462,"./EditMemoItem":453,"./MemoItem":454,"react":367,"underscore":434}],456:[function(require,module,exports){
+var React = require('react');
+
+var AutoSaver = require('../AutoSaver/AutoSaver');
+
+>>>>>>> seokju
 var NoteStore = require('../../stores/NoteStore');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
@@ -60088,6 +60236,10 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
             React.createElement("div", {id: "note-header"}, 
                 React.createElement(ToggleAsideButton, {toggleAsideVisible: this.props.toggleAsideVisible, asideVisible: this.props.asideVisible}), 
                 React.createElement("span", {className: "title"}, this.state.noteTitle), 
+<<<<<<< HEAD
+=======
+                React.createElement(AutoSaver, null), 
+>>>>>>> seokju
                 React.createElement("div", {className: "menu"}
                 )
             )
@@ -60102,7 +60254,11 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
+<<<<<<< HEAD
 },{"../../stores/NoteStore":460,"./ToggleAsideButton":455,"react":367}],455:[function(require,module,exports){
+=======
+},{"../../stores/NoteStore":462,"../AutoSaver/AutoSaver":441,"./ToggleAsideButton":457,"react":367}],457:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -60119,7 +60275,11 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
+<<<<<<< HEAD
 },{"react":367}],456:[function(require,module,exports){
+=======
+},{"react":367}],458:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -60132,7 +60292,11 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
+<<<<<<< HEAD
 },{"react":367}],457:[function(require,module,exports){
+=======
+},{"react":367}],459:[function(require,module,exports){
+>>>>>>> seokju
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -60148,6 +60312,7 @@ module.exports = {
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory"
         // 나머지...
+<<<<<<< HEAD
     },
 
     // ActionTypes
@@ -60156,9 +60321,19 @@ module.exports = {
         REQUEST_ACCOUNT : null
     }),
 
+=======
+
+    },
+
+>>>>>>> seokju
     NoteActionTypes: keyMirror({
         REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
+    }),
+
+    AutoSaveActionTypes: keyMirror({
+        REQUEST_SAVE: null,
+        RECEIVE_SAVE: null
     }),
 
     MemoActionTypes: keyMirror({
@@ -60205,7 +60380,11 @@ module.exports = {
     })
 };
 
+<<<<<<< HEAD
 },{"react/lib/keyMirror":352}],458:[function(require,module,exports){
+=======
+},{"react/lib/keyMirror":352}],460:[function(require,module,exports){
+>>>>>>> seokju
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -60224,9 +60403,20 @@ AppDispatcher.handleServerAction = function(action) {
     });
 };
 
+AppDispatcher.handleAutoSaveAction = function(action) {
+    this.dispatch({
+        source: 'AUTO_SAVE_ACTION',
+        action: action
+    });
+};
+
 module.exports = AppDispatcher;
 
+<<<<<<< HEAD
 },{"flux":169}],459:[function(require,module,exports){
+=======
+},{"flux":169}],461:[function(require,module,exports){
+>>>>>>> seokju
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -60240,10 +60430,13 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
+<<<<<<< HEAD
 var cookie = require('react-cookie');
 
 WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
 
+=======
+>>>>>>> seokju
 React.render(
 
     React.createElement("div", {id: "app-inner"}, 
@@ -60253,7 +60446,11 @@ React.render(
     document.getElementById('app')
 );
 
+<<<<<<< HEAD
 },{"./actions/MemoActionCreator":436,"./components/Editor/Editor":443,"./components/Header":447,"./components/Main":448,"./components/MemoViewer/MemoViewer":453,"./utils/WebGetUtils":461,"react":367,"react-cookie":204,"react-ui-tree":211}],460:[function(require,module,exports){
+=======
+},{"./actions/MemoActionCreator":437,"./components/Editor/Editor":445,"./components/Header":449,"./components/Main":450,"./components/MemoViewer/MemoViewer":455,"./utils/WebGetUtils":463,"react":367,"react-ui-tree":211}],462:[function(require,module,exports){
+>>>>>>> seokju
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -60271,8 +60468,8 @@ var memos = [];
 var globalEditMemo = {
     key: sui.generate("globalEditMemo"),
     title: null,
-    value: "",
-    type: Constants.MemoType.GLOBAL_EDIT_MEMO,
+    text: "",
+    mtype: Constants.MemoType.GLOBAL_EDIT_MEMO,
     date: null
 };
 
@@ -60284,7 +60481,7 @@ var globalEditMemo = {
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
     _.each(_memos, function(memo) {
-        memo.key = sui.generate(memo.value + memo.date.toString());
+        memo.key = sui.generate(memo.text + (new Date()).toString());
     });
     memos = memos.concat(_memos);
     memos.push(_.extend({}, globalEditMemo));
@@ -60297,7 +60494,7 @@ function initNote(_selectNote) {
 function addMemo(_targetEditMemo, _context) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     var newMemo = _.extend({}, {
-        value: _context
+        text: _context
     });
     var _newMemos = _parseMemo(newMemo);
     var len = _newMemos.length;
@@ -60314,7 +60511,8 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
-    _targetCompleteMemo.type = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    console.log(_targetCompleteMemo);
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
@@ -60349,14 +60547,14 @@ function _parseMemo(_unParsedMemo) {
     var protoMemo = {
         key: null,
         title: null,
-        value: "",
-        type: Constants.MemoType.NONE_MEMO,
+        text: "",
+        mtype: Constants.MemoType.NONE_MEMO,
         date: null
     };
 
     var regEx = /^[^#\s]?(#)[ \t].+/gm;
     var _arr, result = new Array();
-    while ((_arr = regEx.exec(_unParsedMemo.value)) !== null) {
+    while ((_arr = regEx.exec(_unParsedMemo.text)) !== null) {
         result.push({
             _title: _arr[0],
             _index: _arr.index
@@ -60367,28 +60565,28 @@ function _parseMemo(_unParsedMemo) {
     if (len == 0) {
         var memo = _.extend(protoMemo, {
             title: "(No Title)",
-            type: Constants.MemoType.NONE_MEMO,
-            value: _unParsedMemo.value,
+            mtype: Constants.MemoType.NONE_MEMO,
+            text: _unParsedMemo.text,
             date: new Date()
         });
         resultMemos.push(memo);
     }
     else {
         var index = 0;
-        var value;
+        var text;
         for (var idx=0; idx<len; idx++) {
             if (idx == len-1) {
-                value = (_unParsedMemo.value).slice(index, (_unParsedMemo.value).length);
+                text = (_unParsedMemo.text).slice(index, (_unParsedMemo.text).length);
             }
             else {
-                value = (_unParsedMemo.value).slice(index, result[idx + 1]._index);
+                text = (_unParsedMemo.text).slice(index, result[idx + 1]._index);
                 index = result[idx+1]._index;
             }
 
             var _memo = _.extend(protoMemo, {
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
-                value: value,
-                type: Constants.MemoType.COMPLETE_MEMO,
+                text: text,
+                mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
             resultMemos.push(_memo);
@@ -60401,7 +60599,7 @@ function _parseMemo(_unParsedMemo) {
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
             resultMemos[idx] = _.extend({}, resultMemos[idx], {
-                key: sui.generate(resultMemos[idx].value + resultMemos[idx].date.toString())
+                key: sui.generate(resultMemos[idx].text + resultMemos[idx].date.toString())
             });
         }
     }
@@ -60420,7 +60618,11 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteID: function() {
+<<<<<<< HEAD
         return selectNote.id;
+=======
+        return selectNote.idAttribute;
+>>>>>>> seokju
     },
 
     getNoteTitle: function() {
@@ -60431,12 +60633,21 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },
 
+<<<<<<< HEAD
     emitMemoChange: function() {
         this.emit('memo-change');
     },
 
     emitMemoSaveComplete: function() {
         this.emit('memo-complete');
+=======
+    emitAutoSaveRequest: function() {
+        this.emit('auto-save-request');
+    },
+
+    emitAutoSaveReceive: function() {
+        this.emit('auto-save-receive');
+>>>>>>> seokju
     },
 
     addChangeListener: function(callback) {
@@ -60447,6 +60658,7 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
 
+<<<<<<< HEAD
     addMemoChangeListener: function(callback) {
         this.on('memo-change', callback);
     },
@@ -60461,6 +60673,22 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeMemoSaveCompleteListener: function(callback) {
         this.removeListener('memo-complete', callback);
+=======
+    addAutoSaveRequestListener: function(callback) {
+        this.on('auto-save-request', callback);
+    },
+
+    removeAutoSaveRequestListener: function(callback) {
+        this.removeListener('auto-save-request', callback);
+    },
+
+    addAutoSaveReceiveListener: function(callback) {
+        this.on('auto-save-receive', callback);
+    },
+
+    removeAutoSaveReceiveListener: function(callback) {
+        this.removeListener('auto-save-receive', callback);
+>>>>>>> seokju
     }
 });
 
@@ -60473,10 +60701,16 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
+            console.log("initMemo");
+            break;
+
+        case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
+            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.RECEIVE_SAVE:
@@ -60485,12 +60719,20 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
+<<<<<<< HEAD
             NoteStore.emitMemoChange();
+=======
+            NoteStore.emitAutoSaveRequest();
+>>>>>>> seokju
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
+<<<<<<< HEAD
             NoteStore.emitMemoChange();
+=======
+            NoteStore.emitAutoSaveRequest();
+>>>>>>> seokju
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
@@ -60500,14 +60742,24 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
+<<<<<<< HEAD
             NoteStore.emitMemoChange();
+=======
+            NoteStore.emitAutoSaveRequest();
+>>>>>>> seokju
             break;
 
         default:
             return true;
     }
 
+<<<<<<< HEAD
     NoteStore.emitChange();
+=======
+    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+        NoteStore.emitChange();
+    }
+>>>>>>> seokju
 
     return true;
 });
@@ -60515,23 +60767,37 @@ AppDispatcher.register(function(payload) {
 
 module.exports = NoteStore;
 
+<<<<<<< HEAD
 },{"../constants/Constants":457,"../dispatcher/AppDispatcher":458,"events":147,"simple-unique-id":429,"underscore":434}],461:[function(require,module,exports){
+=======
+},{"../constants/Constants":459,"../dispatcher/AppDispatcher":460,"events":147,"simple-unique-id":429,"underscore":434}],463:[function(require,module,exports){
+>>>>>>> seokju
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
 
 var WebGetUtils = {
-    getNoteWithMemos: function(_noteID) {
+
+    getNoteWithMemos: function(_token, _noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)
-            .query({noteID: _noteID})
+            .query({userToken: _token, noteId: _noteID})
             .set('API-Key', 'GET_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
+<<<<<<< HEAD
                     console.log(res);
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
+=======
+                    console.log("받음");
+                    console.log(res);
+
+                    ServerReceiveActionCreator.receiveNote(res.body.note);
+                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
+
+>>>>>>> seokju
                 }
                 else {
                     // Show Notification
@@ -60572,7 +60838,11 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
+<<<<<<< HEAD
 },{"../actions/ServerReceiveActionCreator":437,"../constants/Constants":457,"superagent":431}],462:[function(require,module,exports){
+=======
+},{"../actions/ServerReceiveActionCreator":438,"../constants/Constants":459,"superagent":431}],464:[function(require,module,exports){
+>>>>>>> seokju
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 
@@ -60581,6 +60851,7 @@ var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 
 
 var WebPostUtils = {
+<<<<<<< HEAD
     postNoteWithMemo: function(_noteID, _memos) {
         var _escapedMemos = (function() {
 
@@ -60589,11 +60860,29 @@ var WebPostUtils = {
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
             .send({noteID: _noteID.escape(), memos: _escapedMemos})
+=======
+    postNoteWithMemo: function(_noteId, _memos) {
+        var memos = new Array();
+        for (var idx=0,len=_memos.length; idx<len; idx++) {
+            if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+                memos.push(_memos[idx]);
+            }
+        }
+
+        request
+            .post(Constants.API.POST_NOTE_WITH_MEMO)
+            .send({noteId: _noteId, memos: memos})
+>>>>>>> seokju
             .set('API-Key', 'POST_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
+<<<<<<< HEAD
                     ServerReceiveActionCreator.receiveMemoSaveComplete();
+=======
+                    ServerReceiveActionCreator.receiveAutoSaveComplete();
+                    console.log("receiveAutoSave");
+>>>>>>> seokju
                 }
                 else {
                     // Show Notification
@@ -60624,4 +60913,8 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
+<<<<<<< HEAD
 },{"../actions/DirectoryActionCreator":435,"../actions/ServerReceiveActionCreator":437,"../constants/Constants":457,"superagent":431}]},{},[459]);
+=======
+},{"../actions/DirectoryActionCreator":436,"../actions/ServerReceiveActionCreator":438,"../constants/Constants":459,"superagent":431}]},{},[461]);
+>>>>>>> seokju

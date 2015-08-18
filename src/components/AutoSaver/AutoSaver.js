@@ -1,11 +1,11 @@
 var React = require('react');
 
-var MemoActionCreator = require('../../actions/MemoActionCreator');
+var AutoSaveActionCreator = require('../../actions/AutoSaveActionCreator');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
 
 
-var MemoAutoSaver = React.createClass({
+var AutoSaver = React.createClass({
     getInitialState: function() {
         return {
             status: Constants.AutoSaverStatusType.COMPLETE
@@ -13,13 +13,13 @@ var MemoAutoSaver = React.createClass({
     },
 
     componentDidMount: function() {
-        NoteStore.addMemoChangeListener(this._onChange);
-        NoteStore.addMemoSaveCompleteListener(this._onComplete);
+        NoteStore.addAutoSaveRequestListener(this._onRequest);
+        NoteStore.addAutoSaveReceiveListener(this._onReceive);
     },
 
     componentWillUnmount: function() {
-        NoteStore.removeMemoChangeListener(this._onChange);
-        NoteStore.removeMemoSaveCompleteListener(this._onComplete);
+        NoteStore.removeAutoSaveRequestListener(this._onRequest);
+        NoteStore.removeAutoSaveReceiveListener(this._onReceive);
     },
 
     render: function() {
@@ -40,18 +40,25 @@ var MemoAutoSaver = React.createClass({
         );
     },
 
-    _onChange: function() {
-        this.setState({
-            status: Constants.AutoSaverStatusType.SAVING
-        });
-        MemoActionCreator.requestMemoSave(NoteStore.getNoteID(), NoteStore.getMemo());
+    _onRequest: function() {
+        if (this.state.status == Constants.AutoSaverStatusType.SAVING) {
+            return ;
+        }
+        else {
+            this.setState({ status: Constants.AutoSaverStatusType.SAVING }, function() {
+                setTimeout(function() {
+                    AutoSaveActionCreator.requestAutoSave(NoteStore.getNoteID(), NoteStore.getMemo());
+                }, 1500);
+            });
+        }
     },
 
-    _onComplete: function() {
+    _onReceive: function() {
+        console.log("hey");
         this.setState({
             status: Constants.AutoSaverStatusType.COMPLETE
         });
     }
 });
 
-module.exports = MemoAutoSaver;
+module.exports = AutoSaver;

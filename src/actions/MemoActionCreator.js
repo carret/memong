@@ -33,13 +33,6 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
         });
-    },
-
-    requestMemoSave: function(_selectNoteID, _memos) {
-        AppDispatcher.handleClientAction({
-            actionType: Constants.MemoActionTypes.REQUEST_SAVE
-        });
-        WebPostUtils.postNoteWithMemo(_selectNoteID, _memos);
     }
 };
 

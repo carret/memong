@@ -6,19 +6,23 @@ var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 
 
 var WebPostUtils = {
-    postNoteWithMemo: function(_noteID, _memos) {
-        var _escapedMemos = (function() {
-
-        })(_memos);
+    postNoteWithMemo: function(_noteId, _memos) {
+        var memos = new Array();
+        for (var idx=0,len=_memos.length; idx<len; idx++) {
+            if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+                memos.push(_memos[idx]);
+            }
+        }
 
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
-            .send({noteID: _noteID.escape(), memos: _escapedMemos})
+            .send({noteId: _noteId, memos: memos})
             .set('API-Key', 'POST_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveMemoSaveComplete();
+                    ServerReceiveActionCreator.receiveAutoSaveComplete();
+                    console.log("receiveAutoSave");
                 }
                 else {
                     // Show Notification
