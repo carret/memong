@@ -19,6 +19,7 @@ app.set('view engine', 'ejs');
 app.use(passports.initialize());
 app.use(passports.session());
 app.use(express.static(__dirname + '/build'));
+app.use(express.static(__dirname + '/assets'));
 
 routes.doRoutes(app);
 
