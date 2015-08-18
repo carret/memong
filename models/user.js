@@ -8,7 +8,6 @@ var Schema = mongoose.Schema,
 
 var User = {
 
-
     token : {
         type : Object,
         unique : true,
@@ -18,6 +17,12 @@ var User = {
         type : String,
         required:true
     },
+
+    /*
+    root :{
+        type: ObjectId,
+        required: true
+    },*/
 
     servicetype :  {
         type : String,

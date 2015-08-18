@@ -14,7 +14,6 @@ var Note = {
         type: String,
         required: true
     },
-
     memos:
         [
             {

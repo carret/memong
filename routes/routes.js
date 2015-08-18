@@ -8,7 +8,7 @@ exports.doRoutes = function(app) {
         res.render('__static__typography');
     });
     require('./api/login').doRoutes(app)
-    require('./api/note').doRoutes(app)
+    require('./api/tree').doRoutes(app)
     require('./api/memo').doRoutes(app)
 }
 
