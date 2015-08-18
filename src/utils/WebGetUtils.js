@@ -11,8 +11,9 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveNote(res.note);
-                    ServerReceiveActionCreator.receiveMemo(res.memos);
+                    console.log(res);
+                    ServerReceiveActionCreator.receiveNote(res.body.note);
+                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
                 }
                 else {
                     // Show Notification

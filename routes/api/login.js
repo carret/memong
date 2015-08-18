@@ -145,7 +145,7 @@ exports.doRoutes = function(app) {
                             console.log("새로운 노트 저장 성공");
                             callback(null, userId, result._id);
                         }
-                    })
+                    });
                 }
             },
             function(userId, newNoteId) {

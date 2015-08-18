@@ -11,6 +11,10 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
+var cookie = require('react-cookie');
+
+WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
+
 React.render(
 
     <div id="app-inner">

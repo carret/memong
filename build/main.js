@@ -60240,6 +60240,10 @@ var Header = require('./components/Header');
 
 var WebGetUtils = require('./utils/WebGetUtils');
 
+var cookie = require('react-cookie');
+
+WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
+
 React.render(
 
     React.createElement("div", {id: "app-inner"}, 
@@ -60249,7 +60253,7 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/MemoActionCreator":436,"./components/Editor/Editor":443,"./components/Header":447,"./components/Main":448,"./components/MemoViewer/MemoViewer":453,"./utils/WebGetUtils":461,"react":367,"react-ui-tree":211}],460:[function(require,module,exports){
+},{"./actions/MemoActionCreator":436,"./components/Editor/Editor":443,"./components/Header":447,"./components/Main":448,"./components/MemoViewer/MemoViewer":453,"./utils/WebGetUtils":461,"react":367,"react-cookie":204,"react-ui-tree":211}],460:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -60525,8 +60529,9 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveNote(res.note);
-                    ServerReceiveActionCreator.receiveMemo(res.memos);
+                    console.log(res);
+                    ServerReceiveActionCreator.receiveNote(res.body.note);
+                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
                 }
                 else {
                     // Show Notification
