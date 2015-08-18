@@ -5,7 +5,6 @@ var User = {
         unique : true,
         required : true
     },
-
     username : {
         type : String,
         required:true
@@ -38,7 +37,6 @@ var User = {
             }
         }
     ]
-
 };
 
 module.exports = User;

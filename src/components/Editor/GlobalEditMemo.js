@@ -53,6 +53,7 @@ var GlobalEditMemo = React.createClass({
                 }
             }
             if (event.keyCode === 9) {
+                event.preventDefault();
                 var text = $(TextareaDOM).val();
                 if (text == "") {
                     return;

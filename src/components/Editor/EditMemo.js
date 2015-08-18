@@ -20,14 +20,19 @@ var EditMemo = React.createClass({
     },
 
     componentDidMount: function() {
-        var text = this.props.memo.text;
+        var text            = this.props.memo.text,
+            KEYCODE_ENTER   = 13,
+            KEYCODE_TAB     = 9;
+
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
         TextareaDOM.focus();
 
         $(TextareaDOM).on("keydown", function(event) {
-            if (event.keyCode == 13) {
+
+            if (this._isEnter(event.keyCode)) {
                 var text = $(TextareaDOM).val();
                 matches = text.match(regEx);
 
@@ -52,14 +57,24 @@ var EditMemo = React.createClass({
                     }
                 }
             }
-            if (event.keyCode == 9) {
+            if (event.keyCode == KEYCODE_TAB) {
+                event.preventDefault();
                 var text = $(TextareaDOM).val();
                 var result = text;
-                MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
-                    text: result
-                }));
+                if (result == "") {
+                    MemoActionCreator.deleteMemo(this.props.memo);
+                }
+                else {
+                    MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
+                        text: result
+                    }));
+                }
             }
         }.bind(this))
+    },
+
+    isEnter: function(nKeyCode) {
+        return (nKeyCode == 13);
     },
 
     render: function () {

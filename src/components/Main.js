@@ -8,14 +8,17 @@ var Editor = require('./Editor/Editor');
 var AsideDOM;
 var SectionDOM;
 
+var cookie = require('react-cookie');
 
 var Main = React.createClass({
+
     getInitialState: function() {
         return {
             asideVisible: true,
             mainWidth: window.innerWidth
         }
     },
+
 
     componentDidMount: function() {
         AsideDOM = $(React.findDOMNode(this.refs._aside));
@@ -57,8 +60,9 @@ var Main = React.createClass({
     },
 
     render: function() {
-        return(
-            <div ref="_main" id="main">
+        console.log(this.props.isLogin);
+        var item = (this.props.isLogin) ?
+            (<div>
                 <div ref="_aside" id="aside">
                     <DirectoryViewer />
                     <MemoViewer />
@@ -67,6 +71,13 @@ var Main = React.createClass({
                     <NoteHeader toggleAsideVisible={this._toggleAside} asideVisible={this.state.asideVisible} />
                     <Editor />
                 </div>
+            </div>)
+            :
+            (<div>memong은 클라우드 기반 다크다운 메모장입니다.</div>);
+
+        return(
+            <div ref="_main" id="main">
+                {item}
             </div>
         );
     }
