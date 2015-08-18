@@ -59185,13 +59185,32 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
+    },
 
+    endEditMemoAndStartNextEditMemo: function(_targetEditMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO,
+            targetEditMemo: _targetEditMemo
+        });
+    },
+
+    endEditMemoAndStartPreviousEditMemo: function(_targetEditMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO,
+            targetEditMemo: _targetEditMemo
+        });
     },
 
     completeEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
+        });
+    },
+
+    focusGlobalEdit: function() {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.FOCUS_GLOBAL_EDIT
         });
     }
 };
@@ -59483,20 +59502,29 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
-        TextareaDOM.focus();
+        $(TextareaDOM).focus();
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
-            if (keyCode == Constants.KeyCode.ENTER) {
-                this._handleAddMemo();
-            }
-            if (keyCode == Constants.KeyCode.TAB) {
-                $(TextareaDOM).focusout();
-            }
-        }.bind(this));
 
-        $(TextareaDOM).focusout(function() {
-            this._handleCompleteMemo();
+            switch(keyCode) {
+                case Constants.KeyCode.ENTER:
+                    this._handleAddMemo();
+                    break;
+
+                case Constants.KeyCode.TAB:
+                    event.preventDefault();
+                    this._handleCompleteMemo();
+                    break;
+
+                case Constants.KeyCode.ARROW_UP:
+                    this._handleMoveToPrevious();
+                    break;
+
+                case Constants.KeyCode.ARROW_DOWN:
+                    this._handleMoveToNext();
+                    break;
+            }
         }.bind(this));
     },
 
@@ -59526,11 +59554,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         }
     },
 
-    _handleCompleteMemo: function(e) {
-        if (e != undefined) {
-            e.preventDefault();
-        }
-
+    _handleCompleteMemo: function() {
         var text = $(TextareaDOM).val();
         if (text == "") {
             MemoActionCreator.deleteMemo(this.props.memo);
@@ -59542,7 +59566,18 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         }
     },
 
+    _handleMoveToNext: function() {
+        var text = $(TextareaDOM).val();
+        if (text.length == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(this.props.memo);
+        }
+    },
 
+    _handleMoveToPrevious: function() {
+        if (0 == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+        }
+    },
 
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
@@ -59628,7 +59663,6 @@ var Editor = React.createClass({displayName: "Editor",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
     }
 });
 
@@ -59666,14 +59700,33 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
-            if (keyCode == Constants.KeyCode.ENTER) {
 
-            }
-            if (keyCode == Constants.KeyCode.TAB) {
+            switch(keyCode) {
+                case Constants.KeyCode.ENTER:
+                    this._handleAddMemo();
+                    break;
 
+                case Constants.KeyCode.TAB:
+                    event.preventDefault();
+                    this._handleCompleteMemo();
+                    break;
+
+                case Constants.KeyCode.ARROW_UP:
+                    this._handleMoveToPrevious();
+                    break;
+
+                case Constants.KeyCode.BACKSPACE:
+                    this._handleMoveToPreviousByBackSpace();
+                    break;
             }
         }.bind(this));
+
     },
+
+    componentWillReceiveProps: function() {
+        $(TextareaDOM).focus();
+    },
+
 
     _handleAddMemo: function() {
         var text = $(TextareaDOM).val();
@@ -59702,18 +59755,36 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     },
 
     _handleCompleteMemo: function() {
-        event.preventDefault();
         var text = $(TextareaDOM).val();
         if (text == "") {
             return;
         }
         else {
-            var result = text;
             MemoActionCreator.addMemo(_.extend(this.props.memo, {
                 text: ""
-            }), result);
+            }), text);
             $(TextareaDOM).val("");
             TextareaDOM.focus();
+        }
+    },
+
+    _handleMoveToPrevious: function() {
+        if (0 == TextareaDOM.selectionStart) {
+            this.props.memo = _.extend(this.props.memo, {
+                text: $(TextareaDOM).val()
+            });
+            $(TextareaDOM).val("");
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+        }
+    },
+
+    _handleMoveToPreviousByBackSpace: function() {
+        if (0 == TextareaDOM.selectionStart && $(TextareaDOM).val() == "") {
+            this.props.memo = _.extend(this.props.memo, {
+                text: $(TextareaDOM).val()
+            });
+            $(TextareaDOM).val("");
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
         }
     },
 
@@ -59721,6 +59792,10 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
         if (_headerOneMatches.length >= 2) return true;
         return false;
+    },
+
+    __focusThis: function() {
+        TextareaDOM.focus();
     },
 
     render: function() {
@@ -60092,10 +60167,14 @@ var MemoItem = React.createClass({displayName: "MemoItem",
         });
     },
 
+    _onEditStart: function() {
+        MemoActionCreator.startEditMemo(this.props.memo);
+    },
+
     render: function() {
         return (
             React.createElement("div", {className: "memo-viewer-item"}, 
-                React.createElement("span", {className: "title"}, 
+                React.createElement("span", {className: "title", onClick: this._onEditStart}, 
                     this.props.memo.title
                 ), 
                 React.createElement("div", null, 
@@ -60296,6 +60375,8 @@ module.exports = {
         ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
+        END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO: null,
+        END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO: null,
         END_EDIT_MEMO: null
     }),
 
@@ -60335,7 +60416,10 @@ module.exports = {
 
     KeyCode: {
         ENTER: 13,
-        TAB: 9
+        TAB: 9,
+        ARROW_DOWN: 40,
+        ARROW_UP: 38,
+        BACKSPACE: 8
     }
 };
 
@@ -60470,9 +60554,48 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
-    console.log(_targetCompleteMemo);
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == memos.length - 2) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    endEditMemo(_targetEditMemo);
+    startEditMemo(memos[index+1]);
+}
+
+function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == 0) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        var context = memos[index].text;
+        console.log(context);
+        memos[index-1] = _.extend(memos[index-1], {
+            text: memos[index-1].text + '\n\n' + context
+        });
+        memos[index] = _.extend(memos[index], {
+            text: ""
+        });
+        startEditMemo(memos[index-1]);
+        return;
+    }
+    else {
+        endEditMemo(_targetEditMemo);
+        startEditMemo(memos[index-1]);
+    }
 }
 
 function endEditMemo(_targetEditMemo) {
@@ -60630,12 +60753,10 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
-            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
-            console.log("initMemo");
             break;
 
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
@@ -60644,26 +60765,30 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.ADD_NEW_MEMO:
             addNewMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
             break;
 
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:
+            endEditMemoAndStartNextEditMemo(action.targetEditMemo);
+            break;
+
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO:
+            endEditMemoAndStartPreviousEditMemo(action.targetEditMemo);
+            break;
+
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         default:
@@ -60672,6 +60797,14 @@ AppDispatcher.register(function(payload) {
 
     if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
+    }
+
+    if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
+        || action.actionType == Constants.MemoActionTypes.DELETE_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO) {
+            NoteStore.emitAutoSaveRequest();
     }
 
     return true;

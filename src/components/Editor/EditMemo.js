@@ -25,20 +25,29 @@ var EditMemo = React.createClass({
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
-        TextareaDOM.focus();
+        $(TextareaDOM).focus();
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
-            if (keyCode == Constants.KeyCode.ENTER) {
-                this._handleAddMemo();
-            }
-            if (keyCode == Constants.KeyCode.TAB) {
-                $(TextareaDOM).focusout();
-            }
-        }.bind(this));
 
-        $(TextareaDOM).focusout(function() {
-            this._handleCompleteMemo();
+            switch(keyCode) {
+                case Constants.KeyCode.ENTER:
+                    this._handleAddMemo();
+                    break;
+
+                case Constants.KeyCode.TAB:
+                    event.preventDefault();
+                    this._handleCompleteMemo();
+                    break;
+
+                case Constants.KeyCode.ARROW_UP:
+                    this._handleMoveToPrevious();
+                    break;
+
+                case Constants.KeyCode.ARROW_DOWN:
+                    this._handleMoveToNext();
+                    break;
+            }
         }.bind(this));
     },
 
@@ -68,11 +77,7 @@ var EditMemo = React.createClass({
         }
     },
 
-    _handleCompleteMemo: function(e) {
-        if (e != undefined) {
-            e.preventDefault();
-        }
-
+    _handleCompleteMemo: function() {
         var text = $(TextareaDOM).val();
         if (text == "") {
             MemoActionCreator.deleteMemo(this.props.memo);
@@ -84,7 +89,18 @@ var EditMemo = React.createClass({
         }
     },
 
+    _handleMoveToNext: function() {
+        var text = $(TextareaDOM).val();
+        if (text.length == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(this.props.memo);
+        }
+    },
 
+    _handleMoveToPrevious: function() {
+        if (0 == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+        }
+    },
 
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {

@@ -71,9 +71,48 @@ function deleteMemo(_targetMemo) {
 
 function startEditMemo(_targetCompleteMemo) {
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
-    console.log(_targetCompleteMemo);
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == memos.length - 2) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    endEditMemo(_targetEditMemo);
+    startEditMemo(memos[index+1]);
+}
+
+function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == 0) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        var context = memos[index].text;
+        console.log(context);
+        memos[index-1] = _.extend(memos[index-1], {
+            text: memos[index-1].text + '\n\n' + context
+        });
+        memos[index] = _.extend(memos[index], {
+            text: ""
+        });
+        startEditMemo(memos[index-1]);
+        return;
+    }
+    else {
+        endEditMemo(_targetEditMemo);
+        startEditMemo(memos[index-1]);
+    }
 }
 
 function endEditMemo(_targetEditMemo) {
@@ -231,12 +270,10 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
-            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
-            console.log("initMemo");
             break;
 
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
@@ -245,26 +282,30 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.ADD_NEW_MEMO:
             addNewMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
             break;
 
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:
+            endEditMemoAndStartNextEditMemo(action.targetEditMemo);
+            break;
+
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO:
+            endEditMemoAndStartPreviousEditMemo(action.targetEditMemo);
+            break;
+
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         default:
@@ -273,6 +314,14 @@ AppDispatcher.register(function(payload) {
 
     if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
+    }
+
+    if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
+        || action.actionType == Constants.MemoActionTypes.DELETE_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO) {
+            NoteStore.emitAutoSaveRequest();
     }
 
     return true;
