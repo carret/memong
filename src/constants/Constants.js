@@ -71,5 +71,11 @@ module.exports = {
     AutoSaverStatusType: keyMirror({
         COMPLETE: null,
         SAVING: null
-    })
+    }),
+
+
+    KeyCode: {
+        ENTER: 13,
+        TAB: 9
+    }
 };

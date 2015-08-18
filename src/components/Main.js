@@ -60,7 +60,6 @@ var Main = React.createClass({
     },
 
     render: function() {
-        console.log(this.props.isLogin);
         var item = (this.props.isLogin) ?
             (<div>
                 <div ref="_aside" id="aside">
