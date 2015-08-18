@@ -59329,11 +59329,7 @@ var Logout = React.createClass({displayName: "Logout",
             React.createElement("a", {href: "/logout"}, "로그아웃")
         )
     }
-<<<<<<< HEAD
-})
-=======
 });
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
 
 module.exports = Logout;
 
@@ -59770,16 +59766,6 @@ var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
-<<<<<<< HEAD
-
-var loginButton;
-
-if ( cookie.load('username') != null )
-    loginButton = React.createElement(Logout, null)
-else
-    loginButton = React.createElement(Login, null)
-=======
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
 
 var Header = React.createClass({displayName: "Header",
 
@@ -59823,11 +59809,7 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("div", {className: "header-right"}, 
                     React.createElement(Exporter, {handleExport: this._handleExport}), 
                     React.createElement(MemoSearcher, null), 
-<<<<<<< HEAD
-                    loginButton
-=======
                     this.props.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
                 ), 
                 React.createElement(NoteLoader, null)
             )
@@ -59837,11 +59819,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-<<<<<<< HEAD
 },{"./Account/Login":439,"./Account/Logout":440,"./Exporter/Exporter":448,"./MemoSearcher/MemoSearcher":451,"./NoteLoader/NoteLoader":458,"react":367,"react-cookie":204}],450:[function(require,module,exports){
-=======
-},{"./Account/Login":438,"./Account/Logout":439,"./Exporter/Exporter":447,"./MemoSearcher/MemoSearcher":450,"./NoteLoader/NoteLoader":457,"react":366,"react-cookie":203}],449:[function(require,module,exports){
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -59915,28 +59893,6 @@ var Main = React.createClass({displayName: "Main",
     },
 
     render: function() {
-<<<<<<< HEAD
-        return(
-            React.createElement("div", {ref: "_main", id: "main"}, 
-                
-                    this.state.isLogin ?
-                        (
-                            React.createElement("div", null, 
-                                React.createElement("div", {ref: "_aside", id: "aside"}, 
-                                    React.createElement(DirectoryViewer, null), 
-                                    React.createElement(MemoViewer, null)
-                                ), 
-                                React.createElement("div", {ref: "_section", id: "section"}, 
-                                    React.createElement(NoteHeader, {toggleAsideVisible: this._toggleAside, asideVisible: this.state.asideVisible}), 
-                                    React.createElement(Editor, null)
-                                )
-                            )
-                        )
-                        :
-                        React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다.")
-                
-
-=======
         console.log(this.props.isLogin);
         var item = (this.props.isLogin) ?
             (React.createElement("div", null, 
@@ -59955,7 +59911,6 @@ var Main = React.createClass({displayName: "Main",
         return(
             React.createElement("div", {ref: "_main", id: "main"}, 
                 item
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
             )
         );
     }
@@ -59963,11 +59918,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-<<<<<<< HEAD
 },{"./DirectoryViewer/DirectoryViewer":442,"./Editor/Editor":445,"./MemoViewer/MemoViewer":455,"./NoteHeader/NoteHeader":456,"react":367,"react-cookie":204}],451:[function(require,module,exports){
-=======
-},{"./DirectoryViewer/DirectoryViewer":441,"./Editor/Editor":444,"./MemoViewer/MemoViewer":454,"./NoteHeader/NoteHeader":455,"react":366,"react-cookie":203}],450:[function(require,module,exports){
->>>>>>> bfa729e85bc59bccb7f27a4c5e2a4e825fb93dd1
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
