@@ -59525,7 +59525,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
                 var height = $(React.findDOMNode(this.refs._thisEditMemo)).height();
-                this.props.scrollAndFocusTarget(position - height);
+                this.props.scrollAndFocusTarget(position - height - 21);
             }.bind(this), 150);
         }
 
@@ -60162,10 +60162,12 @@ var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
     componentDidMount: function() {
-        setTimeout(function() {
-            var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;
-            this.props.scrollAndFocusTarget(position - 109);
-        }.bind(this), 150);
+        if (!this.props.memo.haveToFocus) {
+            setTimeout(function() {
+                var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;
+                this.props.scrollAndFocusTarget(position - 109);
+            }.bind(this), 150);
+        }
     },
 
     render: function() {

@@ -32,7 +32,7 @@ var EditMemo = React.createClass({
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
                 var height = $(React.findDOMNode(this.refs._thisEditMemo)).height();
-                this.props.scrollAndFocusTarget(position - height);
+                this.props.scrollAndFocusTarget(position - height - 21);
             }.bind(this), 150);
         }
 
