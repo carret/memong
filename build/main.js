@@ -59442,7 +59442,7 @@ var md = new Remarkable({
     langPrefix:   'language-',  // CSS language prefix for fenced blocks
     linkify:      false,        // Autoconvert URL-like text to links
     typographer:  false,
-    quotes: '“”‘’',
+    quotes: '“”‘’'
 });
 
 
@@ -59453,10 +59453,19 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
     render: function() {
         var context = md.render(this.props.memo.text);
+
+        var _date = new Date(this.props.memo.date);
+
+        var date = _date.getFullYear() + '-'
+            + (_date.getMonth() + 1) + '-'
+            + _date.getDate();
+
+
         return (
-            React.createElement("div", {className: "complete-memo"}, 
+            React.createElement("div", {ref: "_completeMemo", className: "complete-memo"}, 
                 React.createElement("div", {className: "complete-memo-inner", onClick: this.startEditMemo}, 
-                    React.createElement("div", {dangerouslySetInnerHTML: {__html: context}})
+                    React.createElement("div", {dangerouslySetInnerHTML: {__html: context}}), 
+                    React.createElement("span", {className: "date"}, date)
                 ), 
                 React.createElement("div", {className: "toolbar"}, 
                     React.createElement("i", {onClick: this._handleAddMemo, className: "material-icons"}, ""), 
@@ -59507,6 +59516,12 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
 
+            if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
+                event.preventDefault();
+                this._handleCompleteMemo();
+                return;
+            }
+
             switch(keyCode) {
                 case Constants.KeyCode.ENTER:
                     this._handleAddMemo();
@@ -59530,6 +59545,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
                     break;
             }
         }.bind(this));
+
     },
 
     _handleAddMemo: function() {
@@ -59654,7 +59670,8 @@ var NoneMemo = require('./NoneMemo');
 
 function getMemos() {
     return {
-        memos: NoteStore.getMemo()
+        memos: NoteStore.getMemo(),
+        shouldFocus: false
     };
 }
 
@@ -59710,6 +59727,7 @@ var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
 var _ = require('underscore');
+var NoteStore = require('../../stores/NoteStore');
 
 var Textarea = require('react-textarea-autosize');
 
@@ -59730,6 +59748,8 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     componentDidMount: function() {
         var text = this.props.memo.text;
 
+        NoteStore.addFocusListener(this._onFocus);
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
@@ -59737,6 +59757,12 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
+
+            if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
+                event.preventDefault();
+                this._handleCompleteMemo();
+                return;
+            }
 
             switch(keyCode) {
                 case Constants.KeyCode.ENTER:
@@ -59758,11 +59784,6 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
             }
         }.bind(this));
     },
-
-    componentDidUpdate: function() {
-        $(TextareaDOM).focus();
-    },
-
 
     _handleAddMemo: function() {
         var text = $(TextareaDOM).val();
@@ -59829,13 +59850,17 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
     },
 
 
+    _onFocus: function() {
+        $(TextareaDOM).focus();
+    },
+
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
         if (_headerOneMatches.length >= 2) return true;
         return false;
     },
 
     __focusThis: function() {
-        TextareaDOM.focus();
+        //TextareaDOM.focus();
     },
 
     render: function() {
@@ -59853,7 +59878,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActionCreator":436,"../../constants/Constants":458,"react":366,"react-textarea-autosize":205,"underscore":433}],446:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":436,"../../constants/Constants":458,"../../stores/NoteStore":461,"react":366,"react-textarea-autosize":205,"underscore":433}],446:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -60859,10 +60884,12 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:
             endEditMemoAndStartNextEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO:
             endEditMemoAndStartPreviousEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
@@ -60876,6 +60903,7 @@ AppDispatcher.register(function(payload) {
     if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
     }
+
 
     if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
         || action.actionType == Constants.MemoActionTypes.DELETE_MEMO
@@ -60905,9 +60933,6 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    console.log("받음");
-                    console.log(res);
-
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
                 }

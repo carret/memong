@@ -30,6 +30,12 @@ var EditMemo = React.createClass({
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
 
+            if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
+                event.preventDefault();
+                this._handleCompleteMemo();
+                return;
+            }
+
             switch(keyCode) {
                 case Constants.KeyCode.ENTER:
                     this._handleAddMemo();
@@ -53,6 +59,7 @@ var EditMemo = React.createClass({
                     break;
             }
         }.bind(this));
+
     },
 
     _handleAddMemo: function() {

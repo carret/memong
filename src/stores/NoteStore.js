@@ -316,10 +316,12 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:
             endEditMemoAndStartNextEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO:
             endEditMemoAndStartPreviousEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO:
@@ -333,6 +335,7 @@ AppDispatcher.register(function(payload) {
     if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
     }
+
 
     if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
         || action.actionType == Constants.MemoActionTypes.DELETE_MEMO

@@ -13,7 +13,8 @@ var NoneMemo = require('./NoneMemo');
 
 function getMemos() {
     return {
-        memos: NoteStore.getMemo()
+        memos: NoteStore.getMemo(),
+        shouldFocus: false
     };
 }
 
