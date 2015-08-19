@@ -49,10 +49,9 @@ var GlobalEditMemo = React.createClass({
                     break;
             }
         }.bind(this));
-
     },
 
-    componentWillReceiveProps: function() {
+    componentDidUpdate: function() {
         $(TextareaDOM).focus();
     },
 

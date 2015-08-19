@@ -37,7 +37,7 @@ var EditMemo = React.createClass({
 
                 case Constants.KeyCode.TAB:
                     event.preventDefault();
-                    this._handleCompleteMemo();
+                    this._handleMoveToNextByTAB();
                     break;
 
                 case Constants.KeyCode.ARROW_UP:
@@ -92,19 +92,33 @@ var EditMemo = React.createClass({
     _handleMoveToNext: function() {
         var text = $(TextareaDOM).val();
         if (text.length == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartNextEditMemo(this.props.memo);
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
         }
     },
 
+    _handleMoveToNextByTAB: function() {
+        var text = $(TextareaDOM).val();
+        MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+            text: text
+        }));
+    },
+
     _handleMoveToPrevious: function() {
+        var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
         }
     },
 
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
-        if (_headerOneMatches.length >= 2) return true;
+        if (_headerOneMatches.length >= 2) {
+            return true;
+        }
         return false;
     },
 

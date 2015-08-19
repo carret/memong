@@ -59514,7 +59514,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
                 case Constants.KeyCode.TAB:
                     event.preventDefault();
-                    this._handleCompleteMemo();
+                    this._handleMoveToNextByTAB();
                     break;
 
                 case Constants.KeyCode.ARROW_UP:
@@ -59569,19 +59569,33 @@ var EditMemo = React.createClass({displayName: "EditMemo",
     _handleMoveToNext: function() {
         var text = $(TextareaDOM).val();
         if (text.length == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartNextEditMemo(this.props.memo);
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
         }
     },
 
+    _handleMoveToNextByTAB: function() {
+        var text = $(TextareaDOM).val();
+        MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+            text: text
+        }));
+    },
+
     _handleMoveToPrevious: function() {
+        var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
         }
     },
 
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
-        if (_headerOneMatches.length >= 2) return true;
+        if (_headerOneMatches.length >= 2) {
+            return true;
+        }
         return false;
     },
 
@@ -59720,10 +59734,9 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
                     break;
             }
         }.bind(this));
-
     },
 
-    componentWillReceiveProps: function() {
+    componentDidUpdate: function() {
         $(TextareaDOM).focus();
     },
 
@@ -59907,7 +59920,7 @@ var Header = React.createClass({displayName: "Header",
             React.createElement("div", {id: "header"}, 
                 React.createElement("div", {className: "header-left"}, 
                     React.createElement("div", {id: "logo-icon"}, 
-                        React.createElement("img", {src: "./libs/logo.svg"})
+                        React.createElement("img", {src: "./logo.svg"})
                     ), 
                     React.createElement("a", {id: "logo"}, "memongade")
                 ), 
@@ -60072,9 +60085,14 @@ module.exports = {
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
+    componentWillReceiveProps: function() {
+        $(React.findDOMNode(this.refs._editMemoItem)).focus();
+
+    },
+
     render: function() {
         return (
-            React.createElement("div", {className: "memo-viewer-edit-item"}, 
+            React.createElement("div", {ref: "_editMemoItem", className: "memo-viewer-edit-item"}, 
                 React.createElement("div", {className: "memo-viewer-overlay"}), 
                 React.createElement("span", {className: "title"}, this.props.memo.title), 
                 React.createElement("span", {className: "editing"}, "편집중...")
@@ -60199,6 +60217,8 @@ var MemoItem = require('./MemoItem');
 var EditMemoItem = require('./EditMemoItem');
 
 
+var MemoViewerDOM;
+
 function getMemos() {
     return {
         memos: NoteStore.getMemo()
@@ -60211,6 +60231,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
     },
 
     componentDidMount: function() {
+        MemoViewerDOM = React.findDOMNode(this.refs._memoViewer);
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -60220,6 +60241,13 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+    },
+
+    _scrollAndFocusTarget: function(position) {
+        console.log("scroll");
+          $(MemoViewerDOM).animate({
+              scrollTop: position
+          }, 450);
     },
 
     render: function() {
@@ -60232,7 +60260,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
                     return React.createElement(MemoItem, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.EDIT_MEMO:
-                    return React.createElement(EditMemoItem, {memo: memo, key: memo.key});
+                    return React.createElement(EditMemoItem, {memo: memo, key: memo.key, scrollAndFocusTarget: this._scrollAndFocusTarget});
             }
         });
 
@@ -60242,7 +60270,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 
         return (
-            React.createElement("div", {id: "memo-viewer"}, 
+            React.createElement("div", {ref: "_memoViewer", id: "memo-viewer"}, 
                 React.createElement("div", {className: "header"}, "메모"), 
                 React.createElement("div", {className: "content"}, 
                     items
@@ -60553,13 +60581,14 @@ function deleteMemo(_targetMemo) {
 }
 
 function startEditMemo(_targetCompleteMemo) {
-    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
-
     for (var idx=0; idx<memos.length; idx++) {
         if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
             endEditMemo(memos[idx]);
         }
     }
+
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
@@ -60570,8 +60599,9 @@ function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
         endEditMemo(_targetEditMemo);
         return;
     }
+    var _nextTargetMemo = memos[index+1];
     endEditMemo(_targetEditMemo);
-    startEditMemo(memos[index+1]);
+    startEditMemo(_nextTargetMemo);
 }
 
 function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
@@ -60582,7 +60612,6 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        console.log(context);
         memos[index-1] = _.extend(memos[index-1], {
             text: memos[index-1].text + '\n\n' + context
         });
@@ -60593,8 +60622,9 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
         return;
     }
     else {
+        var _previousTargetMemo = memos[index-1];
         endEditMemo(_targetEditMemo);
-        startEditMemo(memos[index-1]);
+        startEditMemo(_previousTargetMemo);
     }
 }
 
@@ -60719,6 +60749,18 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-receive');
     },
 
+    emitFocus: function() {
+        this.emit('focus');
+    },
+
+    addFocusListener: function(callback) {
+        this.on('focus', callback);
+    },
+
+    removeFocusListener: function(callback) {
+        this.removeListener('focus', callback);
+    },
+
     addChangeListener: function(callback) {
         this.on('change', callback);
     },
@@ -60795,7 +60837,7 @@ AppDispatcher.register(function(payload) {
             return true;
     }
 
-    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
     }
 
@@ -60885,6 +60927,9 @@ var WebPostUtils = {
         var memos = new Array();
         for (var idx=0,len=_memos.length; idx<len; idx++) {
             if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+                if (_memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+                    _memos[idx].mtype = Constants.MemoType.COMPLETE_MEMO;
+                }
                 memos.push(_memos[idx]);
             }
         }

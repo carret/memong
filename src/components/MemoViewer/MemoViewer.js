@@ -7,6 +7,8 @@ var MemoItem = require('./MemoItem');
 var EditMemoItem = require('./EditMemoItem');
 
 
+var MemoViewerDOM;
+
 function getMemos() {
     return {
         memos: NoteStore.getMemo()
@@ -19,6 +21,7 @@ var MemoViewer = React.createClass({
     },
 
     componentDidMount: function() {
+        MemoViewerDOM = React.findDOMNode(this.refs._memoViewer);
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -28,6 +31,13 @@ var MemoViewer = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+    },
+
+    _scrollAndFocusTarget: function(position) {
+        console.log("scroll");
+          $(MemoViewerDOM).animate({
+              scrollTop: position
+          }, 450);
     },
 
     render: function() {
@@ -40,7 +50,7 @@ var MemoViewer = React.createClass({
                     return <MemoItem memo={memo} key={memo.key} />;
 
                 case Constants.MemoType.EDIT_MEMO:
-                    return <EditMemoItem memo={memo} key={memo.key} />;
+                    return <EditMemoItem memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} />;
             }
         });
 
@@ -50,7 +60,7 @@ var MemoViewer = React.createClass({
 
 
         return (
-            <div id="memo-viewer">
+            <div ref="_memoViewer" id="memo-viewer">
                 <div className="header">메모</div>
                 <div className="content">
                     {items}

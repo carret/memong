@@ -70,13 +70,14 @@ function deleteMemo(_targetMemo) {
 }
 
 function startEditMemo(_targetCompleteMemo) {
-    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
-
     for (var idx=0; idx<memos.length; idx++) {
         if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
             endEditMemo(memos[idx]);
         }
     }
+
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
@@ -87,8 +88,9 @@ function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
         endEditMemo(_targetEditMemo);
         return;
     }
+    var _nextTargetMemo = memos[index+1];
     endEditMemo(_targetEditMemo);
-    startEditMemo(memos[index+1]);
+    startEditMemo(_nextTargetMemo);
 }
 
 function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
@@ -99,7 +101,6 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        console.log(context);
         memos[index-1] = _.extend(memos[index-1], {
             text: memos[index-1].text + '\n\n' + context
         });
@@ -110,8 +111,9 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
         return;
     }
     else {
+        var _previousTargetMemo = memos[index-1];
         endEditMemo(_targetEditMemo);
-        startEditMemo(memos[index-1]);
+        startEditMemo(_previousTargetMemo);
     }
 }
 
@@ -236,6 +238,18 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-receive');
     },
 
+    emitFocus: function() {
+        this.emit('focus');
+    },
+
+    addFocusListener: function(callback) {
+        this.on('focus', callback);
+    },
+
+    removeFocusListener: function(callback) {
+        this.removeListener('focus', callback);
+    },
+
     addChangeListener: function(callback) {
         this.on('change', callback);
     },
@@ -312,7 +326,7 @@ AppDispatcher.register(function(payload) {
             return true;
     }
 
-    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
     }
 
