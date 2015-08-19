@@ -59801,6 +59801,10 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
         }
     },
 
+    _handleClick: function() {
+        MemoActionCreator.startEditMemo(this.props.memo);
+    },
+
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
         if (_headerOneMatches.length >= 2) return true;
@@ -59815,6 +59819,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
         return(
             React.createElement("div", {className: "globaledit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
+                          onClick: this._handleClick, 
                           minRows: 25, 
                           className: "global-edit-memo-textarea"}
                     )
@@ -60588,6 +60593,10 @@ function startEditMemo(_targetCompleteMemo) {
     }
 
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
 
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);

@@ -78,6 +78,10 @@ function startEditMemo(_targetCompleteMemo) {
 
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
 
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
+
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }

@@ -116,6 +116,10 @@ var GlobalEditMemo = React.createClass({
         }
     },
 
+    _handleClick: function() {
+        MemoActionCreator.startEditMemo(this.props.memo);
+    },
+
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
         if (_headerOneMatches.length >= 2) return true;
@@ -130,6 +134,7 @@ var GlobalEditMemo = React.createClass({
         return(
             <div className="globaledit-memo">
                 <Textarea ref="_textarea"
+                          onClick={this._handleClick}
                           minRows={25}
                           className="global-edit-memo-textarea"
                     />
