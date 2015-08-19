@@ -59524,6 +59524,10 @@ var EditMemo = React.createClass({displayName: "EditMemo",
                 case Constants.KeyCode.ARROW_DOWN:
                     this._handleMoveToNext();
                     break;
+
+                case Constants.KeyCode.BACKSPACE:
+                    this._handleMoveToPreviousByBackSpace();
+                    break;
             }
         }.bind(this));
     },
@@ -59585,9 +59589,28 @@ var EditMemo = React.createClass({displayName: "EditMemo",
     _handleMoveToPrevious: function() {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
-                text: text
-            }));
+            if (text == "") {
+                MemoActionCreator.deleteMemo(this.props.memo);
+            }
+            else {
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
+                    text: text
+                }));
+            }
+        }
+    },
+
+    _handleMoveToPreviousByBackSpace: function() {
+        var text = $(TextareaDOM).val();
+        if (0 == TextareaDOM.selectionStart) {
+            if (text == "") {
+                MemoActionCreator.deleteMemo(this.props.memo);
+            }
+            else {
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {
+                    text: text
+                }));
+            }
         }
     },
 
