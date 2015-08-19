@@ -60090,9 +60090,11 @@ module.exports = {
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
-    componentWillReceiveProps: function() {
-        $(React.findDOMNode(this.refs._editMemoItem)).focus();
-
+    componentDidMount: function() {
+        setTimeout(function() {
+            var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;
+            this.props.scrollAndFocusTarget(position - 109);
+        }.bind(this), 150);
     },
 
     render: function() {
@@ -60244,16 +60246,6 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
         NoteStore.removeChangeListener(this._onChange); //Listener 삭제
     },
 
-    _onChange: function() {
-        this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-    },
-
-    _scrollAndFocusTarget: function(position) {
-        console.log("scroll");
-          $(MemoViewerDOM).animate({
-              scrollTop: position
-          }, 450);
-    },
 
     render: function() {
         var items = _.map(this.state.memos, function(memo) {
@@ -60267,7 +60259,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
                 case Constants.MemoType.EDIT_MEMO:
                     return React.createElement(EditMemoItem, {memo: memo, key: memo.key, scrollAndFocusTarget: this._scrollAndFocusTarget});
             }
-        });
+        }.bind(this));
 
         if (typeof items[0] === "undefined") {
             items = React.createElement("div", {className: "no-memo"}, React.createElement("span", null, "NO"), React.createElement("span", null, "MEMO"));
@@ -60275,13 +60267,25 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 
         return (
-            React.createElement("div", {ref: "_memoViewer", id: "memo-viewer"}, 
+            React.createElement("div", {id: "memo-viewer"}, 
                 React.createElement("div", {className: "header"}, "메모"), 
-                React.createElement("div", {className: "content"}, 
+                React.createElement("div", {ref: "_memoViewer", className: "content"}, 
                     items
                 )
             )
         );
+    },
+
+    _onChange: function() {
+        this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+    },
+
+    _scrollAndFocusTarget: function(position) {
+        console.log(position);
+        console.log($(MemoViewerDOM))
+        $(MemoViewerDOM).stop().animate({
+            scrollTop: position
+        }, 450, 'swing');
     }
 });
 
