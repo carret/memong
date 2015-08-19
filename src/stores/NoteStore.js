@@ -44,10 +44,12 @@ function addMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -57,10 +59,13 @@ function addNewMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx+1, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx+1, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -124,12 +129,7 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        memos[index-1] = _.extend(memos[index-1], {
-            text: memos[index-1].text + '\n\n' + context
-        });
-        memos[index] = _.extend(memos[index], {
-            text: ""
-        });
+        addMemo(_targetEditMemo, context);
         startEditMemo(memos[index-1]);
         return;
     }
@@ -148,13 +148,18 @@ function endEditMemo(_targetEditMemo) {
     }
 
     var _newMemos = _parseMemo(_targetEditMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len-1; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len-1; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
+        memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
     }
-
-    memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
+    else {
+        deleteMemo(_targetEditMemo);
+    }
 }
 
 
@@ -192,13 +197,15 @@ function _parseMemo(_unParsedMemo) {
     var len = result.length;
 
     if (len == 0) {
-        var memo = _.extend(protoMemo, {
-            title: "(No Title)",
-            mtype: Constants.MemoType.NONE_MEMO,
-            text: _unParsedMemo.text,
-            date: new Date()
-        });
-        resultMemos.push(memo);
+        if (_unParsedMemo.text != "") {
+            var memo = _.extend(protoMemo, {
+                title: "(No Title)",
+                mtype: Constants.MemoType.NONE_MEMO,
+                text: _unParsedMemo.text,
+                date: new Date()
+            });
+            resultMemos.push(memo);
+        }
     }
     else {
         var index = 0;
@@ -223,7 +230,7 @@ function _parseMemo(_unParsedMemo) {
     }
 
     if (resultMemos.length == 0) {
-        throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
+        return null;
     }
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {

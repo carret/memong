@@ -59520,7 +59520,6 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         TextareaDOM.selectionEnd = text.length;
         $(TextareaDOM).focus();
 
-        console.log(this.props.focusThis);
         if (this.props.focusThis) {
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
@@ -59621,27 +59620,15 @@ var EditMemo = React.createClass({displayName: "EditMemo",
     _handleMoveToPrevious: function() {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            if (text == "") {
-                MemoActionCreator.deleteMemo(this.props.memo);
-            }
-            else {
-                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
-                    text: text
-                }));
-            }
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {text: text}));
         }
     },
 
     _handleMoveToPreviousByBackSpace: function() {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            if (text == "") {
-                MemoActionCreator.deleteMemo(this.props.memo);
-            }
-            else {
-                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {
-                    text: text
-                }));
+            if (TextareaDOM.selectionStart == TextareaDOM.selectionEnd){
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {text: text}));
             }
         }
     },
@@ -60162,11 +60149,14 @@ var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
     componentDidMount: function() {
+        $(React.findDOMNode(this.refs._editMemoItem)).focus();
+
         if (!this.props.memo.haveToFocus) {
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;
-                this.props.scrollAndFocusTarget(position - 109);
-            }.bind(this), 150);
+                var height = $(React.findDOMNode(this.refs._editMemoItem)).height();
+                this.props.scrollAndFocusTarget(position - height);
+            }.bind(this), 300);
         }
     },
 
@@ -60636,10 +60626,12 @@ function addMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -60649,10 +60641,13 @@ function addNewMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx+1, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx+1, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -60716,12 +60711,7 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        memos[index-1] = _.extend(memos[index-1], {
-            text: memos[index-1].text + '\n\n' + context
-        });
-        memos[index] = _.extend(memos[index], {
-            text: ""
-        });
+        addMemo(_targetEditMemo, context);
         startEditMemo(memos[index-1]);
         return;
     }
@@ -60740,13 +60730,18 @@ function endEditMemo(_targetEditMemo) {
     }
 
     var _newMemos = _parseMemo(_targetEditMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len-1; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len-1; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
+        memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
     }
-
-    memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
+    else {
+        deleteMemo(_targetEditMemo);
+    }
 }
 
 
@@ -60784,13 +60779,15 @@ function _parseMemo(_unParsedMemo) {
     var len = result.length;
 
     if (len == 0) {
-        var memo = _.extend(protoMemo, {
-            title: "(No Title)",
-            mtype: Constants.MemoType.NONE_MEMO,
-            text: _unParsedMemo.text,
-            date: new Date()
-        });
-        resultMemos.push(memo);
+        if (_unParsedMemo.text != "") {
+            var memo = _.extend(protoMemo, {
+                title: "(No Title)",
+                mtype: Constants.MemoType.NONE_MEMO,
+                text: _unParsedMemo.text,
+                date: new Date()
+            });
+            resultMemos.push(memo);
+        }
     }
     else {
         var index = 0;
@@ -60815,7 +60812,7 @@ function _parseMemo(_unParsedMemo) {
     }
 
     if (resultMemos.length == 0) {
-        throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
+        return null;
     }
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
