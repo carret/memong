@@ -80,7 +80,7 @@ var MemoItem = React.createClass({
     },
 
     _onEditStart: function() {
-        MemoActionCreator.startEditMemo(this.props.memo);
+        MemoActionCreator.startEditMemoFromMemoViewer(this.props.memo);
     },
 
     render: function() {

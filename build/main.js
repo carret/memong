@@ -59187,6 +59187,13 @@ var MemoActionCreator = {
         });
     },
 
+    startEditMemoFromMemoViewer: function(_targetCompleteMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.START_EDIT_MEMO_FROM_MEMO_VIEWER,
+            targetCompleteMemo: _targetCompleteMemo
+        });
+    },
+
     endEditMemoAndStartNextEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO,
@@ -59513,6 +59520,15 @@ var EditMemo = React.createClass({displayName: "EditMemo",
         TextareaDOM.selectionEnd = text.length;
         $(TextareaDOM).focus();
 
+        console.log(this.props.focusThis);
+        if (this.props.focusThis) {
+            setTimeout(function() {
+                var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
+                var height = $(React.findDOMNode(this.refs._thisEditMemo)).height();
+                this.props.scrollAndFocusTarget(position - height);
+            }.bind(this), 150);
+        }
+
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
 
@@ -59641,7 +59657,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
     render: function () {
         return (
-            React.createElement("div", {className: "edit-memo"}, 
+            React.createElement("div", {ref: "_thisEditMemo", className: "edit-memo"}, 
                 React.createElement(Textarea, {ref: "_textarea", 
                           className: "edit-memo-textarea", 
                           defaultValue: this.props.memo.text}
@@ -59683,7 +59699,7 @@ var Editor = React.createClass({displayName: "Editor",
     },
 
     componentDidMount: function() {
-        EditorDOM = $(React.findDOMNode(this.refs._editor));
+        EditorDOM = React.findDOMNode(this.refs._editor);
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -59700,7 +59716,7 @@ var Editor = React.createClass({displayName: "Editor",
                     return React.createElement(CompleteMemo, {memo: memo, key: memo.key});
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return React.createElement(EditMemo, {memo: memo, key: memo.key});
+                    return React.createElement(EditMemo, {memo: memo, key: memo.key, scrollAndFocusTarget: this._scrollAndFocusTarget, focusThis: memo.haveToFocus});
 
                 case Constants.MemoType.NONE_MEMO :
                     return React.createElement(NoneMemo, {memo: memo, key: memo.key});
@@ -59717,6 +59733,13 @@ var Editor = React.createClass({displayName: "Editor",
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+    },
+
+    _scrollAndFocusTarget: function(position) {
+        var scrollTop = $(EditorDOM).scrollTop();
+        $(EditorDOM).stop().animate({
+            scrollTop: position + scrollTop
+        }, 450, 'swing');
     }
 });
 
@@ -60241,7 +60264,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
     },
 
     _onEditStart: function() {
-        MemoActionCreator.startEditMemo(this.props.memo);
+        MemoActionCreator.startEditMemoFromMemoViewer(this.props.memo);
     },
 
     render: function() {
@@ -60329,8 +60352,6 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
     },
 
     _scrollAndFocusTarget: function(position) {
-        console.log(position);
-        console.log($(MemoViewerDOM))
         $(MemoViewerDOM).stop().animate({
             scrollTop: position
         }, 450, 'swing');
@@ -60460,6 +60481,7 @@ module.exports = {
         ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
+        START_EDIT_MEMO_FROM_MEMO_VIEWER: null,
         END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO: null,
         END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO: null,
         END_EDIT_MEMO: null
@@ -60651,6 +60673,25 @@ function startEditMemo(_targetCompleteMemo) {
     }
 
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.haveToFocus = false;
+    memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function startEditMemoFromMemoViewer(_targetCompleteMemo) {
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
+
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
+
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.haveToFocus = true;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
@@ -60691,6 +60732,11 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
+
+    if (memos[index].hasOwnProperty("haveToFocus")) {
+        memos[index].haveToFocus = false;
+    }
+
     var _newMemos = _parseMemo(_targetEditMemo);
     var len = _newMemos.length;
 
@@ -60880,6 +60926,10 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
+            break;
+
+        case Constants.MemoActionTypes.START_EDIT_MEMO_FROM_MEMO_VIEWER:
+            startEditMemoFromMemoViewer(action.targetCompleteMemo);
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:

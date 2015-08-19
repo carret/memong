@@ -83,6 +83,25 @@ function startEditMemo(_targetCompleteMemo) {
     }
 
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.haveToFocus = false;
+    memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function startEditMemoFromMemoViewer(_targetCompleteMemo) {
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
+
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
+
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.haveToFocus = true;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
@@ -123,6 +142,11 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
+
+    if (memos[index].hasOwnProperty("haveToFocus")) {
+        memos[index].haveToFocus = false;
+    }
+
     var _newMemos = _parseMemo(_targetEditMemo);
     var len = _newMemos.length;
 
@@ -312,6 +336,10 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
+            break;
+
+        case Constants.MemoActionTypes.START_EDIT_MEMO_FROM_MEMO_VIEWER:
+            startEditMemoFromMemoViewer(action.targetCompleteMemo);
             break;
 
         case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:

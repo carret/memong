@@ -64,8 +64,6 @@ var MemoViewer = React.createClass({
     },
 
     _scrollAndFocusTarget: function(position) {
-        console.log(position);
-        console.log($(MemoViewerDOM))
         $(MemoViewerDOM).stop().animate({
             scrollTop: position
         }, 450, 'swing');

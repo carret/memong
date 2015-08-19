@@ -27,6 +27,15 @@ var EditMemo = React.createClass({
         TextareaDOM.selectionEnd = text.length;
         $(TextareaDOM).focus();
 
+        console.log(this.props.focusThis);
+        if (this.props.focusThis) {
+            setTimeout(function() {
+                var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
+                var height = $(React.findDOMNode(this.refs._thisEditMemo)).height();
+                this.props.scrollAndFocusTarget(position - height);
+            }.bind(this), 150);
+        }
+
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
 
@@ -155,7 +164,7 @@ var EditMemo = React.createClass({
 
     render: function () {
         return (
-            <div className="edit-memo">
+            <div ref="_thisEditMemo" className="edit-memo">
                 <Textarea ref="_textarea"
                           className="edit-memo-textarea"
                           defaultValue={this.props.memo.text}
