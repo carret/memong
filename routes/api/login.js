@@ -54,9 +54,9 @@ exports.doRoutes = function(app) {
     function writeCookie(req,res,next) {
         console.log('write cookie');
         res.cookie('username', req.session.passport.user.email, {
-            expires:new Date(Date.now()+9999999999)
+            expires:new Date(Date.now()+9999999999),
             //httpOnly:true,
-            //signed:true
+            signed:true
         });
 
         res.cookie('token', req.session.passport.user.token, {
@@ -67,7 +67,9 @@ exports.doRoutes = function(app) {
             expires:new Date(Date.now()+9999999999)
             //httpOnly:true,
             //signed:true
+
         });
+
         next();
     }
 
@@ -97,9 +99,9 @@ exports.doRoutes = function(app) {
                         }else{
                             console.log("Successfully updated");
                         }
-                        //res.end();
                         next();
                     });
+
 
                 } else {
                     console.log('save');
@@ -144,7 +146,7 @@ exports.doRoutes = function(app) {
                     })
                 }
             },
-            function(userId, newNoteId) {
+            function(userId, newNoteId, callback) {
                 User.findOneAndUpdate(
                     {_id: mongoose.Types.ObjectId(userId)},
                     {$set: {selectNoteId: mongoose.Types.ObjectId(newNoteId)}},
@@ -157,6 +159,7 @@ exports.doRoutes = function(app) {
                         else {
                             console.log("새로운 노트: \n"+result);
                             callback();
+
                         }
                     }
                 )
