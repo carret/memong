@@ -25,12 +25,25 @@ exports.doRoutes = function(app) {
     app.post('/user',allUser)
 };
 
-var updateTree =  function(existingCate, updatedCate){
+var updateTree =  function(existingCate){
 
-    // treeview Update
+    var i = 0, j=0;
+    var updatedTree = {tree : [{
+        module: 'ROOT',
+        type : 'folder',
+        id : 'root',
+        children : []
+    }]};
 
+    for(i = 0 ; i < updatedCate.length ; i++ ) {
+
+        for(j = 0 ; j < updatedTree.length ; j++ ) {
+            //if()updatedTree.tree.push();
+        }
+    }
     return updatedCate;
 }
+
 var escapeKey =  function(obj) {
     return  key.escape(obj);
 }

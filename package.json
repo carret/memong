@@ -17,6 +17,7 @@
     "express-session": "^1.11.3",
     "flux": "^2.0.3",
     "gulp-less": "^3.0.3",
+    "jqtree": "^1.2.1",
     "material-ui": "0.10.2",
     "mongodb": "^2.0.40",
     "mongoose": "^4.1.0",
