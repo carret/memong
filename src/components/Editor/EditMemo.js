@@ -88,10 +88,6 @@ var EditMemo = React.createClass({
                 }
                 var len = index.length;
 
-                resultContext = text.slice(0, index[len-1]);
-                updateValue = text.slice(index[len-1], text.length);
-
-
                 MemoActionCreator.addMemoInEditMemo(this.props.memo, text);
             }
         }

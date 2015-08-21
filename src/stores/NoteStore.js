@@ -62,9 +62,6 @@ function addMemoInEditMemo(_targetEditMemo, _allContext) {
     });
     var _newMemos = _parseMemo(newMemo);
 
-    console.log("allContext", newMemo);
-    console.log("newMemos", _newMemos);
-
     memos.splice(index, 1);
     if (_newMemos != null) {
         var len = _newMemos.length;
@@ -218,8 +215,6 @@ function _parseMemo(_unParsedMemo) {
     }
     var len = result.length;
 
-    console.log("result", result);
-
     if (len == 0) {
         if (_unParsedMemo.text != "") {
             var memo = _.extend(protoMemo, {
@@ -243,17 +238,13 @@ function _parseMemo(_unParsedMemo) {
                 index = result[idx+1]._index;
             }
 
-            console.log("text", text);
-            console.log("result[idx]",result[idx]);
-
             var _memo = _.extend({
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
                 text: text,
                 mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
-            console.log("_memo",_memo);
-            console.log("idx", idx);
+
             resultMemos.push(_memo);
         }
     }

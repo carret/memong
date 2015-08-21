@@ -38854,9 +38854,18 @@ var React = require('react');
 //});
 
 var Logout = React.createClass({displayName: "Logout",
+    handleLogout: function() {
+        location.href = '/logout';
+    },
+
     render : function() {
         return (
-            React.createElement("a", {href: "/logout"}, "로그아웃")
+            React.createElement("div", {className: "account", onClick: this.handleLogout}, 
+                React.createElement("button", {onClick: this.handleLogout}, 
+                    React.createElement("i", {className: "material-icons"}, ""), 
+                    React.createElement("span", null, "Seokju Na")
+                )
+            )
         )
     }
 });
@@ -39086,10 +39095,6 @@ var EditMemo = React.createClass({displayName: "EditMemo",
                     index.push(_arr.index);
                 }
                 var len = index.length;
-
-                resultContext = text.slice(0, index[len-1]);
-                updateValue = text.slice(index[len-1], text.length);
-
 
                 MemoActionCreator.addMemoInEditMemo(this.props.memo, text);
             }
@@ -40155,9 +40160,6 @@ function addMemoInEditMemo(_targetEditMemo, _allContext) {
     });
     var _newMemos = _parseMemo(newMemo);
 
-    console.log("allContext", newMemo);
-    console.log("newMemos", _newMemos);
-
     memos.splice(index, 1);
     if (_newMemos != null) {
         var len = _newMemos.length;
@@ -40311,8 +40313,6 @@ function _parseMemo(_unParsedMemo) {
     }
     var len = result.length;
 
-    console.log("result", result);
-
     if (len == 0) {
         if (_unParsedMemo.text != "") {
             var memo = _.extend(protoMemo, {
@@ -40336,17 +40336,13 @@ function _parseMemo(_unParsedMemo) {
                 index = result[idx+1]._index;
             }
 
-            console.log("text", text);
-            console.log("result[idx]",result[idx]);
-
             var _memo = _.extend({
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
                 text: text,
                 mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
-            console.log("_memo",_memo);
-            console.log("idx", idx);
+
             resultMemos.push(_memo);
         }
     }

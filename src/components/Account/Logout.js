@@ -14,9 +14,18 @@ var React = require('react');
 //});
 
 var Logout = React.createClass({
+    handleLogout: function() {
+        location.href = '/logout';
+    },
+
     render : function() {
         return (
-            <a href='/logout'>로그아웃</a>
+            <div className="account" onClick={this.handleLogout}>
+                <button  onClick={this.handleLogout}>
+                    <i className="material-icons">&#xE7FD;</i>
+                    <span>Seokju Na</span>
+                </button>
+            </div>
         )
     }
 });

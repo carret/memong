@@ -284,38 +284,44 @@ html, body {
                 display: -ms-flexbox;
                 display: flex;
 
-                -webkit-box-pack: center;
-                -webkit-justify-content: center;
-                -moz-box-pack: center;
-                -ms-flex-pack: center;
-                justify-content: center;
-
-                will-change: background-color, border;
-
-                -webkit-transition: all .3s ease;
-                -moz-transition: all .3s ease;
-                -ms-transition: all .3s ease;
-                -o-transition: all .3s ease;
-                transition: all .3s ease;
-
-
-                :hover { background-color: @color-red-300; }
 
                 button {
                     min-width: 107px;
-                    display: inline-block;
                     height: inherit;
                     outline: none;
                     border: none;
                     margin: 0;
-                    background-color: @color-red-500;
+
                     color: @color-grey-50;
+                    background-color: @color-red-500;
 
                     -webkit-box-sizing: border-box;
                     -moz-box-sizing: border-box;
                     box-sizing: border-box;
 
+                    will-change: background-color;
+
+                    -webkit-transition: background-color .3s ease;
+                    -moz-transition: background-color .3s ease;
+                    -ms-transition: background-color .3s ease;
+                    -o-transition: background-color .3s ease;
+                    transition: background-color .3s ease;
+
                     cursor: pointer;
+
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: -moz-box;
+                    display: -ms-flexbox;
+                    display: flex;
+
+                    -webkit-box-pack: center;
+                    -webkit-justify-content: center;
+                    -moz-box-pack: center;
+                    -ms-flex-pack: center;
+                    justify-content: center;
+
+                    &:hover { background-color: @color-red-300; }
 
 
                     i {
@@ -887,9 +893,9 @@ html, body {
 
                 .edit-memo {
                     overflow: visible;
-                    margin-top: 1.5rem;
-                    margin-bottom: 1.5rem;
-                    padding: .5rem;
+                    margin-top: 2.5rem;
+                    margin-bottom: 2.5rem;
+                    padding: .75rem;
 
                     textarea {
                         width: 100%;
