@@ -55,11 +55,11 @@ var EditMemo = React.createClass({
                     break;
 
                 case Constants.KeyCode.ARROW_UP:
-                    this._handleMoveToPrevious();
+                    this._handleMoveToPrevious(event);
                     break;
 
                 case Constants.KeyCode.ARROW_DOWN:
-                    this._handleMoveToNext();
+                    this._handleMoveToNext(event);
                     break;
 
                 case Constants.KeyCode.BACKSPACE:
@@ -76,6 +76,8 @@ var EditMemo = React.createClass({
 
         if (headerOneMatches != undefined) {
             if (this.__checkIfHeaderAreTwo(headerOneMatches)) {
+                console.log(text);
+
                 var resultContext;
                 var updateValue;
 
@@ -89,9 +91,8 @@ var EditMemo = React.createClass({
                 resultContext = text.slice(0, index[len-1]);
                 updateValue = text.slice(index[len-1], text.length);
 
-                MemoActionCreator.addMemo(this.props.memo, resultContext);
-                $(TextareaDOM).val(updateValue);
-                TextareaDOM.focus();
+
+                MemoActionCreator.addMemoInEditMemo(this.props.memo, text);
             }
         }
     },
@@ -108,26 +109,28 @@ var EditMemo = React.createClass({
         }
     },
 
-    _handleMoveToNext: function() {
+    _handleMoveToNext: function(e) {
         var text = $(TextareaDOM).val();
         if (text.length == TextareaDOM.selectionStart) {
+            e.preventDefault();
             MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
                 text: text
             }));
+            return false;
         }
     },
 
     _handleMoveToNextByTAB: function() {
         var text = $(TextareaDOM).val();
-        MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
-            text: text
-        }));
+        MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {text: text}));
     },
 
-    _handleMoveToPrevious: function() {
+    _handleMoveToPrevious: function(e) {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
+            e.preventDefault();
             MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {text: text}));
+            return false;
         }
     },
 

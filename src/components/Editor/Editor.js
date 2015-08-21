@@ -60,6 +60,7 @@ var Editor = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
+        console.log(this.state.memos);
     },
 
     _scrollAndFocusTarget: function(position) {

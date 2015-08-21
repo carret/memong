@@ -34,6 +34,7 @@ module.exports = {
     MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
+        ADD_MEMO_IN_EDIT_MEMO: null,
         ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
