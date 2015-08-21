@@ -42,14 +42,14 @@ var updateTree =  function(existingCate){
         }
     }
     return updatedCate;
-}
+};
 
 var escapeKey =  function(obj) {
     return  key.escape(obj);
-}
+};
 var unescapeKey =  function(obj) {
     return  key.unescape(obj);
-}
+};
 
 /*Test API*/
 var allNote =  function(req ,res){
@@ -72,6 +72,19 @@ var allUser =  function(req ,res){
         res.send(test);
     });
 }
+
+var loadTree = function(req ,res){
+
+    var username = escapeKey(req.body.username);
+
+    User.findOne ( {token : username } , function( err, validUser) {
+        if (err) res.send('error');
+        if (validUser === null) res.send(true, 'unregistered User');
+        else res.send(validUser.category);
+    });
+};
+
+
 
 /*Note API*/
 var addNote = function(req ,res) {

@@ -1,7 +1,9 @@
 var React = require('react');
 var jqtree = require('jqtree');
-var elTree, addNoteDOM, addFolderDOM, removeNodeDOM , renameNodeDOM;
+var WebPostUtils = require('../utils/WebPostUtils');
+var elTree, addNoteDOM, addFolderDOM;
 var _id= 8;
+var _username = 'cho';
 
 var DirectoryViewer = React.createClass({
 
@@ -33,6 +35,9 @@ var DirectoryViewer = React.createClass({
                 ]
             }];
         // 서버에서 가져오기
+
+
+        WebPostUtils.postDirectory(_username);
 
         return data;
     },

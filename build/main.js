@@ -63399,7 +63399,7 @@ module.exports = Logout;
 },{"react":379}],447:[function(require,module,exports){
 var React = require('react');
 var jqtree = require('jqtree');
-var elTree, addNoteDOM, addFolderDOM, removeNodeDOM , renameNodeDOM;
+var elTree, addNoteDOM, addFolderDOM;
 var _id= 8;
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
