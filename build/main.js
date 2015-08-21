@@ -63399,61 +63399,155 @@ module.exports = Logout;
 },{"react":379}],447:[function(require,module,exports){
 var React = require('react');
 var jqtree = require('jqtree');
-var directoryTreeDOM, addNoteDOM, addFolderDOM;
+var elTree, addNoteDOM, addFolderDOM, removeNodeDOM , renameNodeDOM;
+var _id= 8;
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
-    componentDidMount: function() {
-
-        directoryTreeDOM = React.findDOMNode(this.refs.tree1);
+    _initComponent : function(){
+        elTree = React.findDOMNode(this.refs.tree1);
         addNoteDOM = React.findDOMNode(this.refs.btn_addN);
         addFolderDOM = React.findDOMNode(this.refs.btn_addF);
+    },
 
-
+    _getDataToDB : function () {
 
         var data = [
             {
-                label: 'node1', id: 1,
+                label: 'root', id: 0, type: 'folder',
                 children: [
-                    { label: 'child1', id: 2 },
-                    { label: 'child2', id: 3 }
+                    {
+                        label: 'node1', id: 1, type: 'folder',
+                        children: [
+                            {label: 'child1', id: 2, type: 'note'},
+                            {label: 'child2', id: 3, type: 'note'}
+                        ]
+                    },
+                    {
+                        label: 'node2', id: 4, type: 'folder',
+                        children: [
+                            {label: 'child3', id: 5, type: 'note'}
+                        ]
+                    }
                 ]
-            },
-            {
-                label: 'node2', id: 4,
-                children: [
-                    { label: 'child3', id: 5 }
-                ]
-            }
-        ];
+            }];
+        // 서버에서 가져오기
 
-        $(directoryTreeDOM).tree({
-            data: data,
+        return data;
+    },
+
+    _initDirTreeDOM : function(){
+
+        var treeData = this._getDataToDB();
+
+        $(elTree).tree({
+            data: treeData,
             autoOpen: true,
             dragAndDrop: true,
 
             onCreateLi: function(node, $li) {
-                $li.find('.jqtree-title').after('<a class="icon_mod">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    mod</a>');
-                $li.find('.jqtree-title').after('<a class="icon_del">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; del</a>');
+                $li.find('.jqtree-title').after('<a class="icon_mod" id="btn_mod"  ref="btn_mod" onClick="btnMd_click();"  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    mod</a>');
+                $li.find('.jqtree-title').after('<a class="icon_del" id="btn_rm"  ref="btn_del" onClick="btnRm_click();" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; del</a>');
             }
         });
+    },
 
+    _treeSelectEvent : function(event){
 
-        $(addNoteDOM).click(function()
-        {
-            console.log($(directoryTreeDOM));
-            var node1 = $((directoryTreeDOM), 'getNodeByName', 'child1');
-            console.log(node1);
-            $(directoryTreeDOM).tree(
+        if (event.node) {
+            var node = event.node;
+            console.log(node);
+            var n =  $(elTree).find(node);
+            console.log($(n));
+            $(n).find('a').css('background-color', 'red');
+            console.log($(n).find('a').css('background-color'));
+
+        }
+        else {
+            // event.node is null
+            // a node was deselected
+            // e.previous_node contains the deselected node
+        }
+    }, // testing......
+
+    _bindTreeEvent: function() {
+
+        $(elTree).bind(
+            'tree.move', function(event){
+                if(event.move_info.target_node.type == "note" && event.move_info.position == "inside") event.preventDefault();
+                else if(event.move_info.moved_node.id == 0) event.preventDefault();
+                else if(event.move_info.target_node.id == 0 && event.move_info.position == 'before')  event.preventDefault();
+            }
+        );
+
+        $(elTree).bind(
+            'tree.select', function(event){ });
+    },
+
+    _addNoteToTree : function(){
+
+        $(addNoteDOM).click(function() {
+
+            var notePosition = null;
+            var node = $(elTree).tree('getSelectedNode');
+
+            if (node == false) node = $(elTree).tree('getNodeById', 0);
+            console.log(node);
+            if (node.type == 'note') notePosition = 'addNodeAfter';
+            else notePosition = 'appendNode';
+
+            $(elTree).tree(
                 'addNodeAfter',
                 {
-                    label: 'new_node',
-                    id: 456
+                    label: 'new_note',
+                    type: 'note',
+                    id: _id++
                 },
-                node1
+                node
+            );
+        })
+    },
+
+    _addFolderToTree : function() {
+
+        $(addFolderDOM).click(function() {
+
+            var folderPosition = null;
+            var node = $(elTree).tree('getSelectedNode');
+
+            if(node == false) node = $(elTree).tree('getNodeById', 0);
+
+            if(node.type == 'note') folderPosition = 'addNodeAfter';
+            else folderPosition = 'appendNode';
+
+            $(elTree).tree(
+                folderPosition,
+                {
+                    label: 'new_folder',
+                    type: 'folder',
+                    id: _id++
+                },
+                node
             );
 
-        });
+        })
+
+    },
+
+    _onClickEvent : function(){
+
+        this._addFolderToTree();
+        this._addNoteToTree();
+
+    },
+
+    componentDidMount: function() {
+
+        this._initComponent();
+        this._initDirTreeDOM();
+
+        this._onClickEvent();
+        this._bindTreeEvent();
     },
 
     render: function() {
@@ -63463,8 +63557,9 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                 React.createElement("div", {className: "addNode"}, 
                     React.createElement("button", {ref: "btn_addN"}, "add note"), 
                     React.createElement("button", {ref: "btn_addF"}, "add folder"), " "), 
-                React.createElement("div", {className: "content"}, " ", React.createElement("div", {ref: "tree1", 
-                                               className: "directory-viewer-tree"}), " ")
+                React.createElement("div", {className: "content"}, " ", React.createElement("div", {id: "tree1", ref: "tree1", 
+                                               className: "directory-viewer-tree"})
+                )
             )
         )
     }
@@ -64271,8 +64366,6 @@ var Header = require('./components/Header');
 
 
 MemoActions.initMemo([]);
-
-
 
 React.render(
     React.createElement("div", {id: "app-inner"}, 
