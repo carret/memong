@@ -8,48 +8,27 @@ var Schema = mongoose.Schema,
 
 var User = {
 
-    token : {
-        type : Object,
-        unique : true,
-        required : true
-    },
     username : {
         type : String,
         required:true
     },
 
-    /*
-    root :{
-        type: ObjectId,
-        required: true
-    },*/
-
-    servicetype :  {
+    tree : {
         type : String,
         required : true
     },
 
-    category : [
-        {
-            /* file && note categories */
-            name: {
-                type: String,
-                required: true
-            },
-            type: {
-                /*  type ::  dir / note */
-                type: String,
-                required: true
-            },
-            nid:{
-                type : ObjectId
-            },
-            parent: {
-                type: String,
-                required : true
-            }
+    treeTable : [{
+
+        id : {
+            type : String,
+            required : true
+        },
+
+        nid : {
+            type : ObjectId
         }
-    ],
+    } ],
 
     hashtable :
     [

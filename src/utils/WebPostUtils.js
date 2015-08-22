@@ -1,6 +1,6 @@
-
+var Constants = require('../constants/Constants');
+var DirectoryServerAction = require('../actions/DirectoryServerAction');
 var request = require('superagent');
-
 
 var WebPostUtils = {
 
@@ -31,25 +31,42 @@ var WebPostUtils = {
                 }
             });
     },*/
-
-    postDirectory: function(_username) {
-
-       /* var _escapedTree = (function() {
-
-        })(_tree); */
+    loadDirectory: function(_username, callback) {
 
         request
-            .post('/note/load')
-            .send({username: _username})
-            .set('API-Key', '/note/load')
+            .post(Constants.API.POST_ROAD_DIRECTORY)
+            .send({username: _username })
+            .set('API-Key', Constants.API.POST_ROAD_DIRECTORY)
             .set('Accept', 'application/json')
             .end(function(err,res) {
-                if (res.ok) {
-                    console.log(res.body);
-                }
-                else {
+                if (res.ok) callback(res.body);
+                else callback('error');
+            });
+    },
 
+    postDirectory: function(_username, _tree , _type, _data) {
+
+        var _action = {
+            type : _type,
+            tree : _tree,
+            data : _data
+            } ;
+
+        request
+            .post(Constants.API.POST_DIRECTORY)
+            .send({
+                username: _username,
+                action : _action
+            })
+            .set('API-Key', Constants.API.POST_DIRECTORY)
+            .set('Accept', 'application/json')
+            .end(function(err,res) {
+                if (res.ok){
+                    DirectoryServerAction.successNoteUpdate(_tree);
+                    console.log(res.body.noteId);
+                    // 노트 불러오기
                 }
+                else console.log('error');
             });
     }
 };
