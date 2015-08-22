@@ -21,4 +21,4 @@ var DirectoryServerAction = {
     }
 };
 
-module.exports = DirectoryAction;
+module.exports = DirectoryServerAction;

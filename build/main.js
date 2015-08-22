@@ -65828,6 +65828,95 @@ module.exports = function(arr, fn, initial){
 
 },{}],448:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
+var DirectoryActionConstants = require('../constants/MemoActionConstants');
+var WebPostUtils = require('../utils/WebPostUtils');
+var Constants = require('../constants/Constants');
+
+var _username = 'true';
+
+var DirectoryAction = {
+
+    addNote_updateDB: function(_tree , _type, _data) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.ADD_NOTE,
+        });
+        WebPostUtils.postDirectory(_username, _tree , _type, _data);
+    },
+
+    renameNote_updateDB: function(_tree, _type ,_nodeId) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.RENAME_NOTE,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type, _nodeId)
+    },
+
+    deleteNote_updateDB: function(_tree, _type ,_nodeId) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.DELETE_NOTE,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type, _nodeId);
+    },
+
+    addFolder_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.ADD_FOLDER,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type)
+    },
+    
+    renameFolder_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.RENAME_FOLDER,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type)
+    },
+    
+    deleteFolder_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.DELETE_FOLDER,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type)
+    },
+    
+
+    moveNode_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.MOVE_TREE,
+        });
+        WebPostUtils.postDirectory(_username, _tree, _type)
+    }
+};
+
+module.exports = DirectoryAction;
+
+},{"../constants/Constants":470,"../constants/MemoActionConstants":471,"../dispatcher/AppDispatcher":473,"../utils/WebPostUtils":477}],449:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var WebPostUtils = require('../utils/WebPostUtils');
+var Constants = require('../constants/Constants');
+
+var _username = 'true';
+
+var DirectoryServerAction = {
+
+    successNoteUpdate: function(_tree) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryServerAction.UPDATE_NOTE,
+            tree: _tree
+        });
+    },
+
+    successTreeUpdate: function(_tree) { /* Folder + move Update*/
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryServerAction.UPDATE_TREE,
+            tree: _tree
+        });
+    }
+};
+
+module.exports = DirectoryServerAction;
+
+},{"../constants/Constants":470,"../dispatcher/AppDispatcher":473,"../utils/WebPostUtils":477}],450:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
 var MemoActionConstants = require('../constants/MemoActionConstants');
 
 var MemoActions = {
@@ -65870,7 +65959,7 @@ var MemoActions = {
 
 module.exports = MemoActions;
 
-},{"../constants/MemoActionConstants":469,"../dispatcher/AppDispatcher":471}],449:[function(require,module,exports){
+},{"../constants/MemoActionConstants":471,"../dispatcher/AppDispatcher":473}],451:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -65934,7 +66023,7 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 });
 
 module.exports = LoginBtn;
-},{"rc-dialog":188,"react":380}],450:[function(require,module,exports){
+},{"rc-dialog":188,"react":380}],452:[function(require,module,exports){
 var React = require('react');
 
 var Logout = React.createClass({displayName: "Logout",
@@ -65953,17 +66042,20 @@ var Logout = React.createClass({displayName: "Logout",
 
 module.exports = Logout;
 
-},{"react":380}],451:[function(require,module,exports){
+},{"react":380}],453:[function(require,module,exports){
 var React = require('react');
 var async = require('async');
 var jqtree = require('jqtree');
 var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
+var DirectoryActions = require('../../actions/DirectoryAction');
+var DirectoryStore = require('../../stores/DirectoryStore');
+
 var elTree, addNoteDOM, addFolderDOM;
 var _id;
 var _username = 'true';
 
-var _redundancyCheck = function(parentNode, noteTitle, callback)
+function _redundancyCheck(parentNode, noteTitle, callback)
 {
     var i;
     for ( i=0; i < parentNode.children.length; i++) {
@@ -65976,7 +66068,12 @@ var _redundancyCheck = function(parentNode, noteTitle, callback)
     if(parentNode.children.length == i)  callback();
     else callback('Duplicated Name');
 
+};
+
+function getTree() {
+    return DirectoryStore.getTree();
 }
+
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
@@ -65985,6 +66082,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         addNoteDOM = React.findDOMNode(this.refs.btn_addN);
         addFolderDOM = React.findDOMNode(this.refs.btn_addF);
     },
+
 
     _getDataToDB : function () {
 
@@ -66033,8 +66131,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                 else if(event.move_info.target_node.id == 0 && event.move_info.position == 'before')  event.preventDefault();
 
                 console.log(($(elTree).tree('getTree')).children);
-
-                $('#tree1').tree('loadData', ($(elTree).tree('getTree')).children);
             }
         );
 
@@ -66042,15 +66138,13 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
             'tree.select', function(event){ });
     },
 
-
     _addNoteToTree : function(){
 
         $(addNoteDOM).click(function() {
 
-            var noteTitle = 'new_note';
-            var preTreeData=  $(elTree).tree('getTree');
-            var treeData;
+            var noteTitle = 'new_note' + (_id+1); // 다이얼로그 입력
             var node = $(elTree).tree('getSelectedNode');
+            var treeData, preTreeData=  $(elTree).tree('toJson');
 
             if (node == false) node = $(elTree).tree('getNodeById', 0);
             if (node.type == 'note') node = node.parent;
@@ -66058,6 +66152,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
             _redundancyCheck(node, noteTitle,function(err) {
 
                 if(err == null) {
+
                     $(elTree).tree(
                         'appendNode',
                         {
@@ -66067,18 +66162,15 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                         },
                         node
                     );
-
                     treeData = $(elTree).tree('toJson');
-                    console.log($(elTree).tree('toJson'));
 
-                    WebPostUtils.postDirectory(_username, treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
+                    console.log(preTreeData);
+                    $(elTree).tree('loadData', JSON.parse(preTreeData));
 
-
+                    DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
                 }
-                else {
-
+                else
                     console.log(err); // 안내 alert 띄움
-                }
             });
 
         })
@@ -66117,7 +66209,13 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
     },
 
+    componentWillMount: function(){
+        DirectoryStore.removeTreeChangeListener(this._onChange);
+    },
+
     componentDidMount: function() {
+
+        DirectoryStore.addTreeChangeListener(this._onChange);
 
         this._initComponent();
         this._getDataToDB();
@@ -66126,6 +66224,10 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         this._bindTreeEvent();
     },
 
+    _onChange: function() {
+
+        $(elTree).tree('loadData', JSON.parse(getTree()));
+    },
     render: function() {
         return (
             React.createElement("div", {id: "directory-viewer"}, 
@@ -66143,7 +66245,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-},{"../../constants/Constants":468,"../../utils/WebPostUtils":474,"async":1,"jqtree":183,"react":380}],452:[function(require,module,exports){
+},{"../../actions/DirectoryAction":448,"../../constants/Constants":470,"../../stores/DirectoryStore":475,"../../utils/WebPostUtils":477,"async":1,"jqtree":183,"react":380}],454:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -66175,7 +66277,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActions":448,"react":380,"remarkable":381}],453:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],455:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -66293,7 +66395,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActions":448,"../../constants/MemoActionConstants":469,"../../constants/MemoTypeConstants":470,"react":380,"react-textarea-autosize":218,"underscore":447}],454:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":471,"../../constants/MemoTypeConstants":472,"react":380,"react-textarea-autosize":218,"underscore":447}],456:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -66369,7 +66471,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/MemoTypeConstants":470,"../../stores/MemoStore":473,"./CompleteMemo":452,"./EditMemo":453,"./GlobalEditMemo":455,"./NoneMemo":456,"react":380,"underscore":447}],455:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":472,"../../stores/MemoStore":476,"./CompleteMemo":454,"./EditMemo":455,"./GlobalEditMemo":457,"./NoneMemo":458,"react":380,"underscore":447}],457:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
@@ -66484,7 +66586,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActions":448,"../../constants/MemoActionConstants":469,"../../constants/MemoTypeConstants":470,"react":380,"react-textarea-autosize":218,"underscore":447}],456:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":471,"../../constants/MemoTypeConstants":472,"react":380,"react-textarea-autosize":218,"underscore":447}],458:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -66516,7 +66618,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActions":448,"react":380,"remarkable":381}],457:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],459:[function(require,module,exports){
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -66533,7 +66635,7 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
-},{"react":380}],458:[function(require,module,exports){
+},{"react":380}],460:[function(require,module,exports){
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -66594,7 +66696,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"./Account/Login":449,"./Account/Logout":450,"./Exporter/Exporter":457,"./MemoSearcher/MemoSearcher":460,"./NoteLoader/NoteLoader":467,"react":380}],459:[function(require,module,exports){
+},{"./Account/Login":451,"./Account/Logout":452,"./Exporter/Exporter":459,"./MemoSearcher/MemoSearcher":462,"./NoteLoader/NoteLoader":469,"react":380}],461:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -66671,7 +66773,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-},{"./DirectoryViewer/DirectoryViewer":451,"./Editor/Editor":454,"./MemoViewer/MemoViewer":464,"./NoteHeader/NoteHeader":465,"react":380}],460:[function(require,module,exports){
+},{"./DirectoryViewer/DirectoryViewer":453,"./Editor/Editor":456,"./MemoViewer/MemoViewer":466,"./NoteHeader/NoteHeader":467,"react":380}],462:[function(require,module,exports){
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -66717,7 +66819,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 });
 
 module.exports=AutoInput;
-},{"./utils":461,"react":380,"react-autosuggest":213}],461:[function(require,module,exports){
+},{"./utils":463,"react":380,"react-autosuggest":213}],463:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -66726,7 +66828,7 @@ function escapeRegexCharacters(str) {
 module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
-},{}],462:[function(require,module,exports){
+},{}],464:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -66743,7 +66845,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":380}],463:[function(require,module,exports){
+},{"react":380}],465:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 
@@ -66770,7 +66872,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActions":448,"react":380}],464:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380}],466:[function(require,module,exports){
 var React = require('react');
 var MemoStore = require('../../stores/MemoStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -66835,7 +66937,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/MemoTypeConstants":470,"../../stores/MemoStore":473,"./EditMemoItem":462,"./MemoItem":463,"react":380,"underscore":447}],465:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":472,"../../stores/MemoStore":476,"./EditMemoItem":464,"./MemoItem":465,"react":380,"underscore":447}],467:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
@@ -66856,7 +66958,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-},{"./ToggleAsideButton":466,"react":380}],466:[function(require,module,exports){
+},{"./ToggleAsideButton":468,"react":380}],468:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -66873,7 +66975,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-},{"react":380}],467:[function(require,module,exports){
+},{"react":380}],469:[function(require,module,exports){
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -66886,7 +66988,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-},{"react":380}],468:[function(require,module,exports){
+},{"react":380}],470:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -66943,28 +67045,33 @@ module.exports = {
     }),
 
     DirectoryAction : keyMirror({
-    LOAD_TREE: null,
-    MOVE_TREE: null,
+        LOAD_TREE: null,
+        MOVE_TREE: null,
 
-    ADD_NOTE: null,
-    RENAME_NOTE: null,
-    DELETE_NOTE: null,
+        ADD_NOTE: null,
+        RENAME_NOTE: null,
+        DELETE_NOTE: null,
 
-    DELETE_FOLDER: null,
-    ADD_FOLDER: null,
-    RENAME_FOLDER: null
+        DELETE_FOLDER: null,
+        ADD_FOLDER: null,
+        RENAME_FOLDER: null
+
     }),
 
+    DirectoryServerAction: keyMirror({
+
+            UPDATE_NOTE: null,
+            UPDATE_TREE: null
+        }
+    ),
+
     DirectoryAPIType : keyMirror({
-        MOVE_TREE: 'moveNote',
 
         ADD_NOTE: 'addNote',
         RENAME_NOTE: 'renameNote',
         DELETE_NOTE: 'deleteNote',
 
-        DELETE_FOLDER: 'deleteFolder',
-        ADD_FOLDER: 'addFolder',
-        RENAME_FOLDER: 'renameFolder'
+        CHANGE_TREE: 'updateTree' /* Folder Event + Move Event */
     }),
 
     SearchActionTypes: keyMirror({
@@ -67001,7 +67108,7 @@ module.exports = {
     }
 };
 
-},{"react/lib/keyMirror":365}],469:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],471:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -67012,7 +67119,7 @@ module.exports = keyMirror({
     END_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":365}],470:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],472:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -67022,7 +67129,7 @@ module.exports = keyMirror({
     GLOBAL_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":365}],471:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],473:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -67044,7 +67151,7 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":170}],472:[function(require,module,exports){
+},{"flux":170}],474:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -67066,7 +67173,64 @@ React.render(
     ),
     document.getElementById('app')
 );
-},{"./actions/MemoActions":448,"./components/Editor/Editor":454,"./components/Header":458,"./components/Main":459,"./components/MemoViewer/MemoViewer":464,"react":380,"react-ui-tree":223}],473:[function(require,module,exports){
+},{"./actions/MemoActions":450,"./components/Editor/Editor":456,"./components/Header":460,"./components/Main":461,"./components/MemoViewer/MemoViewer":466,"react":380,"react-ui-tree":223}],475:[function(require,module,exports){
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var EventEmitter = require('events').EventEmitter;
+var Constants = require('../constants/Constants');
+
+var _ = require('underscore');
+var sui = require('simple-unique-id');
+
+
+//Memo Data
+var _tree= [];
+
+
+//서버로부터 불러온 초기 메모 데이터 설정
+function initTree(tree) {
+    _tree = _tree.concat(tree);
+}
+
+function reloadTree(tree){
+    _tree = tree;
+}
+
+//Public Function
+var DirectoryStore = _.extend({}, EventEmitter.prototype, {
+    getTree: function() {
+        return _tree;
+    },
+
+    emitChange: function() {
+        this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
+    },
+
+    addTreeChangeListener: function(callback) {
+        this.on('change', callback);
+    },
+
+    removeTreeChangeListener: function(callback) {
+        this.removeListener('change', callback);
+    }
+});
+
+AppDispatcher.register(function(payload) {
+
+    var action = payload.action;
+
+    if ( action.actionType == Constants.DirectoryServerAction.UPDATE_NOTE
+        || action.actionType == Constants.DirectoryServerAction.UPDATE_TREE){
+
+        reloadTree(action.tree);
+        DirectoryStore.emitChange();
+    }
+
+    return true;
+});
+
+module.exports = DirectoryStore;
+
+},{"../constants/Constants":470,"../dispatcher/AppDispatcher":473,"events":149,"simple-unique-id":442,"underscore":447}],476:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MemoActionConstants = require('../constants/MemoActionConstants');
@@ -67272,8 +67436,9 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/MemoActionConstants":469,"../constants/MemoTypeConstants":470,"../dispatcher/AppDispatcher":471,"events":149,"simple-unique-id":442,"underscore":447}],474:[function(require,module,exports){
+},{"../constants/MemoActionConstants":471,"../constants/MemoTypeConstants":472,"../dispatcher/AppDispatcher":473,"events":149,"simple-unique-id":442,"underscore":447}],477:[function(require,module,exports){
 var Constants = require('../constants/Constants');
+var DirectoryServerAction = require('../actions/DirectoryServerAction');
 var request = require('superagent');
 
 var WebPostUtils = {
@@ -67325,8 +67490,6 @@ var WebPostUtils = {
             tree : _tree,
             data : _data
             } ;
-        console.log(_action);
-
 
         request
             .post(Constants.API.POST_DIRECTORY)
@@ -67337,7 +67500,11 @@ var WebPostUtils = {
             .set('API-Key', Constants.API.POST_DIRECTORY)
             .set('Accept', 'application/json')
             .end(function(err,res) {
-                if (res.ok) console.log(res.body);
+                if (res.ok){
+                    DirectoryServerAction.successNoteUpdate(_tree);
+                    console.log(res.body.noteId);
+                    // ��Ʈ �ҷ�����
+                }
                 else console.log('error');
             });
     }
@@ -67345,4 +67512,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-},{"../constants/Constants":468,"superagent":444}]},{},[472]);
+},{"../actions/DirectoryServerAction":449,"../constants/Constants":470,"superagent":444}]},{},[474]);

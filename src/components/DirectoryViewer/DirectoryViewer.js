@@ -3,8 +3,8 @@ var async = require('async');
 var jqtree = require('jqtree');
 var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
-var DirectoryActions = require('../../actions/DirectoryAction'),
-    DirectoryStore = require('../../stores/DirectoryStore');
+var DirectoryActions = require('../../actions/DirectoryAction');
+var DirectoryStore = require('../../stores/DirectoryStore');
 
 var elTree, addNoteDOM, addFolderDOM;
 var _id;
@@ -86,8 +86,6 @@ var DirectoryViewer = React.createClass({
                 else if(event.move_info.target_node.id == 0 && event.move_info.position == 'before')  event.preventDefault();
 
                 console.log(($(elTree).tree('getTree')).children);
-
-                $('#tree1').tree('loadData', ($(elTree).tree('getTree')).children);
             }
         );
 
@@ -99,7 +97,7 @@ var DirectoryViewer = React.createClass({
 
         $(addNoteDOM).click(function() {
 
-            var noteTitle = 'new_note'; // 다이얼로그 입력
+            var noteTitle = 'new_note' + (_id+1); // 다이얼로그 입력
             var node = $(elTree).tree('getSelectedNode');
             var treeData, preTreeData=  $(elTree).tree('toJson');
 
@@ -120,7 +118,9 @@ var DirectoryViewer = React.createClass({
                         node
                     );
                     treeData = $(elTree).tree('toJson');
-                    $(elTree).tree('loadData', preTreeData);
+
+                    console.log(preTreeData);
+                    $(elTree).tree('loadData', JSON.parse(preTreeData));
 
                     DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
                 }
@@ -180,7 +180,8 @@ var DirectoryViewer = React.createClass({
     },
 
     _onChange: function() {
-        $(elTree).tree('loadData', getTree);//Store의 데이터가 변경되었을 시 데이터를 불러온다.
+
+        $(elTree).tree('loadData', JSON.parse(getTree()));
     },
     render: function() {
         return (
