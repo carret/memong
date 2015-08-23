@@ -72,7 +72,25 @@ var Main = React.createClass({
                 </div>
             </div>)
             :
-            (<div>memong은 클라우드 기반 다크다운 메모장입니다.</div>);
+            (<div id="front">
+                <div className="section1"><img src="./front.jpg" /></div>
+                <div className="section2">
+                    <div className="section2-inner">
+                        <div className="item">
+                            <i className="material-icons">&#xE22B;</i>
+                            <span className="context">memongade는 에디터입니다. 여러분의 생각과 회의 내용을 적을 수 있습니다. 에버노트와 뭐가 다르냐고요?</span>
+                        </div>
+                        <div className="item">
+                            <i className="material-icons">&#xE245;</i>
+                            <span className="context">우선 memongade는 마크다운 기반입니다. 마크다운에 능숙한 여러분은 쉽게 메모를 작성할 수 있습니다.</span>
+                        </div>
+                        <div className="item">
+                            <i className="material-icons">&#xE873;</i>
+                            <span className="context">또, 하나의 노트에 여러 메모를 작성합니다. 여러분이 글을 분리하지 마세요. 여러 생각을 하나의 노트에 모으세요.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>);
 
         return(
             <div ref="_main" id="main">

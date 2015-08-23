@@ -33,10 +33,11 @@ var WebPostUtils = {
             });
     },
 
-    postDirectory: function(_tree) {
-        var _escapedTree = (function() {
-
-        })(_tree);
+    postDirectory: function(_user, _tree, _query) {
+        var _query = {
+            type: NOTE,
+            data: data
+        }
 
         request
             .post(Constants.API.POST_DIRECTORY)

@@ -3,7 +3,6 @@ var React = require('react');
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
 var Login = require('./Account/Login');
 var Logout = require('./Account/Logout');
-var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
@@ -48,8 +47,7 @@ var Header = React.createClass({
                     <a id="logo">memongade</a>
                 </div>
                 <div className="header-right" >
-                    <Exporter handleExport={this._handleExport}  />
-                    <MemoSearcher />
+                    {this.props.isLogin ? <MemoSearcher /> : <div></div>}
                     {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
                 <NoteLoader />

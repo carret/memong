@@ -21,7 +21,7 @@ var Logout = React.createClass({
     render : function() {
         return (
             <div className="account" onClick={this.handleLogout}>
-                <button  onClick={this.handleLogout}>
+                <button className="logout" onClick={this.handleLogout}>
                     <i className="material-icons">&#xE7FD;</i>
                     <span>Seokju Na</span>
                 </button>

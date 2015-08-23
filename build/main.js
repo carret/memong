@@ -38629,7 +38629,7 @@ var AutoSaveActionCreator = {
 
 module.exports = AutoSaveActionCreator;
 
-},{"../constants/Constants":292,"../dispatcher/AppDispatcher":293,"../utils/WebGetUtils":296,"../utils/WebPostUtils":297}],269:[function(require,module,exports){
+},{"../constants/Constants":291,"../dispatcher/AppDispatcher":292,"../utils/WebGetUtils":295,"../utils/WebPostUtils":296}],269:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -38642,12 +38642,19 @@ var DirectoryActionCreator = {
             actionType: Constants.NoteActionTypes.REQUEST_NOTE
         });
         WebGetUtils.getDirectory();
+    },
+
+    selectNote: function(_noteId) {
+        AppDispatcher.handleClientAction({
+            actionType: COnstnat.DirectotyActionTypes.SELECT_NOE,
+        });
+        WebGetUtils.getNoteWithMemos(c, _noteId)
     }
 };
 
 module.exports = DirectoryActionCreator;
 
-},{"../constants/Constants":292,"../dispatcher/AppDispatcher":293,"../utils/WebGetUtils":296}],270:[function(require,module,exports){
+},{"../constants/Constants":291,"../dispatcher/AppDispatcher":292,"../utils/WebGetUtils":295}],270:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -38730,7 +38737,7 @@ var MemoActionCreator = {
 
 module.exports = MemoActionCreator;
 
-},{"../constants/Constants":292,"../dispatcher/AppDispatcher":293,"../utils/WebGetUtils":296,"../utils/WebPostUtils":297}],271:[function(require,module,exports){
+},{"../constants/Constants":291,"../dispatcher/AppDispatcher":292,"../utils/WebGetUtils":295,"../utils/WebPostUtils":296}],271:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -38772,7 +38779,7 @@ var ServerReceiveActionCreator = {
 
 module.exports = ServerReceiveActionCreator;
 
-},{"../constants/Constants":292,"../dispatcher/AppDispatcher":293}],272:[function(require,module,exports){
+},{"../constants/Constants":291,"../dispatcher/AppDispatcher":292}],272:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -38804,12 +38811,12 @@ var DialogContent = React.createClass({displayName: "DialogContent",
     },
     render : function() {
         return (
-            React.createElement("div", null, 
+            React.createElement("div", {id: "loginModel"}, 
                 React.createElement("div", null, 
-                    React.createElement("a", {href: "/login/facebook"}, "Login Facebook")
+                    React.createElement("a", {className: "facebook-login", href: "/login/facebook"}, React.createElement("img", {src: "./facebook.png"}), React.createElement("span", null, "Facebook으로 시작하기"))
                 ), 
                 React.createElement("div", null, 
-                    React.createElement("a", {href: "/login/google"}, "Login Google")
+                    React.createElement("a", {className: "google-login", href: "/login/google"}, React.createElement("img", {src: "./google.png"}), React.createElement("span", null, "Google로 시작하기"))
                 )
             )
         );
@@ -38819,17 +38826,17 @@ var DialogContent = React.createClass({displayName: "DialogContent",
 var LoginBtn = React.createClass({displayName: "LoginBtn",
     handleTrigger: function () {
         this.d = showDialog(React.createElement(DialogContent, null),{
-            title: React.createElement("p", null, " Login memong"),
+            title: React.createElement("p", {id: "logModelTitle"}, "로그인"),
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
-            style: {width: 300}
+            style: {width: 350}
         });
     },
     render: function () {
         return (
-            React.createElement("div", null, 
-                React.createElement("button", {className: "account", onClick: this.handleTrigger}, "로그인")
+            React.createElement("div", {className: "account"}, 
+                React.createElement("button", {className: "login", onClick: this.handleTrigger}, React.createElement("span", null, "로그인"))
             )
         );
     }
@@ -38861,7 +38868,7 @@ var Logout = React.createClass({displayName: "Logout",
     render : function() {
         return (
             React.createElement("div", {className: "account", onClick: this.handleLogout}, 
-                React.createElement("button", {onClick: this.handleLogout}, 
+                React.createElement("button", {className: "logout", onClick: this.handleLogout}, 
                     React.createElement("i", {className: "material-icons"}, ""), 
                     React.createElement("span", null, "Seokju Na")
                 )
@@ -38937,7 +38944,7 @@ var AutoSaver = React.createClass({displayName: "AutoSaver",
 
 module.exports = AutoSaver;
 
-},{"../../actions/AutoSaveActionCreator":268,"../../constants/Constants":292,"../../stores/NoteStore":295,"react":202}],275:[function(require,module,exports){
+},{"../../actions/AutoSaveActionCreator":268,"../../constants/Constants":291,"../../stores/NoteStore":294,"react":202}],275:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
@@ -39171,7 +39178,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActionCreator":270,"../../constants/Constants":292,"react":202,"react-textarea-autosize":41,"underscore":267}],278:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":270,"../../constants/Constants":291,"react":202,"react-textarea-autosize":41,"underscore":267}],278:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -39247,7 +39254,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/Constants":292,"../../stores/NoteStore":295,"./CompleteMemo":276,"./EditMemo":277,"./GlobalEditMemo":279,"./NoneMemo":280,"react":202,"underscore":267}],279:[function(require,module,exports){
+},{"../../constants/Constants":291,"../../stores/NoteStore":294,"./CompleteMemo":276,"./EditMemo":277,"./GlobalEditMemo":279,"./NoneMemo":280,"react":202,"underscore":267}],279:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -39403,7 +39410,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActionCreator":270,"../../constants/Constants":292,"../../stores/NoteStore":295,"react":202,"react-textarea-autosize":41,"underscore":267}],280:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":270,"../../constants/Constants":291,"../../stores/NoteStore":294,"react":202,"react-textarea-autosize":41,"underscore":267}],280:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -39438,27 +39445,9 @@ module.exports = NoneMemo;
 },{"../../actions/MemoActionCreator":270,"react":202,"remarkable":203}],281:[function(require,module,exports){
 var React = require('react');
 
-var Exporter = React.createClass({displayName: "Exporter",
-    render: function() {
-        return (
-            React.createElement("div", {id: "exporter", onClick: this.props.handleExport}, 
-                React.createElement("button", {className: "header-menu"}, 
-                    React.createElement("i", {className: "material-icons"}, "")
-                )
-            )
-        )
-    }
-});
-
-module.exports = Exporter;
-
-},{"react":202}],282:[function(require,module,exports){
-var React = require('react');
-
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
 var Login = require('./Account/Login');
 var Logout = require('./Account/Logout');
-var Exporter = require('./Exporter/Exporter');
 var NoteLoader = require('./NoteLoader/NoteLoader');
 
 var cookie = require('react-cookie');
@@ -39503,8 +39492,7 @@ var Header = React.createClass({displayName: "Header",
                     React.createElement("a", {id: "logo"}, "memongade")
                 ), 
                 React.createElement("div", {className: "header-right"}, 
-                    React.createElement(Exporter, {handleExport: this._handleExport}), 
-                    React.createElement(MemoSearcher, null), 
+                    this.props.isLogin ? React.createElement(MemoSearcher, null) : React.createElement("div", null), 
                     this.props.isLogin ? React.createElement(Logout, null) : React.createElement(Login, null)
                 ), 
                 React.createElement(NoteLoader, null)
@@ -39515,7 +39503,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"./Account/Login":272,"./Account/Logout":273,"./Exporter/Exporter":281,"./MemoSearcher/MemoSearcher":284,"./NoteLoader/NoteLoader":291,"react":202,"react-cookie":39}],283:[function(require,module,exports){
+},{"./Account/Login":272,"./Account/Logout":273,"./MemoSearcher/MemoSearcher":283,"./NoteLoader/NoteLoader":290,"react":202,"react-cookie":39}],282:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -39590,7 +39578,25 @@ var Main = React.createClass({displayName: "Main",
                 )
             ))
             :
-            (React.createElement("div", null, "memong은 클라우드 기반 다크다운 메모장입니다."));
+            (React.createElement("div", {id: "front"}, 
+                React.createElement("div", {className: "section1"}, React.createElement("img", {src: "./front.jpg"})), 
+                React.createElement("div", {className: "section2"}, 
+                    React.createElement("div", {className: "section2-inner"}, 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("i", {className: "material-icons"}, ""), 
+                            React.createElement("span", {className: "context"}, "memongade는 에디터입니다. 여러분의 생각과 회의 내용을 적을 수 있습니다. 에버노트와 뭐가 다르냐고요?")
+                        ), 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("i", {className: "material-icons"}, ""), 
+                            React.createElement("span", {className: "context"}, "우선 memongade는 마크다운 기반입니다. 마크다운에 능숙한 여러분은 쉽게 메모를 작성할 수 있습니다.")
+                        ), 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("i", {className: "material-icons"}, ""), 
+                            React.createElement("span", {className: "context"}, "또, 하나의 노트에 여러 메모를 작성합니다. 여러분이 글을 분리하지 마세요. 여러 생각을 하나의 노트에 모으세요.")
+                        )
+                    )
+                )
+            ));
 
         return(
             React.createElement("div", {ref: "_main", id: "main"}, 
@@ -39602,7 +39608,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-},{"./DirectoryViewer/DirectoryViewer":275,"./Editor/Editor":278,"./MemoViewer/MemoViewer":288,"./NoteHeader/NoteHeader":289,"react":202,"react-cookie":39}],284:[function(require,module,exports){
+},{"./DirectoryViewer/DirectoryViewer":275,"./Editor/Editor":278,"./MemoViewer/MemoViewer":287,"./NoteHeader/NoteHeader":288,"react":202,"react-cookie":39}],283:[function(require,module,exports){
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -39649,7 +39655,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 
 module.exports=AutoInput;
 
-},{"./utils":285,"react":202,"react-autosuggest":35}],285:[function(require,module,exports){
+},{"./utils":284,"react":202,"react-autosuggest":35}],284:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -39659,7 +39665,7 @@ module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
 
-},{}],286:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -39688,7 +39694,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":202}],287:[function(require,module,exports){
+},{"react":202}],286:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -39792,7 +39798,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActionCreator":270,"rc-dialog":10,"react":202}],288:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":270,"rc-dialog":10,"react":202}],287:[function(require,module,exports){
 var React = require('react');
 var NoteStore = require('../../stores/NoteStore');
 var Constants = require('../../constants/Constants');
@@ -39867,7 +39873,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/Constants":292,"../../stores/NoteStore":295,"./EditMemoItem":286,"./MemoItem":287,"react":202,"underscore":267}],289:[function(require,module,exports){
+},{"../../constants/Constants":291,"../../stores/NoteStore":294,"./EditMemoItem":285,"./MemoItem":286,"react":202,"underscore":267}],288:[function(require,module,exports){
 var React = require('react');
 
 var AutoSaver = require('../AutoSaver/AutoSaver');
@@ -39918,7 +39924,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-},{"../../stores/NoteStore":295,"../AutoSaver/AutoSaver":274,"./ToggleAsideButton":290,"react":202}],290:[function(require,module,exports){
+},{"../../stores/NoteStore":294,"../AutoSaver/AutoSaver":274,"./ToggleAsideButton":289,"react":202}],289:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -39935,7 +39941,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-},{"react":202}],291:[function(require,module,exports){
+},{"react":202}],290:[function(require,module,exports){
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -39948,7 +39954,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-},{"react":202}],292:[function(require,module,exports){
+},{"react":202}],291:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -40038,7 +40044,7 @@ module.exports = {
     }
 };
 
-},{"react/lib/keyMirror":187}],293:[function(require,module,exports){
+},{"react/lib/keyMirror":187}],292:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -40066,7 +40072,7 @@ AppDispatcher.handleAutoSaveAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":4}],294:[function(require,module,exports){
+},{"flux":4}],293:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -40095,7 +40101,7 @@ React.render(
     document.getElementById('app')
 );
 
-},{"./actions/MemoActionCreator":270,"./components/Editor/Editor":278,"./components/Header":282,"./components/Main":283,"./components/MemoViewer/MemoViewer":288,"./utils/WebGetUtils":296,"react":202,"react-cookie":39,"react-ui-tree":46}],295:[function(require,module,exports){
+},{"./actions/MemoActionCreator":270,"./components/Editor/Editor":278,"./components/Header":281,"./components/Main":282,"./components/MemoViewer/MemoViewer":287,"./utils/WebGetUtils":295,"react":202,"react-cookie":39,"react-ui-tree":46}],294:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -40510,7 +40516,7 @@ AppDispatcher.register(function(payload) {
 
 module.exports = NoteStore;
 
-},{"../constants/Constants":292,"../dispatcher/AppDispatcher":293,"events":1,"node-uuid":7,"underscore":267}],296:[function(require,module,exports){
+},{"../constants/Constants":291,"../dispatcher/AppDispatcher":292,"events":1,"node-uuid":7,"underscore":267}],295:[function(require,module,exports){
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
@@ -40566,7 +40572,7 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
-},{"../actions/ServerReceiveActionCreator":271,"../constants/Constants":292,"superagent":264}],297:[function(require,module,exports){
+},{"../actions/ServerReceiveActionCreator":271,"../constants/Constants":291,"superagent":264}],296:[function(require,module,exports){
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 
@@ -40602,10 +40608,11 @@ var WebPostUtils = {
             });
     },
 
-    postDirectory: function(_tree) {
-        var _escapedTree = (function() {
-
-        })(_tree);
+    postDirectory: function(_user, _tree, _query) {
+        var _query = {
+            type: NOTE,
+            data: data
+        }
 
         request
             .post(Constants.API.POST_DIRECTORY)
@@ -40625,4 +40632,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-},{"../actions/DirectoryActionCreator":269,"../actions/ServerReceiveActionCreator":271,"../constants/Constants":292,"superagent":264}]},{},[294]);
+},{"../actions/DirectoryActionCreator":269,"../actions/ServerReceiveActionCreator":271,"../constants/Constants":291,"superagent":264}]},{},[293]);
