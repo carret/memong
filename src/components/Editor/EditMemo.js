@@ -55,15 +55,16 @@ var EditMemo = React.createClass({
                     break;
 
                 case Constants.KeyCode.ARROW_UP:
-                    this._handleMoveToPrevious(event);
+                    this._handleMoveToPrevious(event, this.props.preventMoveToPrevious);
                     break;
+
 
                 case Constants.KeyCode.ARROW_DOWN:
                     this._handleMoveToNext(event);
                     break;
 
                 case Constants.KeyCode.BACKSPACE:
-                    this._handleMoveToPreviousByBackSpace();
+                    this._handleMoveToPreviousByBackSpace(this.props.preventMoveToPrevious);
                     break;
             }
         }.bind(this));
@@ -76,18 +77,11 @@ var EditMemo = React.createClass({
 
         if (headerOneMatches != undefined) {
             if (this.__checkIfHeaderAreTwo(headerOneMatches)) {
-                console.log(text);
-
-                var resultContext;
-                var updateValue;
-
                 var _arr;
                 var index = new Array();
                 while ((_arr = regEx.exec(text)) !== null) {
                     index.push(_arr.index);
                 }
-                var len = index.length;
-
                 MemoActionCreator.addMemoInEditMemo(this.props.memo, text);
             }
         }
@@ -99,9 +93,7 @@ var EditMemo = React.createClass({
             MemoActionCreator.deleteMemo(this.props.memo);
         }
         else {
-            MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {
-                text: text
-            }));
+            MemoActionCreator.completeEditMemo(_.extend({}, this.props.memo, {text: text}));
         }
     },
 
@@ -109,9 +101,7 @@ var EditMemo = React.createClass({
         var text = $(TextareaDOM).val();
         if (text.length == TextareaDOM.selectionStart) {
             e.preventDefault();
-            MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
-                text: text
-            }));
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {text: text}));
             return false;
         }
     },
@@ -121,7 +111,8 @@ var EditMemo = React.createClass({
         MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {text: text}));
     },
 
-    _handleMoveToPrevious: function(e) {
+    _handleMoveToPrevious: function(e, preventMoveToPrevious) {
+        if (preventMoveToPrevious) { return; }
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
             e.preventDefault();
@@ -130,7 +121,8 @@ var EditMemo = React.createClass({
         }
     },
 
-    _handleMoveToPreviousByBackSpace: function() {
+    _handleMoveToPreviousByBackSpace: function(preventMoveToPrevious) {
+        if (preventMoveToPrevious) { return; }
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
             if (TextareaDOM.selectionStart == TextareaDOM.selectionEnd){

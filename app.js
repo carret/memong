@@ -15,9 +15,10 @@ app.use(cookieParser('myKey'));
 app.use(session({
     secret: 'my secret',
     cookie: { maxAge: 60000 },
+    secret: 'myKey',
+    proxy: true,
     resave: true,
-    saveUninitialized: true
-}));
+    saveUninitialized: true}));
 app.engine('.ejs', require('ejs').__express);
 app.set('views', __dirname + '/build/views');
 app.set('view engine', 'ejs');

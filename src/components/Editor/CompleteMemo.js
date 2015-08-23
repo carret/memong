@@ -26,6 +26,13 @@ var CompleteMemo = React.createClass({
             + (_date.getMonth() + 1) + '-'
             + _date.getDate();
 
+        var toolbar = (this.props.enableAddMemo) ? (
+            <div className="toolbar">
+                <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>
+                <span onClick={this._handleAddMemo}>새로운 메모 추가하기</span>
+            </div>
+        ) : <div />;
+
 
         return (
             <div ref="_completeMemo" className="complete-memo" >
@@ -33,10 +40,7 @@ var CompleteMemo = React.createClass({
                     <div dangerouslySetInnerHTML={{__html: context}} />
                     <span className="date">{date}</span>
                 </div>
-                <div className="toolbar">
-                    <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>
-                    <span onClick={this._handleAddMemo}>새로운 메모 추가하기</span>
-                </div>
+                {toolbar}
             </div>
         );
     },

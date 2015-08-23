@@ -36,14 +36,20 @@ var Editor = React.createClass({
 
 
     render: function() {
-        var items = _.map(this.state.memos, function(memo) {
+        var items = _.map(this.state.memos, function(memo, index) {
             var type = memo.mtype;
             switch(type) {
                 case Constants.MemoType.COMPLETE_MEMO :
-                    return <CompleteMemo memo={memo} key={memo.key}/>;
+                    if (index == this.state.memos.length - 2) {
+                        return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={true}/>;
+                    }
+                    return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={false} />;
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} />;
+                    if (index == 0) {
+                        return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={true} />;
+                    }
+                    return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={false} />;
 
                 case Constants.MemoType.NONE_MEMO :
                     return <NoneMemo memo={memo} key={memo.key}/>;

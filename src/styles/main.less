@@ -134,8 +134,6 @@ html, body {
             #logo {
                 display: inline-block;
 
-                padding: 0 .5rem;
-
                 font-family: @font-logo;
                 font-size: 1.8em;
                 line-height: 1em;
@@ -287,9 +285,9 @@ html, body {
                     border: none;
                     margin: 0;
 
-                    border-radius: 3px;
+                    border-radius: 2px;
 
-                    color: @color-grey-50;
+                    color: #FFF;
                     background-color: #FFB300;
 
                     -webkit-box-sizing: border-box;
@@ -334,8 +332,10 @@ html, body {
                     border: none;
                     margin: 0;
 
-                    color: @color-grey-50;
-                    background-color: #FFC107;
+                    color: #FFF;
+                    background-color: #FFB300;
+
+                    border-radius: 2px;
 
                     -webkit-box-sizing: border-box;
                     -moz-box-sizing: border-box;
@@ -364,7 +364,6 @@ html, body {
                     justify-content: center;
 
                     &:hover { background-color: #FFA000; }
-
 
                     i {
                         line-height: 1.71428571rem;
@@ -517,6 +516,9 @@ html, body {
                     flex: 1;
 
                     overflow-y: scroll;
+                    ::-webkit-scrollbar {
+                        display: none;
+                    }
 
                     background-color: @color-grey-200;
 
@@ -750,7 +752,6 @@ html, body {
             }
 
             #editor {
-
                 font-size: 14px;
                 line-height: 180%;
 
@@ -763,10 +764,12 @@ html, body {
                 background-color: @color-grey-100;
                 color: @color-grey-800;
 
-                padding: 0 2rem;
+                padding: 0 1.8rem;
                 overflow-y: auto;
 
                 p {
+                    font-size: 1em;
+                    line-height: 1.8;
                     font-weight: 300;
                     margin-top: 0;
                     margin-bottom: 1.8rem;
@@ -777,14 +780,16 @@ html, body {
                 }
 
                 h1 {
-                    line-height: 3.6rem;
+                    font-size: 2em;
+                    line-height: 1;
                     margin-top: 1.2rem;
                     font-weight: 700;
                     margin-bottom: calc(1.8rem - 0.4rem);
                 }
 
                 h2 {
-                    line-height: 3.6rem;
+                    font-size: 1.5em;
+                    line-height: 1;
                     font-weight: 700;
                     margin-top: 1.7rem;
                     margin-bottom: calc(1.8rem - 0.4rem);
@@ -792,14 +797,15 @@ html, body {
 
                 h3 {
                     font-size: 1.25em;
+                    line-height: 1;
                     font-weight: 700;
-                    line-height: 2.7rem;
                     margin-top: 1.05rem;
                     margin-bottom: calc(0.9rem - 0.4rem);
                 }
 
                 h4 {
                     font-size: 1em;
+                    line-height: 1.8;
                     font-weight: 700;
                     margin-top: 0;
                     margin-bottom: 0.9rem;
@@ -807,6 +813,7 @@ html, body {
 
                 h5 {
                     font-size: 1em;
+                    line-height: 1.8;
                     font-weight: 700;
                     margin-top: 0;
                     margin-bottom: 0;
@@ -816,6 +823,7 @@ html, body {
                     display: inline-block;
                     float: left;
                     font-size: 1em;
+                    line-height: 1.8;
                     font-weight: 700;
                     margin-top: 0;
                     margin-bottom: 0;
@@ -833,16 +841,16 @@ html, body {
                     background: #f9f9f9;
 
                     margin-right: 0;
-                    padding: 0.9rem 1rem 0.9rem 1.3rem;
+                    padding: 0.9rem;
                 }
                 blockquote p {
+                    color: @color-grey-600;
                     display: inline;
                 }
 
 
                 .complete-memo {
-                    margin-top: 2.5rem;
-                    margin-bottom: 1.5rem;
+                    margin: 1.8rem 0;
 
                     display: -webkit-box;
                     display: -webkit-flex;
@@ -859,9 +867,7 @@ html, body {
                     flex-direction: column;
 
                     .complete-memo-inner {
-                        padding: 0 1rem;
-                        background-color: #DEDEDE;
-                        border: 1px solid @color-grey-300;
+                        padding: 1.8rem 0;
 
                         position: relative;
 
@@ -880,9 +886,12 @@ html, body {
                         }
 
                         .date {
+                            width: 100%;
                             position: absolute;
-                            top: .25rem;
-                            right: .75rem;
+                            top: 0;
+                            left: 0;
+
+                            border-bottom: 1px solid @color-grey-300;
 
                             font-size: 0.75em;
                             color: @color-grey-500;
@@ -890,7 +899,7 @@ html, body {
                     }
 
                     .toolbar {
-                        margin-top: .75rem;
+                        margin-top: .9rem;
 
                         display: -webkit-box;
                         display: -webkit-flex;
@@ -915,7 +924,7 @@ html, body {
 
                 .globaledit-memo {
                     overflow: visible;
-                    margin-top: 1.5rem;
+                    margin-top: 1.8rem;
 
                     textarea {
                         width: 100%;
@@ -936,9 +945,11 @@ html, body {
 
                 .edit-memo {
                     overflow: visible;
-                    margin-top: 2.5rem;
-                    margin-bottom: 2.5rem;
-                    padding: .75rem;
+                    margin: 1.8rem 0;
+
+                    padding: .9rem;
+
+                    background-color: #DEDEDE;
 
                     textarea {
                         width: 100%;
@@ -947,8 +958,8 @@ html, body {
                         resize: none;
                         overflow: visible;
                         font-size: 1em;
-                        font-weight: 100;
-                        line-height: 180%;
+                        font-weight: 300;
+                        line-height: 1.8;
                     }
                     textarea:focus {
                         outline: none;
@@ -958,9 +969,7 @@ html, body {
                 }
 
                 .none-memo {
-                    padding: 0 1rem;
-                    padding-top: 1.8rem;
-                    background-color: #DEDEDE;
+                    margin: 1.8rem 0;
                     border: 1px solid @color-grey-300;
 
                     will-change: opacity;
@@ -1071,8 +1080,110 @@ html, body {
     width: 100%;
 
     .section1 {
+        position: relative;
         max-height: 700px;
         overflow: hidden;
+
+        img {
+            width: 100%;
+        }
+
+        .section1-inner {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: flex;
+
+            width: 100%;
+            height: 100%;
+
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            -moz-box-orient: vertical;
+            -moz-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+
+            text-align: center;
+            color: @color-grey-50;
+
+            .title {
+                font-size: 5.5em;
+                line-height: 1;
+                color: #fff;
+                padding: 2rem 0;
+            }
+
+            .content {
+                max-width: 768px;
+                font-size: 3em;
+                line-height: 1.5;
+                font-weight: 100;
+            }
+
+            button.startNow {
+                outline: none;
+                border: none;
+                margin: 3rem 0;
+
+                border-radius: 3px;
+
+                color: @color-grey-50;
+                background-color: #FFB300;
+
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+
+                will-change: background-color;
+
+                -webkit-transition: background-color .3s ease;
+                -moz-transition: background-color .3s ease;
+                -ms-transition: background-color .3s ease;
+                -o-transition: background-color .3s ease;
+                transition: background-color .3s ease;
+
+                cursor: pointer;
+
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -moz-box;
+                display: -ms-flexbox;
+                display: flex;
+
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                -moz-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+
+                &:hover { background-color: #FFA000; }
+
+                span {
+                    display: inline-block;
+                    font-size: 1.3rem;
+                    padding: 1rem 5rem;
+                }
+            }
+        }
     }
 
     .section2 {
@@ -1397,13 +1508,27 @@ html, body {
     }
 
     .footer {
-        height: 100px;
+        padding: .5rem 1rem;
         background-color: @color-grey-800;
+        color: @color-grey-400;
+
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+
+        .git {
+            a {
+                text-decoration: none;
+                color: @color-grey-400;
+            }
+        }
     }
 }
-
-
-
 
 hr {
     border: 0;

@@ -105,7 +105,6 @@ function startEditMemo(_targetCompleteMemo) {
     if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         return;
     }
-
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     _targetCompleteMemo.haveToFocus = false;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
@@ -129,6 +128,7 @@ function startEditMemoFromMemoViewer(_targetCompleteMemo) {
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
+
 function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     if (index == memos.length - 2) {
@@ -139,6 +139,7 @@ function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
     endEditMemo(_targetEditMemo);
     startEditMemo(_nextTargetMemo);
 }
+
 
 function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
@@ -158,6 +159,7 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
         startEditMemo(_previousTargetMemo);
     }
 }
+
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
