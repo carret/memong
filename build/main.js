@@ -39595,6 +39595,69 @@ var Main = React.createClass({displayName: "Main",
                             React.createElement("span", {className: "context"}, "또, 하나의 노트에 여러 메모를 작성합니다. 여러분이 글을 분리하지 마세요. 여러 생각을 하나의 노트에 모으세요.")
                         )
                     )
+                ), 
+                React.createElement("hr", null), 
+                React.createElement("div", {className: "section3"}, 
+                    React.createElement("div", {className: "section3-inner"}, 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("img", {src: "http://placehold.it/200x200"}), 
+                            React.createElement("div", {className: "main"}, 
+                                React.createElement("span", {className: "header"}, "1. 메모를 생성하세요"), 
+                                React.createElement("span", {className: "content"}, "memongade는 마크다운 기반의 에디터입니다. 여러분들의 노트는 ", React.createElement("strong", null, "# h1"), "을 기준으로 메모로 분리됩니다. 여러분들의 메모들은 노트를 이루는 단위가 됩니다. 그리고 쉽게 원하는 내용을 검색할 수 있습니다.")
+                            )
+                        ), 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("div", {className: "main"}, 
+                                React.createElement("span", {className: "header"}, "2. 내용을 입력하세요"), 
+                                React.createElement("span", {className: "content"}, "여러 헤더들과 링크, 이미지, 리스트 등을 메모안에 입력하세요! 모든 것이 마크다운 기반으로 여러분들의 타이핑이 중심이 됩니다.")
+                            ), 
+                            React.createElement("img", {src: "http://placehold.it/200x200"})
+                        ), 
+                        React.createElement("div", {className: "item"}, 
+                            React.createElement("img", {src: "http://placehold.it/200x200"}), 
+                            React.createElement("div", {className: "main"}, 
+                                React.createElement("span", {className: "header"}, "3. 편집을 완료하세요"), 
+                                React.createElement("span", {className: "content"}, "memongade는 여러분들이 불필요한 마우스 사용을 하지 않도록 키보드 단축키를 지원합니다. ", React.createElement("strong", null, "TAB"), "을 눌러 다음 메모로 이동하세요. ", React.createElement("strong", null, "Shift+Enter"), "을 눌러 내용 편집을 완료하세요. 여러분들의 손의 움직임을 낭비하지 마세요. 그저 키보드로 타이핑만 하면 됩니다.")
+                            )
+                        )
+                    )
+                ), 
+                React.createElement("hr", null), 
+                React.createElement("div", {className: "section4"}, 
+                    React.createElement("div", {className: "section4-inner"}, 
+                        React.createElement("span", {className: "title"}, "지금 시작하세요!"), 
+                        React.createElement("span", {className: "content"}, "마크다운 기반의 에디터, memongade로 타이핑 중심의 메모 작성을 경험해보세요."), 
+                        React.createElement("button", {className: "startNow"}, React.createElement("span", null, "시작하기"))
+                    )
+                ), 
+                React.createElement("div", {className: "team-info"}, 
+                    React.createElement("div", {className: "team-info-outer"}, 
+                        React.createElement("div", {className: "team-info-inner"}, 
+                            React.createElement("div", {className: "item"}, 
+                                React.createElement("div", {className: "profile"}, React.createElement("img", {src: "http://placehold.it/150x150"})), 
+                                React.createElement("div", {className: "content"}, 
+                                    React.createElement("span", {className: "name"}, "김재욱"), 
+                                    React.createElement("span", {className: "email"}, "cmdhema@gmail.com")
+                                )
+                            ), 
+                            React.createElement("div", {className: "item"}, 
+                                React.createElement("div", {className: "profile"}, React.createElement("img", {src: "http://placehold.it/150x150"})), 
+                                React.createElement("div", {className: "content"}, 
+                                    React.createElement("span", {className: "name"}, "장초롱"), 
+                                    React.createElement("span", {className: "email"}, "crjang91@gmail.com")
+                                )
+                            ), 
+                            React.createElement("div", {className: "item"}, 
+                                React.createElement("div", {className: "profile"}, React.createElement("img", {src: "http://placehold.it/150x150"})), 
+                                React.createElement("div", {className: "content"}, 
+                                    React.createElement("span", {className: "name"}, "나석주"), 
+                                    React.createElement("span", {className: "email"}, "seokmaTD@gmail.com")
+                                )
+                            )
+                        )
+                    )
+                ), 
+                React.createElement("div", {className: "footer"}
                 )
             ));
 
