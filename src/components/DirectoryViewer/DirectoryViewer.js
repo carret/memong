@@ -1,17 +1,115 @@
 var React = require('react');
-var async = require('async');
 var jqtree = require('jqtree');
+var Dialog = require('rc-dialog');
+var async = require('async');
 var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActions = require('../../actions/DirectoryAction');
 var DirectoryStore = require('../../stores/DirectoryStore');
-var NodeBtn  = require('./NodeBtn');
 
-var elTree, addNoteDOM, addFolderDOM, renameNodeDOM, removeNodeDOM;
+var elTree, addNoteDOM, addFolderDOM;
 var _id;
 var _username = 'rong';
 
-var lastId= 0;
+var lastId= 0, preNodeId = 0;
+var _selectedNode;
+var container;
+
+function showDialog(content, props) {
+
+    if (!container) {
+        container = document.createElement('div');
+        container.setAttribute("id", "redundancyCheckDialog");
+        document.body.appendChild(container);
+    }
+
+    var close = props.onClose;
+    props.onClose = function() {
+        if(close)
+            close();
+        React.unmountComponentAtNode(container);
+    };
+
+    var dialog = React.render(<Dialog {...props} renderToBody={false}>{content}</Dialog>, container);
+    dialog.show();
+    return dialog;
+}
+
+var DialogContent = React.createClass({
+
+    getInitialState: function() {
+        return {value: ''};
+    },
+
+    componentDidMount: function() {
+        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                this.props.addNoteItem();
+            }
+        });
+    },
+
+    _IsRedundancy: function() {
+
+        console.log(this.props.selectedNode);
+
+        var node = $(elTree).tree('getSelectedNode'), nodeParent;
+        var _title = document.getElementById('title').value;
+
+        if (node == false) node = $(elTree).tree('getNodeById', 0);
+        nodeParent = (node.type == 'note')? node.parent: node;
+
+
+        var val = _redundancyCheck____(nodeParent, _title);
+
+        if(val== false) console.log('중복!');
+        else {
+            this.props.addNoteItem(_title);
+            this.props.handleClose();
+        }
+    },
+
+    _addNoteItem: function() {
+        var _title = document.getElementById('title').value;
+        this.props.addNoteItem(_title);
+        this.props.handleClose();
+    },
+
+
+    handleChange: function(event) {
+
+        this.setState({value: event.target.value});
+    },
+
+    render : function() {
+
+        return (
+
+            <div ref="_dialog">
+                <div className="redundancyCheckDialog-text"><span>생성할 노트의 이름을 입력해주세요!</span></div>
+                <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
+                <div className="redundancyCheckDialog-btnMenu">
+                    <button onClick={this._IsRedundancy} >생성</button>
+                    <button onClick={this.props.handleClose} >취소</button>
+                </div>
+            </div>
+        );
+    }
+});
+
+
+function _redundancyCheck____(parentNode, noteTitle)
+{
+    var i;
+    for ( i=0; i < parentNode.children.length; i++) {
+        var child = parentNode.children[i];
+        if(child.name == noteTitle) break;
+    }
+
+    if(parentNode.children.length == i)  true;
+    else return false;
+
+}
 
 function _redundancyCheck(parentNode, noteTitle, callback)
 {
@@ -30,13 +128,25 @@ function getTree() {
     return DirectoryStore.getTree();
 }
 
+function visibleBtn(_nodeId){
+
+    if(_nodeId == 0) return;
+
+    $('#btn_mod'+_nodeId).css("visibility","visible");
+    $('#btn_del'+_nodeId).css("visibility","visible");
+}
+
+function hiddenBtn(_nodeId){
+    $('#btn_mod'+_nodeId).css("visibility","hidden");
+    $('#btn_del'+_nodeId).css("visibility","hidden");
+}
 
 var DirectoryViewer = React.createClass({
 
+
     _initComponent : function(){
         elTree = React.findDOMNode(this.refs.tree1);
-        addNoteDOM = React.findDOMNode(this.refs.btn_addN);
-        addFolderDOM = React.findDOMNode(this.refs.btn_addF);
+        //addFolderDOM = React.findDOMNode(this.refs.btn_addFolder);
     },
 
     _getDataToDB : function () {
@@ -46,30 +156,40 @@ var DirectoryViewer = React.createClass({
             var treeData = _data.tree;
             _id = _data.count;
 
-            console.log(_data);
             $(elTree).tree({
+
                 data: treeData,
                 autoOpen: true,
                 dragAndDrop: true,
 
                 onCreateLi: function(node, $li) {
 
-                    $li.find('.jqtree-title').after('<button id="btn_mod'+ node.id +'"> mod </button>');
-                    $li.find('.jqtree-title').after('<button id="btn_del'+ node.id +'"> del </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="visibility:hidden;"> del </button>');
 
                     $('#btn_mod'+lastId).click(function() {
-                        var node = $(elTree).tree('getSelectedNode');
+                        var node = $(elTree).tree('getSelectedNode'), nodeParent;
                         var newTitle = 'newTitle...';
                         var treeData, preTreeData=  $(elTree).tree('toJson');
 
-                        console.log(node);
-                        $(elTree).tree('updateNode', node, newTitle);
-                        treeData=  $(elTree).tree('toJson');
-                        $(elTree).tree('loadData', JSON.parse(preTreeData));
+                        nodeParent = (node.type == 'note')? node.parent: node;
 
-                        console.log(newTitle);
-                        if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
-                        else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
+                        _redundancyCheck(nodeParent, newTitle,function(err) {
+
+                            if(err == null) {
+
+                                $(elTree).tree('updateNode', node, newTitle);
+                                treeData=  $(elTree).tree('toJson');
+                                $(elTree).tree('loadData', JSON.parse(preTreeData));
+
+                                console.log(newTitle);
+                                if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
+                                else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
+                            }
+                            else
+                                console.log(err); // 안내 alert 띄움
+                        });
+
 
                     });
 
@@ -106,11 +226,14 @@ var DirectoryViewer = React.createClass({
 
                     var node = event.node;
 
+                    _selectedNode = node;
 
-                    console.log(lastId);
+                    if(preNodeId !=0) hiddenBtn(preNodeId);
+                    visibleBtn(node.id);
+
+                    preNodeId = node.id;
+
                     if(lastId != 0) {
-
-                        console.log(lastId);
 
                         $('#btn_mod'+lastId).click(function () {
                             var node = $(elTree).tree('getSelectedNode');
@@ -178,18 +301,37 @@ var DirectoryViewer = React.createClass({
         );
     },
 
-    _addNoteToTree : function(){
+    _addNoteToTree : function(_value){
 
-        $(addNoteDOM).click(function() {
+            console.log(_value);
 
-            var noteTitle = 'new_note' + (_id+1), notePosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode');
+            var noteTitle = _value;
+            var notePosition; // 다이얼로그 입력
+            var node = $(elTree).tree('getSelectedNode'), nodeParent;
             var treeData, preTreeData=  $(elTree).tree('toJson');
 
             if (node == false) node = $(elTree).tree('getNodeById', 0);
-            notePosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
 
-            _redundancyCheck(node, noteTitle,function(err) {
+            notePosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
+            nodeParent = (node.type == 'note')? node.parent: node;
+
+            $(elTree).tree(
+                notePosition,
+                {
+                    label: noteTitle,
+                    type: 'note',
+                    id: _id++
+                },
+                node
+            );
+            treeData = $(elTree).tree('toJson');
+
+            console.log(preTreeData);
+            $(elTree).tree('loadData', JSON.parse(preTreeData));
+
+            DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
+
+            /*_redundancyCheck(nodeParent, noteTitle,function(err) {
 
                 if(err == null) {
 
@@ -211,9 +353,8 @@ var DirectoryViewer = React.createClass({
                 }
                 else
                     console.log(err); // 안내 alert 띄움
-            });
+            });*/
 
-        })
     },
 
     _addFolderToTree : function() {
@@ -221,13 +362,14 @@ var DirectoryViewer = React.createClass({
         $(addFolderDOM).click(function() {
 
             var folderTitle = 'new_folder' + (_id+1), folderPosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode');
+            var node = $(elTree).tree('getSelectedNode'), nodeParent;
             var treeData, preTreeData=  $(elTree).tree('toJson');
 
             if (node == false) node = $(elTree).tree('getNodeById', 0);
             folderPosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
+            nodeParent = (node.type == 'note')? node.parent: node;
 
-            _redundancyCheck(node, folderTitle, function(err) {
+            _redundancyCheck(nodeParent, folderTitle,function(err) {
 
                 if(err == null) {
 
@@ -253,13 +395,6 @@ var DirectoryViewer = React.createClass({
         });
     },
 
-    _onClickEvent : function(){
-
-        this._addFolderToTree();
-        this._addNoteToTree();
-
-    },
-
     componentWillMount: function(){
         DirectoryStore.removeTreeChangeListener(this._onChange);
     },
@@ -271,13 +406,7 @@ var DirectoryViewer = React.createClass({
 
         this._getDataToDB();
         this._treeSelectEvent();
-        this._onClickEvent();
         this._bindTreeEvent();
-
-        //var allButtonElements = $(elTree).find('button');
-       // var findBtn = $('button.btn_mod58').find( allButtonElements );
-
-       // $("#btn_mod58" ).css( "border", "3px solid red" );
     },
 
     _onChange: function() {
@@ -285,15 +414,29 @@ var DirectoryViewer = React.createClass({
         $(elTree).tree('loadData', JSON.parse(getTree()));
     },
 
+    _onClose: function() {
+        this.d.close();
+    },
+
+    handleTrigger: function () {
+        this.d = showDialog(<DialogContent addNoteItem={this._addNoteToTree} handleClose={this._onClose} selectedNode={_selectedNode} />,{
+            title: <p className="redundancyCheckDialog-title">노트 생성</p>,
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+
+
     render: function() {
         return (
 
             <div id="directory-viewer">
-                <NodeBtn />
                 <div className="header">디렉토리</div>
                 <div className="addNode">
-                    <button ref="btn_addN">add note</ button>
-                    <button ref="btn_addF">add folder</ button>
+                    <button className = "btn_addNode" onClick={this.handleTrigger} >add note</ button>
+                    <button className = "btn_addNode"  ref="btn_addFolder">add folder</ button>
                     </div>
                 <div className="content"> <div id="tree1" ref="tree1"
                                                className="directory-viewer-tree"></div>

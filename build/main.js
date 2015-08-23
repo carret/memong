@@ -65890,7 +65890,7 @@ var DirectoryAction = {
 
 module.exports = DirectoryAction;
 
-},{"../constants/Constants":471,"../constants/MemoActionConstants":472,"../dispatcher/AppDispatcher":474,"../utils/WebPostUtils":478}],449:[function(require,module,exports){
+},{"../constants/Constants":470,"../constants/MemoActionConstants":471,"../dispatcher/AppDispatcher":473,"../utils/WebPostUtils":477}],449:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var WebPostUtils = require('../utils/WebPostUtils');
 var Constants = require('../constants/Constants');
@@ -65908,7 +65908,7 @@ var DirectoryServerAction = {
 
 module.exports = DirectoryServerAction;
 
-},{"../constants/Constants":471,"../dispatcher/AppDispatcher":474,"../utils/WebPostUtils":478}],450:[function(require,module,exports){
+},{"../constants/Constants":470,"../dispatcher/AppDispatcher":473,"../utils/WebPostUtils":477}],450:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var MemoActionConstants = require('../constants/MemoActionConstants');
 
@@ -65952,7 +65952,7 @@ var MemoActions = {
 
 module.exports = MemoActions;
 
-},{"../constants/MemoActionConstants":472,"../dispatcher/AppDispatcher":474}],451:[function(require,module,exports){
+},{"../constants/MemoActionConstants":471,"../dispatcher/AppDispatcher":473}],451:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
 
@@ -66037,19 +66037,117 @@ module.exports = Logout;
 
 },{"react":380}],453:[function(require,module,exports){
 var React = require('react');
-var async = require('async');
 var jqtree = require('jqtree');
+var Dialog = require('rc-dialog');
+var async = require('async');
 var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActions = require('../../actions/DirectoryAction');
 var DirectoryStore = require('../../stores/DirectoryStore');
-var NodeBtn  = require('./NodeBtn');
 
-var elTree, addNoteDOM, addFolderDOM, renameNodeDOM, removeNodeDOM;
+var elTree, addNoteDOM, addFolderDOM;
 var _id;
 var _username = 'rong';
 
-var lastId= 0;
+var lastId= 0, preNodeId = 0;
+var _selectedNode;
+var container;
+
+function showDialog(content, props) {
+
+    if (!container) {
+        container = document.createElement('div');
+        container.setAttribute("id", "redundancyCheckDialog");
+        document.body.appendChild(container);
+    }
+
+    var close = props.onClose;
+    props.onClose = function() {
+        if(close)
+            close();
+        React.unmountComponentAtNode(container);
+    };
+
+    var dialog = React.render(React.createElement(Dialog, React.__spread({},  props, {renderToBody: false}), content), container);
+    dialog.show();
+    return dialog;
+}
+
+var DialogContent = React.createClass({displayName: "DialogContent",
+
+    getInitialState: function() {
+        return {value: ''};
+    },
+
+    componentDidMount: function() {
+        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                this.props.addNoteItem();
+            }
+        });
+    },
+
+    _IsRedundancy: function() {
+
+        console.log(this.props.selectedNode);
+
+        var node = $(elTree).tree('getSelectedNode'), nodeParent;
+        var _title = document.getElementById('title').value;
+
+        if (node == false) node = $(elTree).tree('getNodeById', 0);
+        nodeParent = (node.type == 'note')? node.parent: node;
+
+
+        var val = _redundancyCheck____(nodeParent, _title);
+
+        if(val== false) console.log('중복!');
+        else {
+            this.props.addNoteItem(_title);
+            this.props.handleClose();
+        }
+    },
+
+    _addNoteItem: function() {
+        var _title = document.getElementById('title').value;
+        this.props.addNoteItem(_title);
+        this.props.handleClose();
+    },
+
+
+    handleChange: function(event) {
+
+        this.setState({value: event.target.value});
+    },
+
+    render : function() {
+
+        return (
+
+            React.createElement("div", {ref: "_dialog"}, 
+                React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "생성할 노트의 이름을 입력해주세요!")), 
+                React.createElement("input", {id: "title", type: "text", onChange: this.handleChange, value: this.state.value}), 
+                React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
+                    React.createElement("button", {onClick: this._IsRedundancy}, "생성"), 
+                    React.createElement("button", {onClick: this.props.handleClose}, "취소")
+                )
+            )
+        );
+    }
+});
+
+
+function _redundancyCheck____(parentNode, noteTitle)
+{
+    var i;
+    for ( i=0; i < parentNode.children.length; i++) {
+        var child = parentNode.children[i];
+        if(child.name == noteTitle) break;
+    }
+
+    if(parentNode.children.length == i)  true;
+    else return false;
+
+}
 
 function _redundancyCheck(parentNode, noteTitle, callback)
 {
@@ -66068,13 +66166,25 @@ function getTree() {
     return DirectoryStore.getTree();
 }
 
+function visibleBtn(_nodeId){
+
+    if(_nodeId == 0) return;
+
+    $('#btn_mod'+_nodeId).css("visibility","visible");
+    $('#btn_del'+_nodeId).css("visibility","visible");
+}
+
+function hiddenBtn(_nodeId){
+    $('#btn_mod'+_nodeId).css("visibility","hidden");
+    $('#btn_del'+_nodeId).css("visibility","hidden");
+}
 
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
+
     _initComponent : function(){
         elTree = React.findDOMNode(this.refs.tree1);
-        addNoteDOM = React.findDOMNode(this.refs.btn_addN);
-        addFolderDOM = React.findDOMNode(this.refs.btn_addF);
+        //addFolderDOM = React.findDOMNode(this.refs.btn_addFolder);
     },
 
     _getDataToDB : function () {
@@ -66084,30 +66194,40 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
             var treeData = _data.tree;
             _id = _data.count;
 
-            console.log(_data);
             $(elTree).tree({
+
                 data: treeData,
                 autoOpen: true,
                 dragAndDrop: true,
 
                 onCreateLi: function(node, $li) {
 
-                    $li.find('.jqtree-title').after('<button id="btn_mod'+ node.id +'"> mod </button>');
-                    $li.find('.jqtree-title').after('<button id="btn_del'+ node.id +'"> del </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="visibility:hidden;"> del </button>');
 
                     $('#btn_mod'+lastId).click(function() {
-                        var node = $(elTree).tree('getSelectedNode');
+                        var node = $(elTree).tree('getSelectedNode'), nodeParent;
                         var newTitle = 'newTitle...';
                         var treeData, preTreeData=  $(elTree).tree('toJson');
 
-                        console.log(node);
-                        $(elTree).tree('updateNode', node, newTitle);
-                        treeData=  $(elTree).tree('toJson');
-                        $(elTree).tree('loadData', JSON.parse(preTreeData));
+                        nodeParent = (node.type == 'note')? node.parent: node;
 
-                        console.log(newTitle);
-                        if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
-                        else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
+                        _redundancyCheck(nodeParent, newTitle,function(err) {
+
+                            if(err == null) {
+
+                                $(elTree).tree('updateNode', node, newTitle);
+                                treeData=  $(elTree).tree('toJson');
+                                $(elTree).tree('loadData', JSON.parse(preTreeData));
+
+                                console.log(newTitle);
+                                if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
+                                else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
+                            }
+                            else
+                                console.log(err); // 안내 alert 띄움
+                        });
+
 
                     });
 
@@ -66144,11 +66264,14 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
                     var node = event.node;
 
+                    _selectedNode = node;
 
-                    console.log(lastId);
+                    if(preNodeId !=0) hiddenBtn(preNodeId);
+                    visibleBtn(node.id);
+
+                    preNodeId = node.id;
+
                     if(lastId != 0) {
-
-                        console.log(lastId);
 
                         $('#btn_mod'+lastId).click(function () {
                             var node = $(elTree).tree('getSelectedNode');
@@ -66216,18 +66339,37 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         );
     },
 
-    _addNoteToTree : function(){
+    _addNoteToTree : function(_value){
 
-        $(addNoteDOM).click(function() {
+            console.log(_value);
 
-            var noteTitle = 'new_note' + (_id+1), notePosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode');
+            var noteTitle = _value;
+            var notePosition; // 다이얼로그 입력
+            var node = $(elTree).tree('getSelectedNode'), nodeParent;
             var treeData, preTreeData=  $(elTree).tree('toJson');
 
             if (node == false) node = $(elTree).tree('getNodeById', 0);
-            notePosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
 
-            _redundancyCheck(node, noteTitle,function(err) {
+            notePosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
+            nodeParent = (node.type == 'note')? node.parent: node;
+
+            $(elTree).tree(
+                notePosition,
+                {
+                    label: noteTitle,
+                    type: 'note',
+                    id: _id++
+                },
+                node
+            );
+            treeData = $(elTree).tree('toJson');
+
+            console.log(preTreeData);
+            $(elTree).tree('loadData', JSON.parse(preTreeData));
+
+            DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
+
+            /*_redundancyCheck(nodeParent, noteTitle,function(err) {
 
                 if(err == null) {
 
@@ -66249,9 +66391,8 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                 }
                 else
                     console.log(err); // 안내 alert 띄움
-            });
+            });*/
 
-        })
     },
 
     _addFolderToTree : function() {
@@ -66259,13 +66400,14 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         $(addFolderDOM).click(function() {
 
             var folderTitle = 'new_folder' + (_id+1), folderPosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode');
+            var node = $(elTree).tree('getSelectedNode'), nodeParent;
             var treeData, preTreeData=  $(elTree).tree('toJson');
 
             if (node == false) node = $(elTree).tree('getNodeById', 0);
             folderPosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
+            nodeParent = (node.type == 'note')? node.parent: node;
 
-            _redundancyCheck(node, folderTitle, function(err) {
+            _redundancyCheck(nodeParent, folderTitle,function(err) {
 
                 if(err == null) {
 
@@ -66291,13 +66433,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         });
     },
 
-    _onClickEvent : function(){
-
-        this._addFolderToTree();
-        this._addNoteToTree();
-
-    },
-
     componentWillMount: function(){
         DirectoryStore.removeTreeChangeListener(this._onChange);
     },
@@ -66309,13 +66444,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
         this._getDataToDB();
         this._treeSelectEvent();
-        this._onClickEvent();
         this._bindTreeEvent();
-
-        //var allButtonElements = $(elTree).find('button');
-       // var findBtn = $('button.btn_mod58').find( allButtonElements );
-
-       // $("#btn_mod58" ).css( "border", "3px solid red" );
     },
 
     _onChange: function() {
@@ -66323,15 +66452,29 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         $(elTree).tree('loadData', JSON.parse(getTree()));
     },
 
+    _onClose: function() {
+        this.d.close();
+    },
+
+    handleTrigger: function () {
+        this.d = showDialog(React.createElement(DialogContent, {addNoteItem: this._addNoteToTree, handleClose: this._onClose, selectedNode: _selectedNode}),{
+            title: React.createElement("p", {className: "redundancyCheckDialog-title"}, "노트 생성"),
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+
+
     render: function() {
         return (
 
             React.createElement("div", {id: "directory-viewer"}, 
-                React.createElement(NodeBtn, null), 
                 React.createElement("div", {className: "header"}, "디렉토리"), 
                 React.createElement("div", {className: "addNode"}, 
-                    React.createElement("button", {ref: "btn_addN"}, "add note"), 
-                    React.createElement("button", {ref: "btn_addF"}, "add folder")
+                    React.createElement("button", {className: "btn_addNode", onClick: this.handleTrigger}, "add note"), 
+                    React.createElement("button", {className: "btn_addNode", ref: "btn_addFolder"}, "add folder")
                     ), 
                 React.createElement("div", {className: "content"}, " ", React.createElement("div", {id: "tree1", ref: "tree1", 
                                                className: "directory-viewer-tree"})
@@ -66343,23 +66486,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-},{"../../actions/DirectoryAction":448,"../../constants/Constants":471,"../../stores/DirectoryStore":476,"../../utils/WebPostUtils":478,"./NodeBtn":454,"async":1,"jqtree":183,"react":380}],454:[function(require,module,exports){
-var React = require('react');
-
-var NodeBtn = React.createClass({displayName: "NodeBtn",
-
-    render: function() {
-        return (
-
-                    React.createElement("span", {className: "btn_mod"}, "mod")
-
-        );
-    }
-});
-
-module.exports = NodeBtn;
-
-},{"react":380}],455:[function(require,module,exports){
+},{"../../actions/DirectoryAction":448,"../../constants/Constants":470,"../../stores/DirectoryStore":475,"../../utils/WebPostUtils":477,"async":1,"jqtree":183,"rc-dialog":188,"react":380}],454:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -66391,7 +66518,7 @@ var CompleteMemo = React.createClass({displayName: "CompleteMemo",
 
 module.exports = CompleteMemo;
 
-},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],456:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],455:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -66509,7 +66636,7 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
 module.exports = EditMemo;
 
-},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":472,"../../constants/MemoTypeConstants":473,"react":380,"react-textarea-autosize":218,"underscore":447}],457:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":471,"../../constants/MemoTypeConstants":472,"react":380,"react-textarea-autosize":218,"underscore":447}],456:[function(require,module,exports){
 //Component Type: Controll View
 
 var React = require('react');
@@ -66585,7 +66712,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/MemoTypeConstants":473,"../../stores/MemoStore":477,"./CompleteMemo":455,"./EditMemo":456,"./GlobalEditMemo":458,"./NoneMemo":459,"react":380,"underscore":447}],458:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":472,"../../stores/MemoStore":476,"./CompleteMemo":454,"./EditMemo":455,"./GlobalEditMemo":457,"./NoneMemo":458,"react":380,"underscore":447}],457:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var MemoActionConstants = require('../../constants/MemoActionConstants');
@@ -66700,7 +66827,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":472,"../../constants/MemoTypeConstants":473,"react":380,"react-textarea-autosize":218,"underscore":447}],459:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"../../constants/MemoActionConstants":471,"../../constants/MemoTypeConstants":472,"react":380,"react-textarea-autosize":218,"underscore":447}],458:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 var Remarkable = require('remarkable');
@@ -66732,7 +66859,7 @@ var NoneMemo = React.createClass({displayName: "NoneMemo",
 
 module.exports = NoneMemo;
 
-},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],460:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380,"remarkable":381}],459:[function(require,module,exports){
 var React = require('react');
 
 var Exporter = React.createClass({displayName: "Exporter",
@@ -66749,7 +66876,7 @@ var Exporter = React.createClass({displayName: "Exporter",
 
 module.exports = Exporter;
 
-},{"react":380}],461:[function(require,module,exports){
+},{"react":380}],460:[function(require,module,exports){
 var React = require('react');
 
 var MemoSearcher = require('./MemoSearcher/MemoSearcher');
@@ -66810,7 +66937,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"./Account/Login":451,"./Account/Logout":452,"./Exporter/Exporter":460,"./MemoSearcher/MemoSearcher":463,"./NoteLoader/NoteLoader":470,"react":380}],462:[function(require,module,exports){
+},{"./Account/Login":451,"./Account/Logout":452,"./Exporter/Exporter":459,"./MemoSearcher/MemoSearcher":462,"./NoteLoader/NoteLoader":469,"react":380}],461:[function(require,module,exports){
 var React = require('react');
 
 var DirectoryViewer = require('./DirectoryViewer/DirectoryViewer');
@@ -66887,7 +67014,7 @@ var Main = React.createClass({displayName: "Main",
 
 module.exports = Main;
 
-},{"./DirectoryViewer/DirectoryViewer":453,"./Editor/Editor":457,"./MemoViewer/MemoViewer":467,"./NoteHeader/NoteHeader":468,"react":380}],463:[function(require,module,exports){
+},{"./DirectoryViewer/DirectoryViewer":453,"./Editor/Editor":456,"./MemoViewer/MemoViewer":466,"./NoteHeader/NoteHeader":467,"react":380}],462:[function(require,module,exports){
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
@@ -66933,7 +67060,7 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 });
 
 module.exports=AutoInput;
-},{"./utils":464,"react":380,"react-autosuggest":213}],464:[function(require,module,exports){
+},{"./utils":463,"react":380,"react-autosuggest":213}],463:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -66942,7 +67069,7 @@ function escapeRegexCharacters(str) {
 module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
-},{}],465:[function(require,module,exports){
+},{}],464:[function(require,module,exports){
 var React = require('react');
 
 var EditMemoItem = React.createClass({displayName: "EditMemoItem",
@@ -66959,7 +67086,7 @@ var EditMemoItem = React.createClass({displayName: "EditMemoItem",
 
 module.exports = EditMemoItem;
 
-},{"react":380}],466:[function(require,module,exports){
+},{"react":380}],465:[function(require,module,exports){
 var React = require('react');
 var MemoActions = require('../../actions/MemoActions');
 
@@ -66986,7 +67113,7 @@ var MemoItem = React.createClass({displayName: "MemoItem",
 
 module.exports = MemoItem;
 
-},{"../../actions/MemoActions":450,"react":380}],467:[function(require,module,exports){
+},{"../../actions/MemoActions":450,"react":380}],466:[function(require,module,exports){
 var React = require('react');
 var MemoStore = require('../../stores/MemoStore');
 var MemoTypeConstants = require('../../constants/MemoTypeConstants');
@@ -67051,7 +67178,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/MemoTypeConstants":473,"../../stores/MemoStore":477,"./EditMemoItem":465,"./MemoItem":466,"react":380,"underscore":447}],468:[function(require,module,exports){
+},{"../../constants/MemoTypeConstants":472,"../../stores/MemoStore":476,"./EditMemoItem":464,"./MemoItem":465,"react":380,"underscore":447}],467:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
@@ -67072,7 +67199,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-},{"./ToggleAsideButton":469,"react":380}],469:[function(require,module,exports){
+},{"./ToggleAsideButton":468,"react":380}],468:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -67089,7 +67216,7 @@ var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
 
 module.exports = ToggleAsideButton;
 
-},{"react":380}],470:[function(require,module,exports){
+},{"react":380}],469:[function(require,module,exports){
 var React = require('react');
 
 var NoteLoader = React.createClass({displayName: "NoteLoader",
@@ -67102,7 +67229,7 @@ var NoteLoader = React.createClass({displayName: "NoteLoader",
 
 module.exports = NoteLoader;
 
-},{"react":380}],471:[function(require,module,exports){
+},{"react":380}],470:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 var APIRoot = "/api";
@@ -67224,7 +67351,7 @@ module.exports = {
     }
 };
 
-},{"react/lib/keyMirror":365}],472:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],471:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -67235,7 +67362,7 @@ module.exports = keyMirror({
     END_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":365}],473:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],472:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -67245,7 +67372,7 @@ module.exports = keyMirror({
     GLOBAL_EDIT_MEMO: null
 });
 
-},{"react/lib/keyMirror":365}],474:[function(require,module,exports){
+},{"react/lib/keyMirror":365}],473:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var AppDispatcher = new Dispatcher();
@@ -67267,7 +67394,7 @@ AppDispatcher.handleServerAction = function(action) {
 
 module.exports = AppDispatcher;
 
-},{"flux":170}],475:[function(require,module,exports){
+},{"flux":170}],474:[function(require,module,exports){
 var React = require('react');
 
 var MemoViewer = require('./components/MemoViewer/MemoViewer');
@@ -67289,7 +67416,7 @@ React.render(
     ),
     document.getElementById('app')
 );
-},{"./actions/MemoActions":450,"./components/Editor/Editor":457,"./components/Header":461,"./components/Main":462,"./components/MemoViewer/MemoViewer":467,"react":380,"react-ui-tree":223}],476:[function(require,module,exports){
+},{"./actions/MemoActions":450,"./components/Editor/Editor":456,"./components/Header":460,"./components/Main":461,"./components/MemoViewer/MemoViewer":466,"react":380,"react-ui-tree":223}],475:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var Constants = require('../constants/Constants');
@@ -67345,7 +67472,7 @@ AppDispatcher.register(function(payload) {
 
 module.exports = DirectoryStore;
 
-},{"../constants/Constants":471,"../dispatcher/AppDispatcher":474,"events":149,"simple-unique-id":442,"underscore":447}],477:[function(require,module,exports){
+},{"../constants/Constants":470,"../dispatcher/AppDispatcher":473,"events":149,"simple-unique-id":442,"underscore":447}],476:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MemoActionConstants = require('../constants/MemoActionConstants');
@@ -67551,7 +67678,7 @@ AppDispatcher.register(function(payload) {
 
 module.exports = MemoStore;
 
-},{"../constants/MemoActionConstants":472,"../constants/MemoTypeConstants":473,"../dispatcher/AppDispatcher":474,"events":149,"simple-unique-id":442,"underscore":447}],478:[function(require,module,exports){
+},{"../constants/MemoActionConstants":471,"../constants/MemoTypeConstants":472,"../dispatcher/AppDispatcher":473,"events":149,"simple-unique-id":442,"underscore":447}],477:[function(require,module,exports){
 var Constants = require('../constants/Constants');
 var DirectoryServerAction = require('../actions/DirectoryServerAction');
 var request = require('superagent');
@@ -67629,4 +67756,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-},{"../actions/DirectoryServerAction":449,"../constants/Constants":471,"superagent":444}]},{},[475]);
+},{"../actions/DirectoryServerAction":449,"../constants/Constants":470,"superagent":444}]},{},[474]);
