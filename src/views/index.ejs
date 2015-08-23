@@ -17,22 +17,7 @@
     <link rel="stylesheet" href="/css/jqtree.css"/>
     <link rel="stylesheet" type="text/css" href="/less/Autosuggest.css"/>
     <link rel="stylesheet" type="text/css" href="/less/Dialog.css"/>
-
-    <script type="text/javascript">
-        function btnRm_click() {
-            var node = $('#tree1').tree('getSelectedNode');
-            console.log(node);
-            $('#tree1').tree('removeNode', node);
-        };
-
-        function btnMd_click() {
-            var node = $('#tree1').tree('getSelectedNode');
-            console.log(node);
-
-            $('#tree1').tree('updateNode', node, 'new label');
-        };
-    </script>
-
+    
 </head>
 <body id="app">
 <script type="text/javascript" src="/main.js"></script>

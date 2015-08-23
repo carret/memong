@@ -44,14 +44,16 @@ var WebPostUtils = {
             });
     },
 
-    postDirectory: function(_username, _tree , _type, _data) {
+    postDirectory: function(_username, _tree , _type, _data, _data2) {
 
         var _action = {
             type : _type,
             tree : _tree,
-            data : _data
+            data : _data,
+            data2 : _data2
             } ;
 
+        console.log(_action);
         request
             .post(Constants.API.POST_DIRECTORY)
             .send({
@@ -62,8 +64,8 @@ var WebPostUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok){
-                    DirectoryServerAction.successNoteUpdate(_tree);
-                    console.log(res.body.noteId);
+                    DirectoryServerAction.successTreeUpdate(_tree);
+                    if(res.body.noteId != null) console.log(res.body.noteId);
                     // 노트 불러오기
                 }
                 else console.log('error');

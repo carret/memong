@@ -13,6 +13,10 @@ var User = {
         required:true
     },
 
+    selectNoteId: {
+        type: Object
+    },
+
     tree : {
         type : String,
         required : true

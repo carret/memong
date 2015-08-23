@@ -42,8 +42,7 @@ AppDispatcher.register(function(payload) {
 
     var action = payload.action;
 
-    if ( action.actionType == Constants.DirectoryServerAction.UPDATE_NOTE
-        || action.actionType == Constants.DirectoryServerAction.UPDATE_TREE){
+    if (action.actionType == Constants.DirectoryServerAction.UPDATE_TREE){
 
         reloadTree(action.tree);
         DirectoryStore.emitChange();
