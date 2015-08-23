@@ -25,21 +25,49 @@ var EditMemo = React.createClass({
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
-        TextareaDOM.focus();
+        $(TextareaDOM).focus();
+
+        if (this.props.focusThis) {
+            setTimeout(function() {
+                var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
+                var height = $(React.findDOMNode(this.refs._thisEditMemo)).height();
+                this.props.scrollAndFocusTarget(position - height - 21);
+            }.bind(this), 150);
+        }
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
-            if (keyCode == Constants.KeyCode.ENTER) {
-                this._handleAddMemo();
+
+            if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
+                event.preventDefault();
+                this._handleCompleteMemo();
+                return;
             }
-            if (keyCode == Constants.KeyCode.TAB) {
-                $(TextareaDOM).focusout();
+
+            switch(keyCode) {
+                case Constants.KeyCode.ENTER:
+                    this._handleAddMemo();
+                    break;
+
+                case Constants.KeyCode.TAB:
+                    event.preventDefault();
+                    this._handleMoveToNextByTAB();
+                    break;
+
+                case Constants.KeyCode.ARROW_UP:
+                    this._handleMoveToPrevious();
+                    break;
+
+                case Constants.KeyCode.ARROW_DOWN:
+                    this._handleMoveToNext();
+                    break;
+
+                case Constants.KeyCode.BACKSPACE:
+                    this._handleMoveToPreviousByBackSpace();
+                    break;
             }
         }.bind(this));
 
-        $(TextareaDOM).focusout(function() {
-            this._handleCompleteMemo();
-        }.bind(this));
     },
 
     _handleAddMemo: function() {
@@ -68,11 +96,7 @@ var EditMemo = React.createClass({
         }
     },
 
-    _handleCompleteMemo: function(e) {
-        if (e != undefined) {
-            e.preventDefault();
-        }
-
+    _handleCompleteMemo: function() {
         var text = $(TextareaDOM).val();
         if (text == "") {
             MemoActionCreator.deleteMemo(this.props.memo);
@@ -84,18 +108,50 @@ var EditMemo = React.createClass({
         }
     },
 
+    _handleMoveToNext: function() {
+        var text = $(TextareaDOM).val();
+        if (text.length == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+                text: text
+            }));
+        }
+    },
 
+    _handleMoveToNextByTAB: function() {
+        var text = $(TextareaDOM).val();
+        MemoActionCreator.endEditMemoAndStartNextEditMemo(_.extend({}, this.props.memo, {
+            text: text
+        }));
+    },
+
+    _handleMoveToPrevious: function() {
+        var text = $(TextareaDOM).val();
+        if (0 == TextareaDOM.selectionStart) {
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {text: text}));
+        }
+    },
+
+    _handleMoveToPreviousByBackSpace: function() {
+        var text = $(TextareaDOM).val();
+        if (0 == TextareaDOM.selectionStart) {
+            if (TextareaDOM.selectionStart == TextareaDOM.selectionEnd){
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {text: text}));
+            }
+        }
+    },
 
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
-        if (_headerOneMatches.length >= 2) return true;
+        if (_headerOneMatches.length >= 2) {
+            return true;
+        }
         return false;
     },
 
 
     render: function () {
         return (
-            <div className="edit-memo">
+            <div ref="_thisEditMemo" className="edit-memo">
                 <Textarea ref="_textarea"
                           className="edit-memo-textarea"
                           defaultValue={this.props.memo.text}

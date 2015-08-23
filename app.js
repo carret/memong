@@ -12,7 +12,11 @@ var passports = require('./passports');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('myKey'));
-app.use(session({secret:'my secret'}));
+app.use(session({
+    secret: 'myKey',
+    proxy: true,
+    resave: true,
+    saveUninitialized: true}));
 app.engine('.ejs', require('ejs').__express);
 app.set('views', __dirname + '/build/views');
 app.set('view engine', 'ejs');

@@ -9,6 +9,7 @@ var AsideDOM;
 var SectionDOM;
 
 var cookie = require('react-cookie');
+var MemoSearcher = require('./MemoSearcher/MemoSearcher');
 
 var Main = React.createClass({
 

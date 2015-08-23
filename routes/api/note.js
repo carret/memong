@@ -8,6 +8,11 @@ var mongoose = require('mongoose');
 
 var async = require('async');
 
+var mecab = require('mecab-ffi');
+
+var jwt = require('jwt-simple');
+var pkgInfo = require('../../package');
+
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
@@ -46,13 +51,15 @@ var testAddUser = function(req, res) {
 var getSelectNoteWithMemo = function(req, res) {
     var userToken = replaceXss(req.query.userToken);
     var noteId = replaceXss(req.query.noteId);
-
+    var userName;
+    if ( userToken != null )
+        userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
     //noteID가 null인 경우, selectNote를 불러옴
     if (noteId == null) {
         async.waterfall([
             function(next) {
                 //유저 검색 및
-                User.findOne({'token.token': userToken}, function(err, result) {
+                User.findOne({username: userName}, function(err, result) {
                     if (err) { return next(err); }
                     else {
                         if (result == null) {
@@ -148,7 +155,7 @@ var saveMemo = function(req, res) {
     var memos = req.body.memos;
 
     async.waterfall([
-        function(next) {
+        function(callback) {
             Note.findOneAndUpdate(
                 {_id: mongoose.Types.ObjectId(noteId)},
                 {$set: {memos: memos}},
@@ -158,10 +165,14 @@ var saveMemo = function(req, res) {
                         res.send(err);
                     }
                     else {
-                        next();
+                        //next();
+                        callback(null, result);
                     }
                 }
             )
+        }, function(memos, callback) {
+            console.log(memos);
+            callback();
         }
     ], function() {
         res.end();

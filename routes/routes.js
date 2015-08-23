@@ -1,6 +1,9 @@
-
 var db = require('../db');
 var User = db.model('User');
+
+var redis = require("redis");
+var client = redis.createClient();
+
 
 exports.doRoutes = function(app) {
     app.get ('/', index)
@@ -14,25 +17,23 @@ exports.doRoutes = function(app) {
 
 var index = function(req, res) {
 
+    var cookieToken = req.cookies.token;
+    //console.log("쿠키 토큰 : " + cookieToken);
 
-    if ( req.session.passport.user == null ) {
-
-        var cookieEmail = req.signedCookies.username;
-        //이전에 Login을 한 경우
-        if (cookieEmail != null) {
-            var cookieToken = req.cookies.token;
-            User.find({username: cookieEmail}, function (err, users) {
-                if (users.length > 0) {
-                    if (users[0].token.token != cookieToken) {
-                        console.log(users[0].token.token);
-                        console.log(cookieToken);
-                        console.log('unAuthorized 비정상 접근입니다.');
-                        //res.send(401);
-                        return;
-                    }
-                }
-            })
-        }
+    if ( cookieToken != null ) {
+        client.get(cookieToken, function(err, name) {
+            if ( name == null ) {
+                console.log('unAuthorized 비정상 접근입니다.');
+                res.status=401;
+                res.send('unAuthorized 비정상 접근입니다.');
+            } else {
+                console.log('token available, render');
+                res.render('index', {title: "memong"});
+            }
+        })
+    } else {
+        console.log('token null, render');
+        res.render('index', {title: "memong"});
     }
     res.render('index', {title: "memong"})
 }

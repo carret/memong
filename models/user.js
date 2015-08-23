@@ -1,10 +1,13 @@
+/**
+ * Created by cho on 2015-08-05.
+ */
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
+
 var User = {
 
-    token : {
-        type : Object,
-        unique : true,
-        required : true
-    },
     username : {
         type : String,
         required:true
@@ -14,29 +17,34 @@ var User = {
         type: Object
     },
 
-    servicetype:{
-        type:String,
-        required:true
-    },
-
     category : [
         {
             /* file && note categories */
             name: {
                 type: String,
                 required: true
-            }, /* dir name - user defined
-         note - unique id */
+            },
             type: {
                 /*  type ::  dir / note */
                 type: String,
                 required: true
             },
+            nid:{
+                type : ObjectId
+            },
             parent: {
-                type: String /* null -- Root */
+                type: String,
+                required : true
             }
         }
-    ]
+    ],
+
+    hashtable :
+        [
+            {
+
+            }
+        ]
 };
 
 module.exports = User;

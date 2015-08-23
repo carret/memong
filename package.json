@@ -18,6 +18,7 @@
     "express": "^4.13.1",
     "express-session": "^1.11.3",
     "flux": "^2.0.3",
+    "jwt-simple": "^0.3.0",
     "material-ui": "0.10.2",
     "mecab-ffi": "^0.1.0",
     "mongoose": "^4.1.2",
@@ -32,6 +33,7 @@
     "react-notification": "^2.0.0",
     "react-textarea-autosize": "^2.4.2",
     "react-ui-tree": "^2.2.1",
+    "redis": "^0.12.1",
     "remarkable": "^1.6.0",
     "simple-unique-id": "0.0.1",
     "superagent": "^1.3.0",
@@ -59,6 +61,9 @@
       "FACEBOOK_APP_ID": "906973419373720",
       "FACEBOOK_APP_SECRET": "7e12213660608afcdaddc280438bb4c2",
       "callbackURL": "http://localhost:8888/login/facebook/callback"
+    },
+    "token": {
+      "secret": "memongSecretKey"
     }
   }
 }

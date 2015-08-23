@@ -14,7 +14,7 @@ var WebGetUtils = require('./utils/WebGetUtils');
 var cookie = require('react-cookie');
 
 WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
-var LoginState = (cookie.load('username') == null) ? false : true;
+var LoginState = (cookie.load('token') == null) ? false : true;
 
 React.render(
     <div id="app-inner">

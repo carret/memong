@@ -44,10 +44,12 @@ function addMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -57,10 +59,13 @@ function addNewMemo(_targetEditMemo, _context) {
         text: _context
     });
     var _newMemos = _parseMemo(newMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len; idx++) {
-        memos.splice(index+idx+1, 0, _newMemos[idx]);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx+1, 0, _newMemos[idx]);
+        }
     }
 }
 
@@ -70,22 +75,91 @@ function deleteMemo(_targetMemo) {
 }
 
 function startEditMemo(_targetCompleteMemo) {
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
+
     var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
+
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
-    console.log(_targetCompleteMemo);
+    _targetCompleteMemo.haveToFocus = false;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function startEditMemoFromMemoViewer(_targetCompleteMemo) {
+    for (var idx=0; idx<memos.length; idx++) {
+        if (memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+            endEditMemo(memos[idx]);
+        }
+    }
+
+    var index = _indexOf(memos, _targetCompleteMemo.key, "key");
+
+    if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        return;
+    }
+
+    _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
+    _targetCompleteMemo.haveToFocus = true;
+    memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
+}
+
+function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == memos.length - 2) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    var _nextTargetMemo = memos[index+1];
+    endEditMemo(_targetEditMemo);
+    startEditMemo(_nextTargetMemo);
+}
+
+function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+    if (index == 0) {
+        endEditMemo(_targetEditMemo);
+        return;
+    }
+    else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        var context = memos[index].text;
+        addMemo(_targetEditMemo, context);
+        startEditMemo(memos[index-1]);
+        return;
+    }
+    else {
+        var _previousTargetMemo = memos[index-1];
+        endEditMemo(_targetEditMemo);
+        startEditMemo(_previousTargetMemo);
+    }
 }
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
-    var _newMemos = _parseMemo(_targetEditMemo);
-    var len = _newMemos.length;
 
-    for (var idx=0; idx<len-1; idx++) {
-        memos.splice(index+idx, 0, _newMemos[idx]);
+    if (memos[index].hasOwnProperty("haveToFocus")) {
+        memos[index].haveToFocus = false;
     }
 
-    memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
+    var _newMemos = _parseMemo(_targetEditMemo);
+
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+
+        for (var idx=0; idx<len-1; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
+        memos[index + len - 1] = _.extend({}, memos[index + len - 1], _newMemos[len - 1]);
+    }
+    else {
+        deleteMemo(_targetEditMemo);
+    }
 }
 
 
@@ -123,13 +197,15 @@ function _parseMemo(_unParsedMemo) {
     var len = result.length;
 
     if (len == 0) {
-        var memo = _.extend(protoMemo, {
-            title: "(No Title)",
-            mtype: Constants.MemoType.NONE_MEMO,
-            text: _unParsedMemo.text,
-            date: new Date()
-        });
-        resultMemos.push(memo);
+        if (_unParsedMemo.text != "") {
+            var memo = _.extend(protoMemo, {
+                title: "(No Title)",
+                mtype: Constants.MemoType.NONE_MEMO,
+                text: _unParsedMemo.text,
+                date: new Date()
+            });
+            resultMemos.push(memo);
+        }
     }
     else {
         var index = 0;
@@ -154,7 +230,7 @@ function _parseMemo(_unParsedMemo) {
     }
 
     if (resultMemos.length == 0) {
-        throw Error("Fatal Error: 잘못된 메모입니다. 다시 코딩하세요. 이 오류는 나와서는 안됩니다.");
+        return null;
     }
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
@@ -197,6 +273,18 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-receive');
     },
 
+    emitFocus: function() {
+        this.emit('focus');
+    },
+
+    addFocusListener: function(callback) {
+        this.on('focus', callback);
+    },
+
+    removeFocusListener: function(callback) {
+        this.removeListener('focus', callback);
+    },
+
     addChangeListener: function(callback) {
         this.on('change', callback);
     },
@@ -231,12 +319,10 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
-            console.log("initNote");
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
-            console.log("initMemo");
             break;
 
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
@@ -245,34 +331,53 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.ADD_MEMO:
             addMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.ADD_NEW_MEMO:
             addNewMemo(action.targetEditMemo, action.context);
-            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.DELETE_MEMO:
             deleteMemo(action.targetCompleteMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         case Constants.MemoActionTypes.START_EDIT_MEMO:
             startEditMemo(action.targetCompleteMemo);
             break;
 
+        case Constants.MemoActionTypes.START_EDIT_MEMO_FROM_MEMO_VIEWER:
+            startEditMemoFromMemoViewer(action.targetCompleteMemo);
+            break;
+
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO:
+            endEditMemoAndStartNextEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
+            break;
+
+        case Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO:
+            endEditMemoAndStartPreviousEditMemo(action.targetEditMemo);
+            NoteStore.emitFocus();
+            break;
+
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
-            NoteStore.emitAutoSaveRequest();
             break;
 
         default:
             return true;
     }
 
-    if (action.actionType != Constants.MemoActionTypes.RECEIVE_SAVE) {
+    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
         NoteStore.emitChange();
+    }
+
+
+    if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
+        || action.actionType == Constants.MemoActionTypes.DELETE_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO
+        || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO) {
+        NoteStore.emitAutoSaveRequest();
     }
 
     return true;
