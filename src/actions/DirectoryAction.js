@@ -3,22 +3,23 @@ var DirectoryActionConstants = require('../constants/MemoActionConstants');
 var WebPostUtils = require('../utils/WebPostUtils');
 var Constants = require('../constants/Constants');
 
-var _username = 'true';
+var _username = 'rong';
 
 var DirectoryAction = {
 
-    addNote_updateDB: function(_tree , _type, _data) {
+    addNote_updateDB: function(_tree , _type, _noteTitle) {
         AppDispatcher.handleClientAction({
             actionType: Constants.DirectoryAction.ADD_NOTE,
         });
-        WebPostUtils.postDirectory(_username, _tree , _type, _data);
+        WebPostUtils.postDirectory(_username, _tree , _type, _noteTitle);
     },
 
-    renameNote_updateDB: function(_tree, _type ,_nodeId) {
+    renameNote_updateDB: function(_tree, _type, _newTitle, _nodeId) {
         AppDispatcher.handleClientAction({
             actionType: Constants.DirectoryAction.RENAME_NOTE,
         });
-        WebPostUtils.postDirectory(_username, _tree, _type, _nodeId)
+        console.log(_newTitle);
+        WebPostUtils.postDirectory(_username, _tree, _type, _newTitle, _nodeId)
     },
 
     deleteNote_updateDB: function(_tree, _type ,_nodeId) {
@@ -42,11 +43,11 @@ var DirectoryAction = {
         WebPostUtils.postDirectory(_username, _tree, _type)
     },
     
-    deleteFolder_updateDB: function(_tree, _type) {
+    deleteFolder_updateDB: function(_tree, _type, _children) {
         AppDispatcher.handleClientAction({
             actionType: Constants.DirectoryAction.DELETE_FOLDER,
         });
-        WebPostUtils.postDirectory(_username, _tree, _type)
+        WebPostUtils.postDirectory(_username, _tree, _type, _children)
     },
     
 

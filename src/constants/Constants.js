@@ -80,6 +80,8 @@ module.exports = {
         RENAME_NOTE: 'renameNote',
         DELETE_NOTE: 'deleteNote',
 
+        ADD_FOLDER: 'addFolder',
+        DELETE_FOLDER: 'deleteFolder',
         CHANGE_TREE: 'updateTree' /* Folder Event + Move Event */
     }),
 

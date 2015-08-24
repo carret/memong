@@ -1,7 +1,3 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var Constants = require('../../src/constants/Constants');
 var async = require('async');
 var db = require('../../db');
@@ -36,51 +32,48 @@ exports.doRoutes = function(app) {
     app.post('/init',initTreeTest)
 };
 
-/*
-DirectoryActionTypes : keyMirror({
-    LOAD_TREE: null,
-    MOVE_TREE: null,
-
-    ADD_NOTE: null,
-    RENAME_NOTE: null,
-    DELETE_NOTE: null,
-
-    DELETE_FOLDER: null,
-    ADD_FOLDER: null,
-    RENAME_FOLDER: null
-}),
-  */
-
 var postDir = function(req ,res){
-
 
     var _username =  req.body.username;
     var _action = req.body.action;
 
-    //console.log(_action.type);
-    //console.log(Constants.DirectoryAPIType.ADD_NOTE);
     if(Constants.DirectoryAPIType.ADD_NOTE == _action.type) console.log(true);
     switch (_action.type){
 
         case Constants.DirectoryAPIType.ADD_NOTE :  addNoteToTree(_username, _action.tree, _action.data, res);
+            break;
+
+        case Constants.DirectoryAPIType.RENAME_NOTE :  renameNoteToTree(_username, _action.tree, _action.data, _action.data2, res);
+            break;
+
+        case Constants.DirectoryAPIType.ADD_FOLDER : addFolderToTree(_username, _action.tree, res);
+            break;
+
+        case Constants.DirectoryAPIType.CHANGE_TREE : renameFolder_movingTreeToTree(_username, _action.tree, res);
+            break;
+
+        case Constants.DirectoryAPIType.DELETE_FOLDER : renameFolder_movingTreeToTree(_username, _action.tree, res);
+            break;
+
+        case Constants.DirectoryAPIType.DELETE_NOTE : deleteNoteToTree(_username, _action.tree, _action.data, res);
+            break;
 
         default : break;
     }
 
 };
 
+/* FOR USER EVENT API*/
 var addNoteToTree = function(_username, _tree, _noteTitle, res) {
 
-    console.log('test');
     async.waterfall(
         [
             function (callback) {
                 User.findOne({ username: _username }, function( err, validUser) {
                     if (err) callback(err);
                     if (validUser === null) callback(true, false);
-                    else {
+                    else
                         callback(null,validUser.treeTable);
-                    }
                 });
             },
 
@@ -116,7 +109,8 @@ var addNoteToTree = function(_username, _tree, _noteTitle, res) {
 
             function (_noteId, callback) {
                 User.update({username: _username},  {
-                        tree : _tree
+                    tree : _tree,
+                    selectNoteId: _noteId
                 }, {upsert: true}, function (err, user) {
                     if (err)
                         callback(err);
@@ -135,114 +129,265 @@ var addNoteToTree = function(_username, _tree, _noteTitle, res) {
             else res.send({noteId: _noteId});
         });
 };
+var addFolderToTree = function(_username, _tree, res){
 
-var initTreeTest = function(req ,res){
+    async.waterfall(
+        [
+            function (callback) {
+                User.findOne({ username: _username }, function( err, validUser) {
+                    if (err) callback(err);
+                    if (validUser === null) callback(true, false);
+                    else {
+                        callback(null,validUser.treeTable);
+                    }
+                });
+            },
 
-    var _username = req.body.username;
-    var noteTitle =  (req.body.noteTitle);
-
-    User.findOne({ username: _username }, function( err, validUser) {
-
-        var initData = JSON.stringify(_initData);
-        validUser.tree = initData;
-
-        User.update({username: _username},
-            validUser
-        , {upsert: true}, function (err, user) {
-
-            var newNote = new Note({
-                title: noteTitle,
-                memos: [{
-                    title: 'New Memo',
-                    text: 'Text'
-                }]
-            });
-
-            newNote.save(function (err, savedNote) {
+            function (_treeTable, callback) {
 
                 User.update({username: _username}, {
                     $push: {
                         treeTable : {
-                            id: 0
+                            id: _treeTable.length,
+                            nid: null
                         }
                     }
                 }, {upsert: true}, function (err, user) {
-
-                    User.update({username: _username}, {
-                        $push: {
-                            treeTable : {
-                                id: 1
-                            }
-                        }
-                    }, {upsert: true}, function (err, user) {
-
-                        User.update({username: _username}, {
-                            $push: {
-                                treeTable : {
-                                    id: 2,
-                                    nid: savedNote['_id']
-                                }
-                            }
-                        }, {upsert: true}, function (err, user) {
-
-                            res.send(user);
-                        });
-
-                    });
-
+                    if (err)
+                        callback(err);
+                    callback(null);
                 });
+            },
 
-            });
+            function ( callback) {
+                User.update({username: _username},  {
+                    tree : _tree
+                }, {upsert: true}, function (err, user) {
+                    if (err)
+                        callback(err);
+                    callback(null);
+                }); }
+        ],
+
+        function (err) {
+            if (err) res.send('error');
+            else res.send('success');
         });
 
-
-
-
-
-    });
-
-
-
 };
 
-var moveTree = function(req ,res){
+var renameNoteToTree = function(_username, _tree, _newTitle, _id, res) {
 
-    var _username = req.body.username;
-    var noteTitle =  (req.body.noteTitle);
+    async.waterfall(
+        [
+            function (callback)
+            {
+                User.findOne ( {username : _username } , function( err, validUser) {
+                    if (err)
+                        callback(err);
+
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else {
+                        var noteId = validUser.treeTable[_id].nid;
+                        Note.findOne({ _id : noteId}, function( err, validNote) {
+                            if (err)
+                                callback(err);
+                            if (validNote === null) callback(true, 'unregistered Note');
+                            else  callback(null,noteId);
+                        });
+                    }
+                });
+            },
+
+            function (_noteId, callback) {
+
+                Note.update({ _id : _noteId }, {$set:{title : _newTitle}} ,{upsert:true}, function(err) {
+                    if ( err ) callback(err);
+                    else callback(null, _noteId);
+                });
+            },
+
+            function (_noteId, callback) {
+                User.update({username: _username},  {
+                    tree : _tree,
+                    selectNoteId: _noteId
+                }, {upsert: true}, function (err, user) {
+                    if (err) callback(err);
+                    else callback(null, _noteId);
+                });
+            }
+        ],
+        function (err, _noteId) {
+            if (err) {
+                if(_noteId != null) res.send(_noteId);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
+            }
+            else res.send({noteId: _noteId});
+        });
 
 };
+var renameFolder_movingTreeToTree = function(_username, _tree, res) {
+    async.waterfall(
+        [
+            function (callback)
+            {
+                User.findOne ( {username : _username } , function( err, validUser) {
+                    if (err)
+                        callback(err);
 
-var initTree = function(user, nid, fid){
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else callback(null);
+                });
+            },
 
-    var initData = JSON.stringify(_initData);
+            function (callback) {
+                User.update({username: _username},  {
+                    tree : _tree
+                }, {upsert: true}, function (err, user) {
+                    if (err) callback(err);
+                    else callback(null);
+                });
+            }
+        ],
 
-    user.category.tree = initData;
-    user.category.tree = Date.now;
+        function (err) {
+            if (err) res.send('error');
+            else res.send('success');
+        });
 };
 
-/*Test API*/
-var allNote =  function(req ,res){
+var deleteFolderToTree = function(_username, _tree, _children, res) {
 
-    Note.find(function(err,test) {
-        if (err) {
-            console.err(err);
-            throw err;
-        }
-        res.send(test);
-    });
-}
-var allUser =  function(req ,res){
+    async.waterfall(
+        [
+            function (callback)
+            {
+                User.findOne ( {username : _username } , function( err, validUser) {
+                    if (err) callback(err);
 
-    User.find(function(err,test) {
-        if (err) {
-            console.err(err);
-            throw err;
-        }
-        res.send(test);
-    });
-}
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else callback(null, validUser.treeTable);
+                });
+            },
 
+            function (_treeTable, callback) {
 
+                for(var i=0;i<_children.length; i++) {
+
+                    if(_children[i].type == "note") {
+                        var nid = _treeTable[(_children[i]._id)].nid;
+
+                        Note.remove({_id: nid}, function (err) {
+                            if (err) callback(err);
+                            else if(i == children.length-1) callback(null, _treeTable);
+                        });
+                    }
+                }
+            },
+
+            function (_treeTable, callback) {
+
+                var i, _noteId;
+                for( i=0; i<_treeTable.length; i++)
+                    if(_treeTable[i].nid != null){
+                        _noteId = _treeTable[i].nid;
+                        break;
+                    }
+
+                if(i==_treeTable.length) _noteId = null;
+                console.log (_noteId);
+                User.update({username: _username},  {
+                    tree : _tree,
+                    treeTable : _treeTable,
+                    selectNoteId: _noteId
+                }, {upsert: true}, function (err, user) {
+                    if (err) callback(err);
+                    else callback(null, _noteId);
+                });
+            }
+        ],
+        function (err, _noteId) {
+            if (err) {
+                if(_noteId != null) res.send(_noteId);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
+            }
+            else res.send({noteId: _noteId});
+        });
+};
+var deleteNoteToTree = function(_username, _tree, _id, res) {
+
+    async.waterfall(
+        [
+            function (callback)
+            {
+                User.findOne ( {username : _username } , function( err, validUser) {
+                    if (err)
+                        callback(err);
+
+                    if (validUser === null) callback(true, 'unregistered User');
+                    else {
+                        var noteId = validUser.treeTable[_id].nid;
+                        validUser.treeTable[_id].nid = null;
+
+                        Note.findOne({ _id : noteId}, function( err, validNote) {
+                            if (err)
+                                callback(err);
+                            if (validNote === null) callback(true, 'unregistered Note');
+                            else  callback(null,validNote,validUser.treeTable);
+                        });
+                    }
+                });
+            },
+
+            function (_validNote,_treeTable, callback) {
+
+                _validNote.remove(function (err) {
+                    if (err) callback(err);
+                    else callback(null, _treeTable);
+                });
+            },
+
+            function (_treeTable, callback) {
+
+                var i, _noteId;
+                for( i=0; i<_treeTable.length; i++)
+                    if(_treeTable[i].nid != null){
+                        console.log(_treeTable[i].id);
+                        _noteId = _treeTable[i].nid;
+                        break;
+                    }
+                if(i==_treeTable.length) _noteId = null;
+                console.log (_noteId);
+
+                User.update({username: _username},  {
+                    tree : _tree,
+                    treeTable : _treeTable,
+                    selectNoteId: _noteId
+                }, {upsert: true}, function (err) {
+                    if (err) callback(err);
+                    else callback(null, _noteId);
+                });
+            }
+        ],
+        function (err, _noteId) {
+            if (err) {
+                if(_noteId != null) res.send(_noteId);
+                else {
+                    console.log(err);
+                    res.send('error');
+                }
+            }
+            else res.send({noteId: _noteId});
+        });
+};
+
+/* FOR INIT TREE */
 var loadTree = function(req ,res){
 
     var _username = req.body.username;
@@ -264,31 +409,20 @@ var loadTree = function(req ,res){
     });
 };
 
+var initTreeTest = function(req ,res){
 
-
-
-
-/*Note API*/
-var addNote = function(req ,res) {
-
+    var _username = req.body.username;
     var noteTitle =  (req.body.noteTitle);
-    var userName=  (req.body.userName);
-    var userCategory ;
 
-    async.waterfall(
-        [
-            function (callback) {
-                User.findOne({ username: userName }, function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, false);
-                    else {
-                        userCategory = validUser.category;
-                        callback(null, validUser.noteTable);
-                    }
-                });
-            },
+    User.findOne({ username: _username }, function( err, validUser) {
 
-            function (callback, _noteTable) {
+        var initData = JSON.stringify(_initData);
+        validUser.tree = initData;
+
+        User.update({username: _username},
+            validUser
+            , {upsert: true}, function (err, user) {
+
                 var newNote = new Note({
                     title: noteTitle,
                     memos: [{
@@ -298,377 +432,71 @@ var addNote = function(req ,res) {
                 });
 
                 newNote.save(function (err, savedNote) {
-                    if (err)
-                        callback(err);
 
-                    User.update({username: userName}, {
+                    User.update({username: _username}, {
                         $push: {
                             treeTable : {
-                                id: _noteTable.length,
-                                nid: savedNote['_id']
+                                id: 0
                             }
                         }
                     }, {upsert: true}, function (err, user) {
-                        if (err)
-                            callback(err);
-                        callback(null, savedNote);
+
+                        User.update({username: _username}, {
+                            $push: {
+                                treeTable : {
+                                    id: 1
+                                }
+                            }
+                        }, {upsert: true}, function (err, user) {
+
+                            User.update({username: _username}, {
+                                $push: {
+                                    treeTable : {
+                                        id: 2,
+                                        nid: savedNote['_id']
+                                    }
+                                }
+                            }, {upsert: true}, function (err, user) {
+
+                                res.send(user);
+                            });
+
+                        });
+
                     });
 
                 });
-            },
+            });
 
-            function (savedNote, callback) {
-                User.findOne({username: userName}, function (err, updatedUser) {
-                    if (err)
-                        callback(err);
-                    callback(null, savedNote, updatedUser);
-                }); }
-        ],
+    });
+};
+var initTree = function(user, nid){
 
-        function (err, savedNote, updatedUser) {
-            if (err) {
-                if(savedNote == false) res.send('Unregistered User');
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send( (savedNote + '|' + userCategory, updatedUser.category));
-        });
+    var initData = JSON.stringify(_initData);
+
+    user.category.tree = initData;
+    user.category.tree = Date.now;
 };
 
-var loadNote = function(req ,res){
 
-    var userName =  (req.body.userName);
-    var noteId =  (req.body.noteId);
+/*Test API*/
+var allNote =  function(req ,res){
 
-    async.waterfall(
-        [
-            function (callback)
-            {
-                User.findOne ( {username : userName } , function( err, validUser) {
-                    if (err)
-                        callback(err);
-                    if (validUser === null) callback(true, 'unregistered User');
-                    else callback(null);
-                });
-            },
-
-            function (callback) {
-                Note.findOne({ _id : noteId }, function( err, validNote) {
-                    if (err)
-                        callback(err);
-
-                    if (validNote === null) callback(true, 'unregistered Note');
-                    else callback(null, validNote);
-                });
-            }
-        ],
-
-        function (err, validNote) {
-            if (err) {
-                if(validNote != null) res.send(validNote);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send( (validNote));
-        });
+    Note.find(function(err,test) {
+        if (err) {
+            console.err(err);
+            throw err;
+        }
+        res.send(test);
+    });
 };
+var allUser =  function(req ,res){
 
-var removeNote = function(req ,res){
-
-    var userName =  (req.body.userName);
-    var noteId =  (req.body.noteId);
-    var userCategory ;
-
-    async.waterfall(
-        [
-            function (callback)
-            {
-                User.findOne({ username: userName }, function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, false);
-                    else {
-                        userCategory = validUser.category;
-                        Note.findOne({ _id : ObjectId(noteId)}, function( err, validNote) {
-                            if (err) callback(err);
-                            if (validNote === null) callback(true, 'unregistered Note');
-                            else callback(null, validUser, validNote);
-                        });
-                    }
-                });
-            },
-
-            function (validUser,validNote, callback) {
-                validNote.remove(function (err) {
-                    if (err)
-                        callback(err);
-                    callback(null,validUser);
-                });
-            },
-
-            function (validUser, callback) {
-                for(var i=validUser.category.length-1; i >=0 ;  i--)
-                    if(validUser.category[i].nid == noteId) validUser.category.splice(i, 1);
-
-                User.update({username : userName},validUser, {upsert: true}, function (err) {
-                    if (err)
-                        callback(err);
-                    callback(null);
-                });
-            },
-
-            function (callback) {
-                User.findOne({username: userName}, function (err, updatedUser) {
-                    if (err)
-                        callback(err);
-                    callback(null,updatedUser);
-                });
-            }
-        ],
-
-        function (err, updatedUser) {
-            if (err) {
-                if(updatedUser != null) res.send(updatedUser);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send(((userCategory, updatedUser.category)));
-        });
+    User.find(function(err,test) {
+        if (err) {
+            console.err(err);
+            throw err;
+        }
+        res.send(test);
+    });
 };
-
-var renameNote =  function(req ,res) {
-
-    var newTitle =  (req.body.newTitle);
-    var userName =  (req.body.userName);
-    var noteId =  (req.body.noteId);
-
-    async.waterfall(
-        [
-            function (callback)
-            {
-                User.findOne ( {username : userName } , function( err, validUser) {
-                    if (err)
-                        callback(err);
-
-                    if (validUser === null) callback(true, 'unregistered User');
-                    else {
-                        Note.findOne({ _id : noteId}, function( err, validNote) {
-                            if (err)
-                                callback(err);
-                            if (validNote === null) callback(true, 'unregistered Note');
-                            else callback(null, validUser);
-                        });
-                    }
-                });
-            },
-
-            function (validUser,callback) {
-
-                for(var i=0;i<validUser.category.length;i++)
-                    if(validUser.category[i].nid == noteId) validUser.category[i].name = newTitle;
-
-                User.update({username : userName},validUser, {upsert: true}, function (err) {
-                    if ( err ) callback(err);
-                    else {
-                        Note.update({ _id : noteId }, {$set:{title : newTitle}} ,{upsert:true}, function(err) {
-                            if ( err ) callback(err);
-                            else callback(null);
-                        }); }
-                });
-            },
-
-            function (callback) {
-                User.findOne ( {username : userName } , function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, 'unregistered User');
-                    else callback(null, validUser.category);
-                });
-            }
-        ],
-        function (err, updatedCate) {
-            if (err) {
-                if(updatedCate != null) res.send(updatedCate);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send((updatedCate));
-        });
-};
-
-/////////////////////////////////////////////////////////////////////////////////////
-
-/*Folder API*/
-var addFolder = function(req ,res) {
-
-    var userName =  (req.body.userName);
-    var newTitle =  (req.body.newTitle);
-    var folderParent =  (req.body.folderParent);
-    var userCategory;
-
-    async.waterfall(
-        [
-            function (callback) {
-                User.findOne({ username: userName }, function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, 'Unregistered User');
-                    else {
-                        userCategory = validUser.category;
-                        callback(null);
-                    }
-                });
-            },
-
-            function (callback) {
-                User.update({username: userName}, {
-                    $push: {
-                        category: {
-                            name: newTitle,
-                            type: 'folder',
-                            parent: folderParent
-                        } }
-                }, {upsert: true}, function (err, user) {
-                    if (err) callback(err);
-                    callback(null);
-                });
-            },
-
-            function (callback) {
-                User.findOne({username: userName}, function (err, updatedUser) {
-                    if (err) callback(err);
-                    callback(null, updatedUser);
-                });
-            }
-        ],
-        function (err, updatedUser) {
-            if (err) {
-                if(updatedUser !=  null) res.send('Unregistered User');
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send(un ((userCategory, updatedUser.category)));
-        });
-};
-
-var removeFolder = function(req ,res){
-    var userName = (req.body.userName);
-    var folderId = (req.body.folderId);
-    var userCategory ;
-    var i;
-
-    async.waterfall(
-        [
-            function (callback) {
-                User.findOne({ username: userName }, function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, 'unregistered User');
-                    else {
-                        userCategory = validUser.category;
-                        for(i=validUser.category.length-1; i>=0 ;i--) {
-                            console.log(validUser.category[i]);
-                            if (validUser.category[i]._id == folderId) {
-                                validUser.category.splice(i, 1);
-                                break;
-                            }
-                        }
-                        if(i >= 0) callback(null, validUser);
-                        else callback(true, 'unregistered Folder');
-                    }
-                });
-            },
-            function (validUser, callback) {
-                User.update({username : userName},validUser, {upsert: true}, function (err) {
-                    if (err) callback(err);
-                    callback(null);
-                });
-            },
-            function (callback) {
-                User.findOne({username: userName}, function (err, updatedUser) {
-                    if (err)  callback(err);
-                    callback(null,updatedUser);
-                });
-            }
-        ],
-
-        function (err, updatedUser) {
-            if (err) {
-                if(updatedUser != null) res.send(updatedUser);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send(((userCategory, updatedUser.category)));
-        });
-};
-
-var renameFolder =  function(req ,res) {
-
-    var userName =  (req.body.userName);
-    var folderId =  (req.body.folderId);
-    var newTitle =  (req.body.newTitle);
-    var userCategory ;
-    var i;
-
-    async.waterfall(
-        [
-            function (callback) {
-                User.findOne({ username: userName }, function( err, validUser) {
-                    if (err) callback(err);
-                    if (validUser === null) callback(true, 'unregistered User');
-                    else {
-                        userCategory = validUser.category;
-                        for(i=validUser.category.length-1; i>=0 ;i--) {
-                            if (validUser.category[i]._id == folderId) {
-                                validUser.category[i].name = newTitle;
-                                break;
-                            }
-                        }
-                        if(i >= 0) callback(null, validUser);
-                        else callback(true, 'unregistered Folder');
-                    }
-                });
-            },
-            function (validUser, callback) {
-                User.update({username : userName},validUser, {upsert: true}, function (err) {
-                    if (err) callback(err);
-                    callback(null);
-                });
-            },
-            function (callback) {
-                User.findOne({username: userName}, function (err, updatedUser) {
-                    if (err)  callback(err);
-                    callback(null,updatedUser);
-                });
-            }
-        ],
-
-        function (err, updatedUser) {
-            if (err) {
-                if(updatedUser != null) res.send(updatedUser);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
-            }
-            else res.send(((userCategory, updatedUser.category))
-            );
-        });
-};
-
-/*
- * User.findOne ( {username : userName, category : { $all : [
- { $elemMatch : { nid : noteId} }]}} , function( err, validUser) {
- if (err)
- callback(err);
- if (validUser === null) callback(true, 'invalid access');
- else callback(null);
- });*/
