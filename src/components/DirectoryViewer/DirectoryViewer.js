@@ -48,11 +48,12 @@ var DialogContent = React.createClass({
 
     _IsRedundancy: function() {
 
-        var node = this.props.selectedNode, nodeParent;
+        var node = $(elTree).tree('getSelectedNode'), nodeParent;
         var title = document.getElementById('title').value;
         var type = this.props.type;
 
-        if (node == false) node = $(elTree).tree('getNodeById', 0);
+        if(type == 'rename') node = this.props.selectedNode;
+        else if (node == false) node = $(elTree).tree('getNodeById', 0);
         nodeParent = (node.type == 'note')? node.parent: node;
 
         var val = _redundancyCheck(nodeParent, title);
@@ -120,6 +121,7 @@ var DirectoryViewer = React.createClass({
     _getDataToDB : function () {
 
         var that = this;
+
         WebPostUtils.loadDirectory(_username,function(_data){
 
             var treeData = _data.tree;
@@ -148,12 +150,10 @@ var DirectoryViewer = React.createClass({
     /* FOR BIND TREE EVENT */
     _treeClickEvent : function(event){
 
-        console.log(event.node);
         if (event.node) {
 
             var node = event.node;
             _selectedNode = node;
-
 
             if (preNodeId != 0) hiddenBtn(preNodeId);
             visibleBtn(node.id);
