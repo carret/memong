@@ -56640,21 +56640,78 @@ module.exports = LoginBtn;
 
 },{"rc-dialog":177,"react":369}],441:[function(require,module,exports){
 var React = require('react');
+var Dialog = require('rc-dialog');
 var cookie = require('react-cookie');
 var jwt = require('jwt-simple');
 var pkgInfo = require('../../../package');
 
+var container;
+
+function showDialog(content, props) {
+    if (!container) {
+        container = document.createElement('div');
+        document.body.appendChild(container);
+    }
+
+    var close = props.onClose;
+    props.onClose = function() {
+        if(close)
+            close();
+        React.unmountComponentAtNode(container);
+    };
+
+    var dialog = React.render(React.createElement(Dialog, React.__spread({},  props, {renderToBody: false}), content), container);
+    dialog.show();
+    return dialog;
+}
+
+var DialogContent = React.createClass({displayName: "DialogContent",
+    getInitialState : function() {
+        return {
+            value:''
+        }
+    },
+
+    _onClose: function() {
+        this.d.close();
+    },
+
+    render : function() {
+        return (
+            React.createElement("div", {id: "logoutModel"}, 
+                React.createElement("div", {className: "content"}, 
+                    React.createElement("span", null, "정말로 로그아웃 하시겠습니까?")
+                ), 
+                React.createElement("div", {className: "btn"}, 
+                    React.createElement("a", {className: "logout-ok", href: "/logout"}, React.createElement("span", null, "로그아웃")), 
+                    React.createElement("a", {className: "logout-cancel", onClick: this.props.handleClose}, React.createElement("span", null, "취소"))
+                )
+            )
+        );
+    }
+});
+
 var Logout = React.createClass({displayName: "Logout",
-    handleLogout: function() {
-        location.href = '/logout';
+    handleTrigger: function () {
+        this.d = showDialog(React.createElement(DialogContent, {handleClose: this._onClose}),{
+            title: React.createElement("p", {id: "logoutModelTitle"}, "로그아웃"),
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 350}
+        });
+    },
+
+    _onClose: function() {
+        this.d.close();
     },
 
     render : function() {
         var username = jwt.decode(cookie.load('token'), pkgInfo.oauth.token.secret).username;
 
         return (
-            React.createElement("div", {className: "account", onClick: this.handleLogout}, 
-                React.createElement("button", {className: "logout", onClick: this.handleLogout}, 
+            React.createElement("div", {className: "account", onClick: this.handleTrigger}, 
+                React.createElement("button", {className: "logout", onClick: this.handleTrigger}, 
                     React.createElement("i", {className: "material-icons"}, ""), 
                     React.createElement("span", null, username)
                 )
@@ -56665,7 +56722,7 @@ var Logout = React.createClass({displayName: "Logout",
 
 module.exports = Logout;
 
-},{"../../../package":435,"jwt-simple":172,"react":369,"react-cookie":206}],442:[function(require,module,exports){
+},{"../../../package":435,"jwt-simple":172,"rc-dialog":177,"react":369,"react-cookie":206}],442:[function(require,module,exports){
 var React = require('react');
 
 var AutoSaveActionCreator = require('../../actions/AutoSaveActionCreator');
@@ -57641,14 +57698,13 @@ var DialogContent = React.createClass({displayName: "DialogContent",
             React.createElement("div", {ref: "_dialog"}, 
                 React.createElement("div", {className: "memoDeleteDialog-text"}, React.createElement("span", null, "정말로 삭제하시겠습니까?")), 
                 React.createElement("div", {className: "memoDeleteDialog-btnMenu"}, 
-                    React.createElement("button", {onClick: this._deleteItem}, "예"), 
-                    React.createElement("button", {onClick: this.props.handleClose}, "아니요")
+                    React.createElement("button", {className: "delete-ok", onClick: this._deleteItem}, "삭제"), 
+                    React.createElement("button", {className: "delete-cancel", onClick: this.props.handleClose}, "취소")
                 )
             )
         );
     }
 });
-
 
 var MemoItem = React.createClass({displayName: "MemoItem",
     _onDelete: function() {

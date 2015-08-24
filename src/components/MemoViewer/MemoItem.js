@@ -51,14 +51,13 @@ var DialogContent = React.createClass({
             <div ref="_dialog">
                 <div className="memoDeleteDialog-text"><span>정말로 삭제하시겠습니까?</span></div>
                 <div className="memoDeleteDialog-btnMenu">
-                    <button onClick={this._deleteItem} >예</button>
-                    <button onClick={this.props.handleClose} >아니요</button>
+                    <button className="delete-ok" onClick={this._deleteItem} >삭제</button>
+                    <button className="delete-cancel" onClick={this.props.handleClose} >취소</button>
                 </div>
             </div>
         );
     }
 });
-
 
 var MemoItem = React.createClass({
     _onDelete: function() {

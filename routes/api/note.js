@@ -8,7 +8,6 @@ var mongoose = require('mongoose');
 
 var async = require('async');
 
-var mecab = require('mecab-ffi');
 
 var jwt = require('jwt-simple');
 var pkgInfo = require('../../package');

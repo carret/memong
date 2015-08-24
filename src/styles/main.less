@@ -516,9 +516,6 @@ html, body {
                     flex: 1;
 
                     overflow-y: scroll;
-                    ::-webkit-scrollbar {
-                        display: none;
-                    }
 
                     background-color: @color-grey-200;
 
@@ -838,7 +835,7 @@ html, body {
                     font-weight: 100;
                     margin-bottom: 1.8rem;
                     border-left: 7px solid #ccc;
-                    background: #f9f9f9;
+                    background: #FFF;
 
                     margin-right: 0;
                     padding: 0.9rem;
@@ -1000,6 +997,9 @@ html, body {
 
 
 .memoDeleteDialog {
+    &-title {
+        font-size: 1.5em;
+    }
     &-text {
         margin-bottom: 1rem;
     }
@@ -1012,6 +1012,47 @@ html, body {
 
         -webkit-justify-content: flex-end;
         justify-content: flex-end;
+
+        button {
+            outline: none;
+            border: none;
+
+            border-radius: 3px;
+
+            font-size: 1em;
+
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+
+            will-change: background-color;
+
+            -webkit-transition: background-color .3s ease;
+            -moz-transition: background-color .3s ease;
+            -ms-transition: background-color .3s ease;
+            -o-transition: background-color .3s ease;
+            transition: background-color .3s ease;
+
+            cursor: pointer;
+
+            text-align: center;
+        }
+
+        .delete-ok {
+            background-color: #FFB300;
+            padding: .5rem 1rem;
+            color: #FFF;
+            margin-right: .5rem;
+
+            &:hover { background-color: #FFA000; }
+        }
+        .delete-cancel {
+            background-color: @color-grey-200;
+            border: 1px solid @color-grey-300;
+            padding: .5rem;
+
+            &:hover { background-color: @color-grey-300; }
+        }
     }
 }
 
@@ -1071,13 +1112,103 @@ html, body {
     }
 }
 
-#logModelTitle {
-    font-size: 1.5em;
+#logoutModel {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+
+    .btn {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+
+        -webkit-justify-content: flex-end;
+        justify-content: flex-end;
+
+        margin-top: 2rem;
+
+        .logout-ok {
+            border-radius: 3px;
+            background-color: #FFB300;
+
+            padding: .5rem 1rem;
+
+            text-decoration: none;
+
+            margin-right: .5rem;
+
+            will-change: background-color;
+
+            cursor: pointer;
+
+            -webkit-transition: background-color .3s ease;
+            -moz-transition: background-color .3s ease;
+            -ms-transition: background-color .3s ease;
+            -o-transition: background-color .3s ease;
+            transition: background-color .3s ease;
+
+            span {
+                color: #fff;
+            }
+
+            &:hover { background-color: #FFA000; }
+        }
+
+        .logout-cancel {
+            border-radius: 3px;
+            background-color: @color-grey-200;
+            border: 1px solid @color-grey-300;
+
+            padding: .5rem .5rem;
+
+            text-decoration: none;
+
+            will-change: background-color;
+
+            -webkit-transition: background-color .3s ease;
+            -moz-transition: background-color .3s ease;
+            -ms-transition: background-color .3s ease;
+            -o-transition: background-color .3s ease;
+            transition: background-color .3s ease;
+
+            cursor: pointer;
+
+            span {
+                color: @color-grey-700;
+                cursor: pointer;
+            }
+
+            &:hover {
+                background-color: @color-grey-300;
+            }
+        }
+    }
 }
+
+#logoutModelTitle { font-size: 1.5em; }
+#logModelTitle { font-size: 1.5em; }
 
 
 #front {
-    width: 100%;
+    display: block;
+
+    overflow: visible;
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
 
     .section1 {
         position: relative;
