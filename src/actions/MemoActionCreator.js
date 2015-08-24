@@ -33,13 +33,39 @@ var MemoActionCreator = {
             actionType: Constants.MemoActionTypes.START_EDIT_MEMO,
             targetCompleteMemo: _targetCompleteMemo
         });
+    },
 
+    startEditMemoFromMemoViewer: function(_targetCompleteMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.START_EDIT_MEMO_FROM_MEMO_VIEWER,
+            targetCompleteMemo: _targetCompleteMemo
+        });
+    },
+
+    endEditMemoAndStartNextEditMemo: function(_targetEditMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO,
+            targetEditMemo: _targetEditMemo
+        });
+    },
+
+    endEditMemoAndStartPreviousEditMemo: function(_targetEditMemo) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO,
+            targetEditMemo: _targetEditMemo
+        });
     },
 
     completeEditMemo: function(_targetEditMemo) {
         AppDispatcher.handleClientAction({
             actionType: Constants.MemoActionTypes.END_EDIT_MEMO,
             targetEditMemo: _targetEditMemo
+        });
+    },
+
+    focusGlobalEdit: function() {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.FOCUS_GLOBAL_EDIT
         });
     }
 };

@@ -13,7 +13,8 @@ var NoneMemo = require('./NoneMemo');
 
 function getMemos() {
     return {
-        memos: NoteStore.getMemo()
+        memos: NoteStore.getMemo(),
+        shouldFocus: false
     };
 }
 
@@ -25,7 +26,7 @@ var Editor = React.createClass({
     },
 
     componentDidMount: function() {
-        EditorDOM = $(React.findDOMNode(this.refs._editor));
+        EditorDOM = React.findDOMNode(this.refs._editor);
         NoteStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
 
@@ -42,7 +43,7 @@ var Editor = React.createClass({
                     return <CompleteMemo memo={memo} key={memo.key}/>;
 
                 case Constants.MemoType.EDIT_MEMO :
-                    return <EditMemo memo={memo} key={memo.key}  />;
+                    return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} />;
 
                 case Constants.MemoType.NONE_MEMO :
                     return <NoneMemo memo={memo} key={memo.key}/>;
@@ -59,7 +60,13 @@ var Editor = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        console.log(this.state.memos);
+    },
+
+    _scrollAndFocusTarget: function(position) {
+        var scrollTop = $(EditorDOM).scrollTop();
+        $(EditorDOM).stop().animate({
+            scrollTop: position + scrollTop
+        }, 450, 'swing');
     }
 });
 

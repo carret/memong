@@ -27,6 +27,7 @@ var EditMemo = React.createClass({
         TextareaDOM.selectionEnd = text.length;
         $(TextareaDOM).focus();
 
+        console.log(this.props.focusThis);
         if (this.props.focusThis) {
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._thisEditMemo)).offset().top;
@@ -127,15 +128,27 @@ var EditMemo = React.createClass({
     _handleMoveToPrevious: function() {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {text: text}));
+            if (text == "") {
+                MemoActionCreator.deleteMemo(this.props.memo);
+            }
+            else {
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend({}, this.props.memo, {
+                    text: text
+                }));
+            }
         }
     },
 
     _handleMoveToPreviousByBackSpace: function() {
         var text = $(TextareaDOM).val();
         if (0 == TextareaDOM.selectionStart) {
-            if (TextareaDOM.selectionStart == TextareaDOM.selectionEnd){
-                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {text: text}));
+            if (text == "") {
+                MemoActionCreator.deleteMemo(this.props.memo);
+            }
+            else {
+                MemoActionCreator.endEditMemoAndStartPreviousEditMemo(_.extend(this.props.memo, {
+                    text: text
+                }));
             }
         }
     },

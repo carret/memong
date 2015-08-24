@@ -30,6 +30,9 @@ module.exports = {
         ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
+        START_EDIT_MEMO_FROM_MEMO_VIEWER: null,
+        END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO: null,
+        END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO: null,
         END_EDIT_MEMO: null
     }),
 
@@ -69,6 +72,9 @@ module.exports = {
 
     KeyCode: {
         ENTER: 13,
-        TAB: 9
+        TAB: 9,
+        ARROW_DOWN: 40,
+        ARROW_UP: 38,
+        BACKSPACE: 8
     }
 };

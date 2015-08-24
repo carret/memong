@@ -79,10 +79,14 @@ var MemoItem = React.createClass({
         });
     },
 
+    _onEditStart: function() {
+        MemoActionCreator.startEditMemoFromMemoViewer(this.props.memo);
+    },
+
     render: function() {
         return (
             <div className="memo-viewer-item">
-                <span className="title">
+                <span className="title" onClick={this._onEditStart}>
                     {this.props.memo.title}
                 </span>
                 <div>

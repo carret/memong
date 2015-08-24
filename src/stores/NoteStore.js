@@ -129,7 +129,12 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        addMemo(_targetEditMemo, context);
+        memos[index-1] = _.extend(memos[index-1], {
+            text: memos[index-1].text + '\n\n' + context
+        });
+        memos[index] = _.extend(memos[index], {
+            text: ""
+        });
         startEditMemo(memos[index-1]);
         return;
     }
@@ -377,7 +382,7 @@ AppDispatcher.register(function(payload) {
         || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO
         || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO
         || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_PREVIOUS_EDIT_MEMO) {
-        NoteStore.emitAutoSaveRequest();
+            NoteStore.emitAutoSaveRequest();
     }
 
     return true;

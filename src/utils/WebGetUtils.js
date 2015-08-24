@@ -12,8 +12,6 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    console.log("받음");
-                    console.log(res);
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
                 }

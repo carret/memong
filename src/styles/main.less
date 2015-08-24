@@ -514,6 +514,12 @@ html, body {
                             display: block;
                             font-size: 1.5em;
                             padding: .75rem 0;
+
+                            cursor: pointer;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
                         }
 
                         .btn_delete {
@@ -810,6 +816,8 @@ html, body {
                         background-color: #DEDEDE;
                         border: 1px solid @color-grey-300;
 
+                        position: relative;
+
                         will-change: opacity;
 
                         -webkit-transition: opacity .2s ease;
@@ -822,6 +830,15 @@ html, body {
 
                         &:hover {
                             opacity: .8;
+                        }
+
+                        .date {
+                            position: absolute;
+                            top: .25rem;
+                            right: .75rem;
+
+                            font-size: 0.75em;
+                            color: @color-grey-500;
                         }
                     }
 
@@ -846,6 +863,7 @@ html, body {
                             &:hover { text-decoration: underline; }
                         }
                     }
+
                 }
 
                 .globaledit-memo {

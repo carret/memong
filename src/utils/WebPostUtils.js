@@ -10,6 +10,9 @@ var WebPostUtils = {
         var memos = new Array();
         for (var idx=0,len=_memos.length; idx<len; idx++) {
             if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+                if (_memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
+                    _memos[idx].mtype = Constants.MemoType.COMPLETE_MEMO;
+                }
                 memos.push(_memos[idx]);
             }
         }
