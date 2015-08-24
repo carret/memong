@@ -144,7 +144,7 @@ var getSelectNoteWithMemo = function(req, res) {
                 })
             }
         ], function(result) {
-            console.log(result);
+            //console.log(result);
             res.send(result);
         });
     }
@@ -171,7 +171,8 @@ var saveMemo = function(req, res) {
                 }
             )
         }, function(memos, callback) {
-            console.log(memos);
+            console.log('save memo ' + memos.memos.length);
+            console.log(memos.memos);
             callback();
         }
     ], function() {

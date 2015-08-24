@@ -4,7 +4,6 @@ var User = db.model('User');
 var redis = require("redis");
 var client = redis.createClient();
 
-
 exports.doRoutes = function(app) {
     app.get ('/', index)
     app.get('/typography', function(req,res){
@@ -35,5 +34,5 @@ var index = function(req, res) {
         console.log('token null, render');
         res.render('index', {title: "memong"});
     }
-    res.render('index', {title: "memong"})
+    //res.render('index', {title: "memong"})
 }
