@@ -1,7 +1,3 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var Constants = require('../../src/constants/Constants');
 var async = require('async');
 var db = require('../../db');
@@ -35,7 +31,6 @@ exports.doRoutes = function(app) {
 
     app.post('/init',initTreeTest)
 };
-
 
 var postDir = function(req ,res){
 
@@ -73,6 +68,7 @@ var postDir = function(req ,res){
 
 };
 
+/* FOR USER EVENT API*/
 var addNoteToTree = function(_username, _tree, _noteTitle, res) {
 
     async.waterfall(
@@ -140,7 +136,6 @@ var addNoteToTree = function(_username, _tree, _noteTitle, res) {
             else res.send({noteId: _noteId});
         });
 };
-
 var addFolderToTree = function(_username, _tree, res){
 
     async.waterfall(
@@ -242,7 +237,6 @@ var renameNoteToTree = function(_username, _tree, _newTitle, _id, res) {
         });
 
 };
-
 var renameFolder_movingTreeToTree = function(_username, _tree, res) {
 
     console.log('receive rename folder server');
@@ -276,10 +270,7 @@ var renameFolder_movingTreeToTree = function(_username, _tree, res) {
         });
 };
 
-
-
-var deleteFolderToTree = function(_username, _tree, _children, res)
-{
+var deleteFolderToTree = function(_username, _tree, _children, res) {
     console.log(_children);
     async.waterfall(
         [
@@ -332,9 +323,7 @@ var deleteFolderToTree = function(_username, _tree, _children, res)
             else res.send({noteId: _noteId});
         });
 }
-
-var deleteNoteToTree = function(_username, _tree, _id, res)
-{
+var deleteNoteToTree = function(_username, _tree, _id, res) {
     async.waterfall(
         [
             function (callback)
@@ -387,9 +376,28 @@ var deleteNoteToTree = function(_username, _tree, _id, res)
         });
 }
 
-var findNote = function (_tree){
 
-}
+/* FOR INIT TREE */
+var loadTree = function(req ,res){
+
+    var _username = req.body.username;
+    var _tree, _count;
+
+    User.findOne ( {username : _username } , function( err, validUser) {
+        if (err) res.send('error');
+        if (validUser === null) res.send('unregistered User');
+        else {
+            _tree = JSON.parse(validUser.tree);
+            _count = validUser.treeTable.length;
+            res.send(
+                {
+                    tree : _tree,
+                    count : _count
+                }
+            );
+        }
+    });
+};
 
 var initTreeTest = function(req ,res){
 
@@ -403,30 +411,22 @@ var initTreeTest = function(req ,res){
 
         User.update({username: _username},
             validUser
-        , {upsert: true}, function (err, user) {
+            , {upsert: true}, function (err, user) {
 
-            var newNote = new Note({
-                title: noteTitle,
-                memos: [{
-                    title: 'New Memo',
-                    text: 'Text'
-                }]
-            });
+                var newNote = new Note({
+                    title: noteTitle,
+                    memos: [{
+                        title: 'New Memo',
+                        text: 'Text'
+                    }]
+                });
 
-            newNote.save(function (err, savedNote) {
-
-                User.update({username: _username}, {
-                    $push: {
-                        treeTable : {
-                            id: 0
-                        }
-                    }
-                }, {upsert: true}, function (err, user) {
+                newNote.save(function (err, savedNote) {
 
                     User.update({username: _username}, {
                         $push: {
                             treeTable : {
-                                id: 1
+                                id: 0
                             }
                         }
                     }, {upsert: true}, function (err, user) {
@@ -434,39 +434,43 @@ var initTreeTest = function(req ,res){
                         User.update({username: _username}, {
                             $push: {
                                 treeTable : {
-                                    id: 2,
-                                    nid: savedNote['_id']
+                                    id: 1
                                 }
                             }
                         }, {upsert: true}, function (err, user) {
 
-                            res.send(user);
+                            User.update({username: _username}, {
+                                $push: {
+                                    treeTable : {
+                                        id: 2,
+                                        nid: savedNote['_id']
+                                    }
+                                }
+                            }, {upsert: true}, function (err, user) {
+
+                                res.send(user);
+                            });
+
                         });
 
                     });
 
                 });
-
             });
-        });
 
     });
 };
-
-var moveTree = function(req ,res){
-
-    var _username = req.body.username;
-    var noteTitle =  (req.body.noteTitle);
-
-};
-
-var initTree = function(user, nid, fid){
+var initTree = function(user, nid){
 
     var initData = JSON.stringify(_initData);
 
     user.category.tree = initData;
     user.category.tree = Date.now;
 };
+
+var findNote = function (_tree){
+
+}
 
 /*Test API*/
 var allNote =  function(req ,res){
@@ -489,28 +493,3 @@ var allUser =  function(req ,res){
         res.send(test);
     });
 }
-
-
-var loadTree = function(req ,res){
-
-    var _username = req.body.username;
-    var _tree, _count;
-
-    User.findOne ( {username : _username } , function( err, validUser) {
-        if (err) res.send('error');
-        if (validUser === null) res.send('unregistered User');
-        else {
-            _tree = JSON.parse(validUser.tree);
-            _count = validUser.treeTable.length;
-            res.send(
-                {
-                    tree : _tree,
-                    count : _count
-                }
-            );
-        }
-    });
-};
-
-
-

@@ -1,19 +1,16 @@
 var React = require('react');
 var jqtree = require('jqtree');
 var Dialog = require('rc-dialog');
-var async = require('async');
+
 var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActions = require('../../actions/DirectoryAction');
 var DirectoryStore = require('../../stores/DirectoryStore');
 
-var elTree, addNoteDOM, addFolderDOM;
-var _id;
-var _username = 'rong';
-
+var elTree, container;
+var _id, _username = 'rong', _selectedNode;
 var lastId= 0, preNodeId = 0;
-var _selectedNode;
-var container;
+
 
 function showDialog(content, props) {
 
@@ -44,49 +41,38 @@ var DialogContent = React.createClass({
     componentDidMount: function() {
         $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
             if (event.keyCode == 13) {
-                this.props.addNoteItem();
+                this.props.actionItem();
             }
         });
     },
 
     _IsRedundancy: function() {
 
-        console.log(this.props.selectedNode);
-
-        var node = $(elTree).tree('getSelectedNode'), nodeParent;
-        var _title = document.getElementById('title').value;
+        var node = this.props.selectedNode, nodeParent;
+        var title = document.getElementById('title').value;
+        var type = this.props.type;
 
         if (node == false) node = $(elTree).tree('getNodeById', 0);
         nodeParent = (node.type == 'note')? node.parent: node;
 
-
-        var val = _redundancyCheck____(nodeParent, _title);
+        var val = _redundancyCheck(nodeParent, title);
 
         if(val== false) console.log('중복!');
         else {
-            this.props.addNoteItem(_title);
+            this.props.actionItem(title, type, node);
             this.props.handleClose();
         }
     },
 
-    _addNoteItem: function() {
-        var _title = document.getElementById('title').value;
-        this.props.addNoteItem(_title);
-        this.props.handleClose();
-    },
-
-
     handleChange: function(event) {
-
         this.setState({value: event.target.value});
     },
-
     render : function() {
 
         return (
 
             <div ref="_dialog">
-                <div className="redundancyCheckDialog-text"><span>생성할 노트의 이름을 입력해주세요!</span></div>
+                <div className="redundancyCheckDialog-text"><span>Check for duplicated TITLE</span></div>
                 <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
                 <div className="redundancyCheckDialog-btnMenu">
                     <button onClick={this._IsRedundancy} >생성</button>
@@ -98,7 +84,7 @@ var DialogContent = React.createClass({
 });
 
 
-function _redundancyCheck____(parentNode, noteTitle)
+function _redundancyCheck(parentNode, noteTitle)
 {
     var i;
     for ( i=0; i < parentNode.children.length; i++) {
@@ -108,26 +94,11 @@ function _redundancyCheck____(parentNode, noteTitle)
 
     if(parentNode.children.length == i)  true;
     else return false;
-
-}
-
-function _redundancyCheck(parentNode, noteTitle, callback)
-{
-    var i;
-    for ( i=0; i < parentNode.children.length; i++) {
-        var child = parentNode.children[i];
-        if(child.name == noteTitle) break;
-    }
-
-    if(parentNode.children.length == i)  callback();
-    else callback('Duplicated Name');
-
 }
 
 function getTree() {
     return DirectoryStore.getTree();
 }
-
 function visibleBtn(_nodeId){
 
     if(_nodeId == 0) return;
@@ -135,7 +106,6 @@ function visibleBtn(_nodeId){
     $('#btn_mod'+_nodeId).css("visibility","visible");
     $('#btn_del'+_nodeId).css("visibility","visible");
 }
-
 function hiddenBtn(_nodeId){
     $('#btn_mod'+_nodeId).css("visibility","hidden");
     $('#btn_del'+_nodeId).css("visibility","hidden");
@@ -143,14 +113,13 @@ function hiddenBtn(_nodeId){
 
 var DirectoryViewer = React.createClass({
 
-
+    /* FOR INIT COMPONENT*/
     _initComponent : function(){
         elTree = React.findDOMNode(this.refs.tree1);
-        //addFolderDOM = React.findDOMNode(this.refs.btn_addFolder);
     },
-
     _getDataToDB : function () {
 
+        var that = this;
         WebPostUtils.loadDirectory(_username,function(_data){
 
             var treeData = _data.tree;
@@ -164,50 +133,11 @@ var DirectoryViewer = React.createClass({
 
                 onCreateLi: function(node, $li) {
 
-                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
                     $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="visibility:hidden;"> del </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
 
-                    $('#btn_mod'+lastId).click(function() {
-                        var node = $(elTree).tree('getSelectedNode'), nodeParent;
-                        var newTitle = 'newTitle...';
-                        var treeData, preTreeData=  $(elTree).tree('toJson');
-
-                        nodeParent = (node.type == 'note')? node.parent: node;
-
-                        _redundancyCheck(nodeParent, newTitle,function(err) {
-
-                            if(err == null) {
-
-                                $(elTree).tree('updateNode', node, newTitle);
-                                treeData=  $(elTree).tree('toJson');
-                                $(elTree).tree('loadData', JSON.parse(preTreeData));
-
-                                console.log(newTitle);
-                                if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
-                                else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
-                            }
-                            else
-                                console.log(err); // 안내 alert 띄움
-                        });
-
-
-                    });
-
-                    $('#btn_del'+lastId).click(function() {
-                            var node = $(elTree).tree('getSelectedNode');
-                            var treeData, preTreeData = $(elTree).tree('toJson');
-                            var childrenOfFolder = node.getData;
-
-                            $(elTree).tree('removeNode', node);
-                            treeData = $(elTree).tree('toJson');
-                            $(elTree).tree('loadData', JSON.parse(preTreeData));
-
-                            console.log(childrenOfFolder);
-
-                            if(node.type=='note') DirectoryActions.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id);
-                            else DirectoryActions.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder);
-                        }
-                    );
+                    $('#btn_mod'+lastId).bind( 'click', that.handleTrigger_RenameNode );
+                    $('#btn_del'+lastId).bind( 'click', that._deleteNode );
 
                     lastId = node.id;
                 }
@@ -215,211 +145,130 @@ var DirectoryViewer = React.createClass({
         });
     },
 
-    _treeSelectEvent : function(){
+    /* FOR BIND TREE EVENT */
+    _treeClickEvent : function(event){
 
-        $(elTree).bind(
-            'tree.click',
+        console.log(event.node);
+        if (event.node) {
 
-            function(event) {
-                console.log('event');
-                if (event.node) {
+            var node = event.node;
+            _selectedNode = node;
 
-                    var node = event.node;
 
-                    _selectedNode = node;
+            if (preNodeId != 0) hiddenBtn(preNodeId);
+            visibleBtn(node.id);
 
-                    if(preNodeId !=0) hiddenBtn(preNodeId);
-                    visibleBtn(node.id);
+            preNodeId = node.id;
 
-                    preNodeId = node.id;
+            if (lastId != 0) {
 
-                    if(lastId != 0) {
-
-                        $('#btn_mod'+lastId).click(function () {
-                            var node = $(elTree).tree('getSelectedNode');
-                            var newTitle = 'newTitle...';
-                            var treeData, preTreeData=  $(elTree).tree('toJson');
-
-                            console.log(node);
-                            $(elTree).tree('updateNode', node, newTitle);
-                            treeData=  $(elTree).tree('toJson');
-                            $(elTree).tree('loadData', JSON.parse(preTreeData));
-
-                            console.log(newTitle);
-                            if(node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE ,newTitle,node.id);
-                            else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE ,newTitle);
-                        });
-
-                        $('#btn_del'+lastId).click(function() {
-                            var node = $(elTree).tree('getSelectedNode');
-                            var treeData, preTreeData=  $(elTree).tree('toJson');
-                            var childrenOfFolder = node.getData;
-
-                            $(elTree).tree('removeNode', node);
-                            treeData=$(elTree).tree('toJson');
-                            $(elTree).tree('loadData',JSON.parse(preTreeData));
-
-                            console.log(childrenOfFolder);
-
-                            if(node.type=='note') DirectoryActions.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id);
-                            else DirectoryActions.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder);
-                        });
-
-                        lastId=0;
-                    }
-                }
-                else {
-                    // event.node is null
-                    // a node was deselected
-                    // e.previous_node contains the deselected node
-                }
+                $('#btn_mod'+lastId).bind( 'click', this.handleTrigger_RenameNode );
+                $('#btn_del'+lastId).bind( 'click', this._deleteNode );
+                lastId = 0;
             }
-        );
-    }, // testing......
-
-    _bindTreeEvent: function() {
-
-        $(elTree).bind(
-            'tree.move', function(event){
-
-                var treeData, preTreeData=  $(elTree).tree('toJson');
-
-                if(event.move_info.target_node.type == "note" && event.move_info.position == "inside") event.preventDefault();
-                else if(event.move_info.moved_node.id == 0) event.preventDefault();
-                else if(event.move_info.target_node.id == 0 && event.move_info.position == 'before')  event.preventDefault();
-
-                else {
-
-                    event.move_info.do_move();
-                    treeData = $(elTree).tree('toJson');
-                    $(elTree).tree('loadData', JSON.parse(preTreeData));
-                    console.log(treeData);
-
-                    DirectoryActions.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
-                }
-            }
-        );
+        }
     },
+    _treeMoveEvent : function(event) {
 
-    _addNoteToTree : function(_value){
+        var treeData, preTreeData=  $(elTree).tree('toJson');
 
-            console.log(_value);
+        if(event.move_info.target_node.type == "note" && event.move_info.position == "inside") event.preventDefault();
+        else if(event.move_info.moved_node.id == 0) event.preventDefault();
+        else if(event.move_info.target_node.id == 0 && event.move_info.position == 'before')  event.preventDefault();
 
-            var noteTitle = _value;
-            var notePosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode'), nodeParent;
-            var treeData, preTreeData=  $(elTree).tree('toJson');
-
-            if (node == false) node = $(elTree).tree('getNodeById', 0);
-
-            notePosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
-            nodeParent = (node.type == 'note')? node.parent: node;
-
-            $(elTree).tree(
-                notePosition,
-                {
-                    label: noteTitle,
-                    type: 'note',
-                    id: _id++
-                },
-                node
-            );
+        else {
+            event.move_info.do_move();
             treeData = $(elTree).tree('toJson');
-
-            console.log(preTreeData);
             $(elTree).tree('loadData', JSON.parse(preTreeData));
+            console.log(treeData);
 
-            DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
+            DirectoryActions.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
+        }
+    },
+    _bindTreeEvent: function() {
+        var that = this;
 
-            /*_redundancyCheck(nodeParent, noteTitle,function(err) {
+        $(elTree).bind(
+            'tree.click', function(event){ that._treeClickEvent(event); } );
 
-                if(err == null) {
-
-                    $(elTree).tree(
-                        notePosition,
-                        {
-                            label: noteTitle,
-                            type: 'note',
-                            id: _id++
-                        },
-                        node
-                    );
-                    treeData = $(elTree).tree('toJson');
-
-                    console.log(preTreeData);
-                    $(elTree).tree('loadData', JSON.parse(preTreeData));
-
-                    DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, noteTitle);
-                }
-                else
-                    console.log(err); // 안내 alert 띄움
-            });*/
-
+        $(elTree).bind(
+            'tree.move', function(event){ that._treeMoveEvent(event); } );
     },
 
-    _addFolderToTree : function() {
+    /* FOR USER EVENT TRIGGER */
+    _addNodeToTree : function(_title, _type){
 
-        $(addFolderDOM).click(function() {
+        var position;
+        var node = $(elTree).tree('getSelectedNode');
+        var treeData, preTreeData=  $(elTree).tree('toJson');
 
-            var folderTitle = 'new_folder' + (_id+1), folderPosition; // 다이얼로그 입력
-            var node = $(elTree).tree('getSelectedNode'), nodeParent;
-            var treeData, preTreeData=  $(elTree).tree('toJson');
+        if (node == false) node = $(elTree).tree('getNodeById', 0);
+        position = (node.type == 'note')? 'addNodeAfter':'appendNode';
 
-            if (node == false) node = $(elTree).tree('getNodeById', 0);
-            folderPosition = (node.type == 'note')? 'addNodeAfter':'appendNode';
-            nodeParent = (node.type == 'note')? node.parent: node;
+        $(elTree).tree(
+            position,
+            {
+                label: _title,
+                type: _type,
+                id: _id++
+            },
+            node
+        );
+        treeData = $(elTree).tree('toJson');
+        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
-            _redundancyCheck(nodeParent, folderTitle,function(err) {
+        if(_type == 'note') DirectoryActions.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, _title);
+        else DirectoryActions.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER);
+    },
+    _renameNode : function(_title, _type, _node) {
 
-                if(err == null) {
+        var node = _node;
+        var treeData, preTreeData=  $(elTree).tree('toJson');
 
-                    $(elTree).tree(
-                        folderPosition,
-                        {
-                            label: folderTitle,
-                            type: 'folder',
-                            id: _id++
-                        },
-                        node
-                    );
-                    treeData = $(elTree).tree('toJson');
+        $(elTree).tree('updateNode', node, _title);
+        treeData = $(elTree).tree('toJson');
+        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
-                    console.log(preTreeData);
-                    $(elTree).tree('loadData', JSON.parse(preTreeData));
+        if (node.type == 'note') DirectoryActions.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id);
+        else DirectoryActions.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title);
+    },
+    _deleteNode : function() {
 
-                    DirectoryActions.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER);
-                }
-                else
-                    console.log(err); // 안내 alert 띄움
-            });
-        });
+        var node = $(elTree).tree('getSelectedNode');
+        var treeData, preTreeData = $(elTree).tree('toJson');
+        var childrenOfFolder = node.getData;
+
+        $(elTree).tree('removeNode', node);
+        treeData = $(elTree).tree('toJson');
+        $(elTree).tree('loadData', JSON.parse(preTreeData));
+
+        if(node.type=='note') DirectoryActions.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id);
+        else DirectoryActions.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder);
     },
 
     componentWillMount: function(){
         DirectoryStore.removeTreeChangeListener(this._onChange);
     },
-
     componentDidMount: function() {
 
         DirectoryStore.addTreeChangeListener(this._onChange);
-        this._initComponent();
 
+        this._initComponent();
         this._getDataToDB();
-        this._treeSelectEvent();
         this._bindTreeEvent();
     },
 
+    /* FOR HANDLE DIALOG */
     _onChange: function() {
-
         $(elTree).tree('loadData', JSON.parse(getTree()));
     },
-
     _onClose: function() {
         this.d.close();
     },
 
-    handleTrigger: function () {
-        this.d = showDialog(<DialogContent addNoteItem={this._addNoteToTree} handleClose={this._onClose} selectedNode={_selectedNode} />,{
+    handleTrigger_AddNote: function () {
+
+        this.d = showDialog(<DialogContent actionItem={this._addNodeToTree} handleClose={this._onClose} selectedNode={_selectedNode} type='note'/>,{
             title: <p className="redundancyCheckDialog-title">노트 생성</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
@@ -427,16 +276,34 @@ var DirectoryViewer = React.createClass({
             style: {width: 300}
         });
     },
+    handleTrigger_AddFolder: function () {
 
+        this.d = showDialog(<DialogContent actionItem={this._addNodeToTree} handleClose={this._onClose} selectedNode={_selectedNode} type='folder'/>,{
+            title: <p className="redundancyCheckDialog-title">폴더 생성</p>,
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+    handleTrigger_RenameNode: function () {
+
+        this.d = showDialog(<DialogContent actionItem={this._renameNode} handleClose={this._onClose} selectedNode={_selectedNode} type='rename'/>,{
+            title: <p className="redundancyCheckDialog-title">Title 변경</p>,
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
 
     render: function() {
         return (
-
             <div id="directory-viewer">
                 <div className="header">디렉토리</div>
                 <div className="addNode">
-                    <button className = "btn_addNode" onClick={this.handleTrigger} >add note</ button>
-                    <button className = "btn_addNode"  ref="btn_addFolder">add folder</ button>
+                    <button className = "btn_addNode" onClick={this.handleTrigger_AddNote} >ADD NOTE</ button>
+                    <button className = "btn_addNode" onClick={this.handleTrigger_AddFolder} >ADD FOLDER</ button>
                     </div>
                 <div className="content"> <div id="tree1" ref="tree1"
                                                className="directory-viewer-tree"></div>
