@@ -4,6 +4,7 @@ var Note = {
         required: true,
         default: Date.now
     },
+
     title: {
         type: String,
         required: true
@@ -18,7 +19,7 @@ var Note = {
                     default: Date.now
                 },
                 title: {
-                    type: String,
+                    type: String
                 },
                 text: {
                     type: String,

@@ -7,16 +7,13 @@ var client = redis.createClient();
 
 exports.doRoutes = function(app) {
     app.get ('/', index);
-    app.get('/typography', function(req,res){
-        res.render('__static__typography');
-    });
-    require('./api/login').doRoutes(app);
-    require('./api/note').doRoutes(app);
-    require('./api/memo').doRoutes(app);
+
+    require('./api/login').doRoutes(app)
+    require('./api/tree').doRoutes(app)
+    require('./api/note').doRoutes(app)
 };
 
 var index = function(req, res) {
-
     var cookieToken = req.cookies.token;
     console.log("쿠키 토큰 : " + cookieToken);
 

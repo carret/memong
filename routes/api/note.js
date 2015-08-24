@@ -8,55 +8,27 @@ var mongoose = require('mongoose');
 
 var async = require('async');
 
-
 var jwt = require('jwt-simple');
 var pkgInfo = require('../../package');
+
 
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
 
-    //app.post('/test/addUser', testAddUser);
-    //app.post('/test/addNote', testAddNote);
 };
 
-var testAddNote = function(req, res) {
-    var note = req.body;
-    console.log(note);
-    var newNote = new Note({
-        title: note.title,
-        memos: note["memos"]
-    });
-    newNote.save(function(err, result) {
-        console.log("Note Saved: " + result);
-        res.send(result);
-    });
-};
-
-var testAddUser = function(req, res) {
-    var user = req.body;
-    var newUser = new User({
-        token: user.token,
-        username: user.username,
-        selectNoteId: mongoose.Types.ObjectId(user.selectNoteId),
-        servicetype: user.servicetype
-    });
-    newUser.save(function(err, result) {
-        console.log("User Saved: " + result);
-        res.send(result);
-    })
-};
 
 var getSelectNoteWithMemo = function(req, res) {
-    var userToken = replaceXss(req.query.userToken);
-    var noteId = replaceXss(req.query.noteId);
+    var userToken = _replaceXss(req.query.userToken);
+    var nodeId = _replaceXss(req.query.noteId);
 
     var userName;
     if ( userToken != null ) {
         userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
     }
     //noteID가 null인 경우, selectNote를 불러옴
-    if (noteId == null) {
+    if (nodeId == null) {
         async.waterfall([
             function(next) {
                 //유저 검색 및
@@ -68,20 +40,25 @@ var getSelectNoteWithMemo = function(req, res) {
                             return next("유저가 없습니다.");
                         }
                         else {
-                            next(null, result.selectNoteId);
+                            next(null, result.selectNoteId, result.treeTable);
                         }
                     }
                 });
             },
-            function(selectNoteId, next) {
+            function(selectNoteId, treeTable, next) {
                 Note.findOne({_id: mongoose.Types.ObjectId(selectNoteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
                         if (result == null) { return next("노트가 없습니다."); }
                         else {
+                            var selectNodeId = _findNodeId(treeTable, selectNoteId.toString());
+                            console.log("selectNoteId", selectNoteId);
+                            console.log("treeTable", treeTable);
+                            console.log("selectNodeId", selectNodeId);
                             var _note = {
                                 title: result.title,
-                                idAttribute: result._id
+                                idAttribute: result._id,
+                                nodeId: selectNodeId
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
@@ -112,7 +89,22 @@ var getSelectNoteWithMemo = function(req, res) {
     //noteID가 null이 아닌 경우, 해당 NoteID의 노트를 불러옴
     else {
         async.waterfall([
-            function (next) {
+            function(next) {
+                User.findOne({username: userName}, function(err, result) {
+                    if (err) { return next(err); }
+                    else {
+                        if (result == null) {
+                            console.log("유저 없음");
+                            return next("유저가 없습니다");
+                        }
+                        else {
+                            var noteId = _findNid(result.treeTable, nodeId);
+                            next(null, noteId, nodeId);
+                        }
+                    }
+                })
+            },
+            function (noteId, nodeId, next) {
                 Note.findOne({_id: mongoose.Types.ObjectId(noteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
@@ -120,7 +112,8 @@ var getSelectNoteWithMemo = function(req, res) {
                         else {
                             var _note = {
                                 title: result.title,
-                                idAttribute: result._id
+                                idAttribute: result._id,
+                                nodeId: nodeId
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
@@ -182,7 +175,7 @@ var saveMemo = function(req, res) {
 
 
 
-function replaceXss(str){
+function _replaceXss(str){
     if(str == null) {
         return null;
     } else {
@@ -193,4 +186,26 @@ function replaceXss(str){
     }
 
     return str;
+}
+
+function _findNid(treeTable, targetId) {
+    var len = treeTable.length;
+    for (var idx=0; idx<len; idx++) {
+        if (treeTable[idx]['id'] == targetId) {
+            return treeTable[idx]['nid'];
+        }
+    }
+}
+
+function _findNodeId(treeTable, targetId) {
+    var len = treeTable.length;
+    for (var idx=0; idx<len; idx++) {
+        if (treeTable[idx]['nid'] != null) {
+            console.log("yaho");
+            console.log(treeTable[idx]['nid']);
+            if (treeTable[idx]['nid'].toString() == targetId) {
+                return treeTable[idx]['id'];
+            }
+        }
+    }
 }

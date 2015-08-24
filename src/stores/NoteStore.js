@@ -27,6 +27,7 @@ var globalEditMemo = {
 
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
+    memos = [];
     _.each(_memos, function(memo) {
         memo.key = uuid.v4();
     });
@@ -36,6 +37,7 @@ function initMemo(_memos) {
 
 function initNote(_selectNote) {
     selectNote = _selectNote;
+    console.log("selectNote", selectNote);
 }
 
 function addMemo(_targetEditMemo, _context) {
@@ -280,6 +282,10 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return selectNote.idAttribute;
     },
 
+    getNoteNodeID: function() {
+        return selectNote.nodeId;
+    },
+
     getNoteTitle: function() {
         return selectNote.title;
     },
@@ -296,8 +302,16 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-receive');
     },
 
-    emitFocus: function() {
-        this.emit('focus');
+    emitInit: function() {
+        this.emit('init');
+    },
+
+    addInitListener: function(callback) {
+        this.on('init', callback);
+    },
+
+    removeInitListener: function(callback) {
+        this.removeListener('init', callback);
     },
 
     addFocusListener: function(callback) {
@@ -342,6 +356,7 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            NoteStore.emitInit();
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:

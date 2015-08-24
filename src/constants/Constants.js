@@ -11,9 +11,26 @@ module.exports = {
         GET_DIRECTORY: APIRoot + "/getDirectory",
         GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
-        POST_DIRECTORY: APIRoot + "/postDirectory"
+        POST_DIRECTORY: APIRoot + "/postDirectory",
+        POST_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
         // 나머지...
     },
+
+    DirectoryAPI: {
+        LOGIN_GOOGLE: APIRoot + "/login/google",
+        LOGOUT: APIRoot + "/logout",
+        GET_NOTE_WITH_MEMO: APIRoot + "/getNoteWithMemo",
+        GET_DIRECTORY: APIRoot + "/getDirectory",
+        GET_HASH_TABLE: APIRoot + "/getHashTable",
+        POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
+        POST_DIRECTORY: APIRoot + "/postDirectory",
+    },
+    // ActionTypes
+
+    AccountActionTypes : keyMirror({
+        REQUEST_ACCOUNT : null
+    }),
+
     NoteActionTypes: keyMirror({
         REQUEST_NOTE_WITH_MEMO: null,
         RECEIVE_NOTE: null
@@ -37,13 +54,29 @@ module.exports = {
         END_EDIT_MEMO: null
     }),
 
-    DirectoryActionTypes: keyMirror({
-        RECEIVE_DIRECTORY: null,
-        SELECT_NOTE: null,
-        ADD_ITEM: null,
-        DELETE_ITEM: null,
-        RENAME_ITEM: null,
-        CHANGE_DIRECTORY: null
+    DirectoryAction : keyMirror({
+        RECEIVE_TREE: null,
+        MOVE_TREE: null,
+
+        ADD_NOTE: null,
+        RENAME_NOTE: null,
+        DELETE_NOTE: null,
+
+        DELETE_FOLDER: null,
+        ADD_FOLDER: null,
+        RENAME_FOLDER: null,
+
+        SELECT_NOTE: null
+    }),
+
+    DirectoryAPIType : keyMirror({
+        ADD_NOTE: 'addNote',
+        RENAME_NOTE: 'renameNote',
+        DELETE_NOTE: 'deleteNote',
+
+        ADD_FOLDER: 'addFolder',
+        DELETE_FOLDER: 'deleteFolder',
+        CHANGE_TREE: 'updateTree' /* Folder Event + Move Event */
     }),
 
     SearchActionTypes: keyMirror({
@@ -60,6 +93,12 @@ module.exports = {
         GLOBAL_EDIT_MEMO: null
     }),
 
+    NodeType: keyMirror({
+        NOTE: null,
+        FOLDER: null,
+        NEED_RENAME_NODE: null
+    }),
+
     DirectoryItemType: keyMirror({
         NOTE: null,
         FOLDER: null
@@ -69,7 +108,6 @@ module.exports = {
         COMPLETE: null,
         SAVING: null
     }),
-
 
     KeyCode: {
         ENTER: 13,

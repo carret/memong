@@ -1,9 +1,9 @@
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
+var cookie = require('react-cookie');
 
 var WebGetUtils = {
-
     getNoteWithMemos: function(_token, _noteID) {
         request
             .get(Constants.API.GET_NOTE_WITH_MEMO)
@@ -12,6 +12,8 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
+                    console.log("getted note", res.body.note);
+                    console.log("getted memos", res.body.memos);
                     ServerReceiveActionCreator.receiveNote(res.body.note);
                     ServerReceiveActionCreator.receiveMemo(res.body.memos);
                 }
@@ -21,19 +23,21 @@ var WebGetUtils = {
             });
     },
 
-    getDirectory: function() {
+    getDirectory: function(callback) {
         request
-            .get(Constants.API.GET_DIRECTORY)
-            .set('API-Key', 'GET_DIRECTORY')
+            .get(Constants.API.POST_ROAD_DIRECTORY)
+            .query({username: cookie.load('token') })
+            .set('API-Key', Constants.API.POST_ROAD_DIRECTORY)
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveDirectory(res.tree);
+                    ServerReceiveActionCreator.receiveTree(res.body.tree);
+                    callback(res.body);
                 }
                 else {
-                    // Show Notification
+                    callback('error');
                 }
-            })
+            });
     },
 
     getHashTable: function() {

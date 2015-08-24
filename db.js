@@ -1,12 +1,8 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var mongoose = require('mongoose');
 var noteSchema = require('./models/note');
 var userSchema = require('./models/user');
 
-mongoose.connect('mongodb://localhost:27017/memong'); // 기본 설정에 따라 포트가 상이 할 수 있습니다.
+mongoose.connect('mongodb://localhost:27017/memong');
 
 var db = mongoose.connection;
 

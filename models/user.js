@@ -17,34 +17,28 @@ var User = {
         type: Object
     },
 
-    category : [
-        {
-            /* file && note categories */
-            name: {
-                type: String,
-                required: true
-            },
-            type: {
-                /*  type ::  dir / note */
-                type: String,
-                required: true
-            },
-            nid:{
-                type : ObjectId
-            },
-            parent: {
-                type: String,
-                required : true
-            }
-        }
-    ],
 
-    hashtable :
-        [
+    hashtable : [
             {
 
             }
-        ]
+    ],
+
+
+    tree : {
+        type : String
+    },
+
+    treeTable : [{
+        id : {
+            type : String,
+            required : true
+        },
+
+        nid : {
+            type : ObjectId
+        }
+    }]
 };
 
 module.exports = User;
