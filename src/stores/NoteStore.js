@@ -6,6 +6,11 @@ var Constants = require('../constants/Constants');
 var _ = require('underscore');
 var uuid = require('node-uuid');
 
+var WebGetUtils = require('../utils/WebGetUtils');
+var cookie = require('react-cookie');
+
+
+
 
 //Note Data
 var selectNote = {};
@@ -37,7 +42,6 @@ function initMemo(_memos) {
 
 function initNote(_selectNote) {
     selectNote = _selectNote;
-    console.log("selectNote", selectNote);
 }
 
 function addMemo(_targetEditMemo, _context) {
@@ -305,6 +309,10 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-receive');
     },
 
+    emitFocus: function() {
+        this.emit('focus');
+    },
+
     addFocusListener: function(callback) {
         this.on('focus', callback);
     },
@@ -341,7 +349,7 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
 //Regist Callback Function
 //디스패처에 Store의 콜백 함수를 등록합니다.
-NoteStore.dispatchToken = AppDispatcher.register(function(payload) {
+AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
@@ -399,7 +407,9 @@ NoteStore.dispatchToken = AppDispatcher.register(function(payload) {
             return true;
     }
 
-    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
+    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE
+        && action.actionType != Constants.AutoSaveActionTypes.REQUEST_SAVE
+        && action.actionType != Constants.DirectoryAction.SELECT_NOTE) {
         NoteStore.emitChange();
     }
 

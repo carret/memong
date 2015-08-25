@@ -3,10 +3,9 @@ var jqtree = require('jqtree');
 var Dialog = require('rc-dialog');
 
 var WebGetUtils = require('../../utils/WebGetUtils');
-var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
-var DirectoryStore = require('../../stores/DirectoryStore');
+
 
 var elTree, container;
 var _id, _selectedNode;
@@ -24,8 +23,7 @@ function showDialog(content, props) {
 
     var close = props.onClose;
     props.onClose = function() {
-        if(close)
-            close();
+        if(close) { close(); }
         React.unmountComponentAtNode(container);
     };
 
@@ -75,7 +73,7 @@ var DialogContent = React.createClass({
                 <div className="redundancyCheckDialog-text"><span>Check for duplicated TITLE</span></div>
                 <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
                 <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._IsRedundancy} >생성</button>
+                    <button onClick={this._IsRedundancy} >확인</button>
                     <button onClick={this.props.handleClose} >취소</button>
                 </div>
             </div>
@@ -142,6 +140,7 @@ var DirectoryViewer = React.createClass({
                     var node = $(elTree).tree('getNodeById', _data.selectNoteNodeId);
                     $(elTree).tree('addToSelection', node);
                     _selectedNode = node;
+                    console.log(_data);
                 }
             );
         });
@@ -153,8 +152,8 @@ var DirectoryViewer = React.createClass({
             var node = event.node;
             _selectedNode = node;
 
-            console.log(_selectedNode);
             if (node.type == 'note') {
+                console.log("ya");
                 DirectoryActionCreator.requestNote(_selectedNode.id);
             }
 
@@ -180,7 +179,6 @@ var DirectoryViewer = React.createClass({
         else {
             event.move_info.do_move();
             treeData = $(elTree).tree('toJson');
-            $(elTree).tree('loadData', JSON.parse(preTreeData));
             console.log(treeData);
 
             DirectoryActionCreator.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
@@ -216,7 +214,6 @@ var DirectoryViewer = React.createClass({
             node
         );
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if(_type == 'note') { DirectoryActionCreator.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, _title); }
         else { DirectoryActionCreator.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER); }
@@ -228,7 +225,6 @@ var DirectoryViewer = React.createClass({
 
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if (node.type == 'note') { DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id); }
         else { DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title); }
@@ -241,31 +237,17 @@ var DirectoryViewer = React.createClass({
 
         $(elTree).tree('removeNode', node);
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
     },
 
-    componentWillUnmount: function(){
-        DirectoryStore.removeTreeChangeListener(this._onChange);
-    },
-
     componentDidMount: function() {
-        DirectoryStore.addTreeChangeListener(this._onChange);
-
         this._initComponent();
         this._getDataToDB();
         this._bindTreeEvent();
     },
 
-    /* FOR HANDLE DIALOG */
-    _onChange: function() {
-        var tree = DirectoryStore.getTree();
-        //$(elTree).tree('loadData', tree);
-        //var node = $(elTree).tree('getNodeById', _selectedNode.id);
-        //$(elTree).tree('addToSelection', node);
-    },
     _onClose: function() {
         this.d.close();
     },
@@ -291,7 +273,6 @@ var DirectoryViewer = React.createClass({
     },
 
     handleTrigger_RenameNode: function () {
-
         this.d = showDialog(<DialogContent actionItem={this._renameNode} handleClose={this._onClose} selectedNode={_selectedNode} type='rename'/>,{
             title: <p className="redundancyCheckDialog-title">Title 변경</p>,
             animation: 'zoom',

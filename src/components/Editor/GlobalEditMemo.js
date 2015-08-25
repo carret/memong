@@ -137,8 +137,6 @@ var GlobalEditMemo = React.createClass({
 
 
 
-
-
     render: function() {
         return(
             <div className="globaledit-memo">

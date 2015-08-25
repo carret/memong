@@ -352,7 +352,7 @@ var deleteNoteToTree = function(_username, _tree, _id, res) {
                         break;
                     }
                 if(i==_treeTable.length) _noteId = null;
-                console.log (_noteId);
+                console.log ('selectedNodeId',_noteId);
 
                 User.update({username: _username},  {
                     tree : _tree,
@@ -406,8 +406,8 @@ var loadTree = function(req ,res){
 };
 
 
-
 function _findNodeId(treeTable, targetId) {
+
     var len = treeTable.length;
     for (var idx=0; idx<len; idx++) {
         if (treeTable[idx]['nid'] == targetId) {

@@ -53,9 +53,6 @@ var getSelectNoteWithMemo = function(req, res) {
                         if (result == null) { return next("노트가 없습니다."); }
                         else {
                             var selectNodeId = _findNodeId(treeTable, selectNoteId.toString());
-                            console.log("selectNoteId", selectNoteId);
-                            console.log("treeTable", treeTable);
-                            console.log("selectNodeId", selectNodeId);
                             var _note = {
                                 title: result.title,
                                 idAttribute: result._id,
@@ -144,7 +141,6 @@ var getSelectNoteWithMemo = function(req, res) {
                 })
             }
         ], function(result) {
-            console.log(result);
             res.send(result);
         });
     }
@@ -153,8 +149,6 @@ var getSelectNoteWithMemo = function(req, res) {
 var saveMemo = function(req, res) {
     var noteId = req.body.noteId;
     var memos = req.body.memos;
-
-    console.log("memos", memos);
 
     async.waterfall([
         function(callback) {
@@ -174,7 +168,6 @@ var saveMemo = function(req, res) {
                 }
             )
         }, function(memos, callback) {
-            console.log("Memo Saved", memos);
             callback();
         }
     ], function() {
@@ -211,8 +204,6 @@ function _findNodeId(treeTable, targetId) {
     var len = treeTable.length;
     for (var idx=0; idx<len; idx++) {
         if (treeTable[idx]['nid'] != null) {
-            console.log("yaho");
-            console.log(treeTable[idx]['nid']);
             if (treeTable[idx]['nid'].toString() == targetId) {
                 return treeTable[idx]['id'];
             }

@@ -1,7 +1,10 @@
+var AppDispatcher =require('../dispatcher/AppDispatcher');
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
 var cookie = require('react-cookie');
+
+
 
 var WebGetUtils = {
     getNoteWithMemos: function(_token, _noteID) {

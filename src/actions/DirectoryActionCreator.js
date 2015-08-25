@@ -3,6 +3,8 @@ var WebPostUtils = require('../utils/WebPostUtils');
 var WebGetUtils = require('../utils/WebGetUtils');
 var Constants = require('../constants/Constants');
 
+var ServerReceiveActionCreator = require('./ServerReceiveActionCreator');
+
 var cookie = require('react-cookie');
 
 var DirectoryActionCreator = {
@@ -57,7 +59,8 @@ var DirectoryActionCreator = {
 
     requestNote: function(_nodeId) {
         AppDispatcher.handleClientAction({
-            actionType: Constants.DirectoryAction.SELECT_NOTE
+            actionType: Constants.DirectoryAction.SELECT_NOTE,
+            nodeId: _nodeId
         });
         WebGetUtils.getNoteWithMemos(cookie.load('token'), _nodeId);
     }

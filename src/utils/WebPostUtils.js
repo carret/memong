@@ -1,3 +1,4 @@
+var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 var WebGetUtils = require('./WebGetUtils');
@@ -15,14 +16,13 @@ var WebPostUtils = {
                 memos.push(_memos[idx]);
             }
         }
-        console.log(memos);
 
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
             .send({noteId: _noteId, memos: memos})
             .set('API-Key', 'POST_NOTE_WITH_MEMO')
             .set('Accept', 'application/json')
-            .end(function(err,res) {
+            .end(function(err, res) {
                 if (res.ok) {
                     ServerReceiveActionCreator.receiveAutoSaveComplete();
                 }
