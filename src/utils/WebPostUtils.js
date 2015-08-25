@@ -15,6 +15,7 @@ var WebPostUtils = {
                 memos.push(_memos[idx]);
             }
         }
+        console.log(memos);
 
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)

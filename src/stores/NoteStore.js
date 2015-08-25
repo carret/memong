@@ -283,6 +283,9 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteNodeID: function() {
+        if (selectNote == null) {
+            return null;
+        }
         return selectNote.nodeId;
     },
 
@@ -300,18 +303,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     emitAutoSaveReceive: function() {
         this.emit('auto-save-receive');
-    },
-
-    emitInit: function() {
-        this.emit('init');
-    },
-
-    addInitListener: function(callback) {
-        this.on('init', callback);
-    },
-
-    removeInitListener: function(callback) {
-        this.removeListener('init', callback);
     },
 
     addFocusListener: function(callback) {
@@ -350,13 +341,12 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
 //Regist Callback Function
 //디스패처에 Store의 콜백 함수를 등록합니다.
-AppDispatcher.register(function(payload) {
+NoteStore.dispatchToken = AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
-            NoteStore.emitInit();
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:

@@ -61324,6 +61324,8 @@ var EditMemo = React.createClass({displayName: "EditMemo",
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
+            var text = $(TextareaDOM).val();
+            this.props.memo.text = text;
 
             if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
                 event.preventDefault();
@@ -61661,6 +61663,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
         return false;
     },
 
+    
     __focusThis: function() {
         //TextareaDOM.focus();
     },
@@ -63063,6 +63066,7 @@ var WebPostUtils = {
                 memos.push(_memos[idx]);
             }
         }
+        console.log(memos);
 
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)

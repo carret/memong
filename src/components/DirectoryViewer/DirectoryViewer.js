@@ -7,7 +7,6 @@ var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
 var DirectoryStore = require('../../stores/DirectoryStore');
-var NoteStore = require('../../stores/NoteStore');
 
 var elTree, container;
 var _id, _selectedNode;

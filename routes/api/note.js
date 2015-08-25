@@ -12,6 +12,7 @@ var jwt = require('jwt-simple');
 var pkgInfo = require('../../package');
 
 
+
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
@@ -86,7 +87,7 @@ var getSelectNoteWithMemo = function(req, res) {
             res.send(result);
         });
     }
-    //noteID가 null이 아닌 경우, 해당 NoteID의 노트를 불러옴
+    //noteID가 null이 아닌 경우, 선택된 NoteID의 노트를 불러옴
     else {
         async.waterfall([
             function(next) {
@@ -108,7 +109,12 @@ var getSelectNoteWithMemo = function(req, res) {
                 Note.findOne({_id: mongoose.Types.ObjectId(noteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
-                        if (result == null) { return next("노트가 없습니다."); }
+                        if (result == null) {
+                            next({
+                                note: null,
+                                memos: null
+                            });
+                        }
                         else {
                             var _note = {
                                 title: result.title,
@@ -148,11 +154,14 @@ var saveMemo = function(req, res) {
     var noteId = req.body.noteId;
     var memos = req.body.memos;
 
+    console.log("memos", memos);
+
     async.waterfall([
         function(callback) {
             Note.findOneAndUpdate(
                 {_id: mongoose.Types.ObjectId(noteId)},
                 {$set: {memos: memos}},
+                {upsert: true},
                 function(err, result) {
                     if (err) {
                         console.log(err);
@@ -160,11 +169,12 @@ var saveMemo = function(req, res) {
                     }
                     else {
                         //next();
-                        callback(null, result);
+                        callback(null, result.memos);
                     }
                 }
             )
         }, function(memos, callback) {
+            console.log("Memo Saved", memos);
             callback();
         }
     ], function() {

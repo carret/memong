@@ -37,6 +37,8 @@ var EditMemo = React.createClass({
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
+            var text = $(TextareaDOM).val();
+            this.props.memo.text = text;
 
             if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
                 event.preventDefault();

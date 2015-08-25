@@ -12,10 +12,13 @@ var WebGetUtils = {
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    console.log("getted note", res.body.note);
-                    console.log("getted memos", res.body.memos);
-                    ServerReceiveActionCreator.receiveNote(res.body.note);
-                    ServerReceiveActionCreator.receiveMemo(res.body.memos);
+                    if (res.body.hasOwnProperty("note")) {
+                        ServerReceiveActionCreator.receiveNote(res.body.note);
+                        ServerReceiveActionCreator.receiveMemo(res.body.memos);
+                    }
+                    else {
+                        throw new Error;
+                    }
                 }
                 else {
                     // Show Notification

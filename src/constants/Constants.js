@@ -13,7 +13,6 @@ module.exports = {
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory",
         POST_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
-        // 나머지...
     },
 
     DirectoryAPI: {
@@ -23,10 +22,11 @@ module.exports = {
         GET_DIRECTORY: APIRoot + "/getDirectory",
         GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
-        POST_DIRECTORY: APIRoot + "/postDirectory",
+        POST_DIRECTORY: APIRoot + "/postDirectory"
     },
-    // ActionTypes
 
+
+    // ActionTypes
     AccountActionTypes : keyMirror({
         REQUEST_ACCOUNT : null
     }),
@@ -70,13 +70,13 @@ module.exports = {
     }),
 
     DirectoryAPIType : keyMirror({
-        ADD_NOTE: 'addNote',
-        RENAME_NOTE: 'renameNote',
-        DELETE_NOTE: 'deleteNote',
+        ADD_NOTE: null,
+        RENAME_NOTE: null,
+        DELETE_NOTE: null,
 
-        ADD_FOLDER: 'addFolder',
-        DELETE_FOLDER: 'deleteFolder',
-        CHANGE_TREE: 'updateTree' /* Folder Event + Move Event */
+        ADD_FOLDER: null,
+        DELETE_FOLDER: null,
+        CHANGE_TREE: null /* Folder Event + Move Event */
     }),
 
     SearchActionTypes: keyMirror({
