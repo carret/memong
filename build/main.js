@@ -11493,7 +11493,7 @@ module.exports={
   "gitHead": "d86cd2a8178f7e7cecbd6dd92eea084e2ab44c13",
   "_id": "elliptic@3.1.0",
   "_shasum": "c21682ef762769b56a74201609105da11d5f60cc",
-  "_from": "elliptic@^3.0.0",
+  "_from": "elliptic@>=3.0.0 <4.0.0",
   "_npmVersion": "2.11.0",
   "_nodeVersion": "2.2.1",
   "_npmUser": {
@@ -24800,12 +24800,6 @@ var Animate = _react2['default'].createClass({
     };
   },
 
-  componentDidMount: function componentDidMount() {
-    this.state.children.map(function (c) {
-      return c.key;
-    }).forEach(this.performAppear);
-  },
-
   getInitialState: function getInitialState() {
     this.currentlyAnimatingKeys = {};
     this.keysToEnter = [];
@@ -24815,8 +24809,23 @@ var Animate = _react2['default'].createClass({
     };
   },
 
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+  componentDidMount: function componentDidMount() {
     var _this = this;
+
+    var showProp = this.props.showProp;
+    var children = this.state.children;
+    if (showProp) {
+      children = children.filter(function (c) {
+        return !!c.props[showProp];
+      });
+    }
+    children.forEach(function (c) {
+      _this.performAppear(c.key);
+    });
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    var _this2 = this;
 
     var nextChildren = (0, _ChildrenUtils.toArrayChildren)(getChildrenFromProps(nextProps));
     var props = this.props;
@@ -24845,7 +24854,7 @@ var Animate = _react2['default'].createClass({
     // exclusive needs immediate response
     if (exclusive) {
       Object.keys(currentlyAnimatingKeys).forEach(function (key) {
-        _this.stop(key);
+        _this2.stop(key);
       });
       currentChildren = (0, _ChildrenUtils.toArrayChildren)(getChildrenFromProps(props));
     }
@@ -24861,11 +24870,11 @@ var Animate = _react2['default'].createClass({
           var showInNow = (0, _ChildrenUtils.isShownInChildren)(currentChildren, c, showProp);
           var showInNext = c.props[showProp];
           if (!showInNow && showInNext) {
-            _this.keysToEnter.push(key);
+            _this2.keysToEnter.push(key);
           }
         }
       } else if (!hasPrev) {
-        _this.keysToEnter.push(key);
+        _this2.keysToEnter.push(key);
       }
     });
 
@@ -24880,11 +24889,11 @@ var Animate = _react2['default'].createClass({
           var showInNext = (0, _ChildrenUtils.isShownInChildren)(nextChildren, c, showProp);
           var showInNow = c.props[showProp];
           if (!showInNext && showInNow) {
-            _this.keysToLeave.push(key);
+            _this2.keysToLeave.push(key);
           }
         }
       } else if (!hasNext) {
-        _this.keysToLeave.push(key);
+        _this2.keysToLeave.push(key);
       }
     });
   },
@@ -60432,7 +60441,6 @@ module.exports={
     "flux": "^2.0.3",
     "jqtree": "^1.2.1",
     "jwt-simple": "^0.3.0",
-    "mecab-ffi": "^0.1.0",
     "mongoose": "^4.1.2",
     "node-uuid": "^1.4.3",
     "passport": "0.2.2",
@@ -60499,7 +60507,7 @@ var AutoSaveActionCreator = {
 
 module.exports = AutoSaveActionCreator;
 
-},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":474,"../utils/WebPostUtils":475}],447:[function(require,module,exports){
+},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":473,"../utils/WebPostUtils":474}],447:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var WebPostUtils = require('../utils/WebPostUtils');
 var WebGetUtils = require('../utils/WebGetUtils');
@@ -60567,7 +60575,7 @@ var DirectoryActionCreator = {
 
 module.exports = DirectoryActionCreator;
 
-},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":474,"../utils/WebPostUtils":475,"react-cookie":221}],448:[function(require,module,exports){
+},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":473,"../utils/WebPostUtils":474,"react-cookie":221}],448:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -60650,7 +60658,7 @@ var MemoActionCreator = {
 
 module.exports = MemoActionCreator;
 
-},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":474,"../utils/WebPostUtils":475}],449:[function(require,module,exports){
+},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"../utils/WebGetUtils":473,"../utils/WebPostUtils":474}],449:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 
@@ -60757,7 +60765,6 @@ var LoginBtn = React.createClass({displayName: "LoginBtn",
 });
 
 module.exports = LoginBtn;
-
 },{"rc-dialog":190,"react":379}],451:[function(require,module,exports){
 var React = require('react');
 var Dialog = require('rc-dialog');
@@ -60907,17 +60914,14 @@ var AutoSaver = React.createClass({displayName: "AutoSaver",
 
 module.exports = AutoSaver;
 
-},{"../../actions/AutoSaveActionCreator":446,"../../constants/Constants":469,"../../stores/NoteStore":473,"react":379}],453:[function(require,module,exports){
+},{"../../actions/AutoSaveActionCreator":446,"../../constants/Constants":469,"../../stores/NoteStore":472,"react":379}],453:[function(require,module,exports){
 var React = require('react');
 var jqtree = require('jqtree');
 var Dialog = require('rc-dialog');
 
 var WebGetUtils = require('../../utils/WebGetUtils');
-var WebPostUtils = require('../../utils/WebPostUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
-var DirectoryStore = require('../../stores/DirectoryStore');
-var NoteStore = require('../../stores/NoteStore');
 
 var elTree, container;
 var _id, _selectedNode;
@@ -60986,7 +60990,7 @@ var DialogContent = React.createClass({displayName: "DialogContent",
                 React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "Check for duplicated TITLE")), 
                 React.createElement("input", {id: "title", type: "text", onChange: this.handleChange, value: this.state.value}), 
                 React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
-                    React.createElement("button", {onClick: this._IsRedundancy}, "생성"), 
+                    React.createElement("button", {onClick: this._IsRedundancy}, "확인"), 
                     React.createElement("button", {onClick: this.props.handleClose}, "취소")
                 )
             )
@@ -61091,7 +61095,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         else {
             event.move_info.do_move();
             treeData = $(elTree).tree('toJson');
-            $(elTree).tree('loadData', JSON.parse(preTreeData));
             console.log(treeData);
 
             DirectoryActionCreator.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
@@ -61127,7 +61130,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
             node
         );
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if(_type == 'note') { DirectoryActionCreator.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, _title); }
         else { DirectoryActionCreator.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER); }
@@ -61139,7 +61141,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if (node.type == 'note') { DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id); }
         else { DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title); }
@@ -61152,18 +61153,17 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
         $(elTree).tree('removeNode', node);
         treeData = $(elTree).tree('toJson');
-        $(elTree).tree('loadData', JSON.parse(preTreeData));
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
     },
 
     componentWillUnmount: function(){
-        DirectoryStore.removeTreeChangeListener(this._onChange);
+        //irectoryStore.removeTreeChangeListener(this._onChange);
     },
 
     componentDidMount: function() {
-        DirectoryStore.addTreeChangeListener(this._onChange);
+       // DirectoryStore.addTreeChangeListener(this._onChange);
 
         this._initComponent();
         this._getDataToDB();
@@ -61172,7 +61172,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
     /* FOR HANDLE DIALOG */
     _onChange: function() {
-        var tree = DirectoryStore.getTree();
+        //var tree = DirectoryStore.getTree();
         //$(elTree).tree('loadData', tree);
         //var node = $(elTree).tree('getNodeById', _selectedNode.id);
         //$(elTree).tree('addToSelection', node);
@@ -61228,7 +61228,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
 module.exports = DirectoryViewer;
 
-},{"../../actions/DirectoryActionCreator":447,"../../constants/Constants":469,"../../stores/DirectoryStore":472,"../../stores/NoteStore":473,"../../utils/WebGetUtils":474,"../../utils/WebPostUtils":475,"async":1,"jqtree":182,"rc-dialog":190,"react":379}],454:[function(require,module,exports){
+},{"../../actions/DirectoryActionCreator":447,"../../constants/Constants":469,"../../utils/WebGetUtils":473,"async":1,"jqtree":182,"rc-dialog":190,"react":379}],454:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -61524,7 +61524,7 @@ var Editor = React.createClass({displayName: "Editor",
 
 module.exports = Editor;
 
-},{"../../constants/Constants":469,"../../stores/NoteStore":473,"./CompleteMemo":454,"./EditMemo":455,"./GlobalEditMemo":457,"./NoneMemo":458,"react":379,"underscore":444}],457:[function(require,module,exports){
+},{"../../constants/Constants":469,"../../stores/NoteStore":472,"./CompleteMemo":454,"./EditMemo":455,"./GlobalEditMemo":457,"./NoneMemo":458,"react":379,"underscore":444}],457:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
@@ -61680,7 +61680,7 @@ var GlobalEditMemo = React.createClass({displayName: "GlobalEditMemo",
 
 module.exports = GlobalEditMemo;
 
-},{"../../actions/MemoActionCreator":448,"../../constants/Constants":469,"../../stores/NoteStore":473,"react":379,"react-textarea-autosize":223,"underscore":444}],458:[function(require,module,exports){
+},{"../../actions/MemoActionCreator":448,"../../constants/Constants":469,"../../stores/NoteStore":472,"react":379,"react-textarea-autosize":223,"underscore":444}],458:[function(require,module,exports){
 var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Remarkable = require('remarkable');
@@ -62029,7 +62029,6 @@ var AutoInput = React.createClass({displayName: "AutoInput",
 });
 
 module.exports=AutoInput;
-
 },{"./utils":462,"react":379,"react-autosuggest":216}],462:[function(require,module,exports){
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
@@ -62039,7 +62038,6 @@ function escapeRegexCharacters(str) {
 module.exports = {
   escapeRegexCharacters: escapeRegexCharacters
 };
-
 },{}],463:[function(require,module,exports){
 var React = require('react');
 
@@ -62247,7 +62245,7 @@ var MemoViewer = React.createClass({displayName: "MemoViewer",
 
 module.exports = MemoViewer;
 
-},{"../../constants/Constants":469,"../../stores/NoteStore":473,"./EditMemoItem":463,"./MemoItem":464,"react":379,"underscore":444}],466:[function(require,module,exports){
+},{"../../constants/Constants":469,"../../stores/NoteStore":472,"./EditMemoItem":463,"./MemoItem":464,"react":379,"underscore":444}],466:[function(require,module,exports){
 var React = require('react');
 
 var AutoSaver = require('../AutoSaver/AutoSaver');
@@ -62298,7 +62296,7 @@ var NoteHeader = React.createClass({displayName: "NoteHeader",
 
 module.exports = NoteHeader;
 
-},{"../../stores/NoteStore":473,"../AutoSaver/AutoSaver":452,"./ToggleAsideButton":467,"react":379}],467:[function(require,module,exports){
+},{"../../stores/NoteStore":472,"../AutoSaver/AutoSaver":452,"./ToggleAsideButton":467,"react":379}],467:[function(require,module,exports){
 var React = require('react');
 
 var ToggleAsideButton = React.createClass({displayName: "ToggleAsideButton",
@@ -62502,57 +62500,7 @@ React.render(
     ),
     document.getElementById('app')
 );
-
-},{"./actions/MemoActionCreator":448,"./components/Editor/Editor":456,"./components/Header":459,"./components/Main":460,"./components/MemoViewer/MemoViewer":465,"./utils/WebGetUtils":474,"react":379,"react-cookie":221}],472:[function(require,module,exports){
-var AppDispatcher = require('../dispatcher/AppDispatcher');
-var EventEmitter = require('events').EventEmitter;
-
-var Constants = require('../constants/Constants');
-
-var _ = require('underscore');
-
-
-var tree = {};
-
-function reloadTree(_tree){
-    tree = _tree;
-}
-
-//Public Function
-var DirectoryStore = _.extend({}, EventEmitter.prototype, {
-    getTree: function() {
-        return tree;
-    },
-
-    emitChange: function() {
-        this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
-    },
-
-    addTreeChangeListener: function(callback) {
-        this.on('change', callback);
-    },
-
-    removeTreeChangeListener: function(callback) {
-        this.removeListener('change', callback);
-    }
-});
-
-
-AppDispatcher.register(function(payload) {
-    var action = payload.action;
-
-    if (action.actionType == Constants.DirectoryAction.RECEIVE_TREE){
-        reloadTree(action.tree);
-    }
-
-    DirectoryStore.emitChange();
-
-    return true;
-});
-
-module.exports = DirectoryStore;
-
-},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"events":148,"underscore":444}],473:[function(require,module,exports){
+},{"./actions/MemoActionCreator":448,"./components/Editor/Editor":456,"./components/Header":459,"./components/Main":460,"./components/MemoViewer/MemoViewer":465,"./utils/WebGetUtils":473,"react":379,"react-cookie":221}],472:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -62984,7 +62932,7 @@ AppDispatcher.register(function(payload) {
 
 module.exports = NoteStore;
 
-},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"events":148,"node-uuid":187,"underscore":444}],474:[function(require,module,exports){
+},{"../constants/Constants":469,"../dispatcher/AppDispatcher":470,"events":148,"node-uuid":187,"underscore":444}],473:[function(require,module,exports){
 var ServerReceiveActionCreator = require('../actions/ServerReceiveActionCreator');
 var request = require('superagent');
 var Constants = require('../constants/Constants');
@@ -63045,7 +62993,7 @@ var WebGetUtils = {
 
 module.exports = WebGetUtils;
 
-},{"../actions/ServerReceiveActionCreator":449,"../constants/Constants":469,"react-cookie":221,"superagent":441}],475:[function(require,module,exports){
+},{"../actions/ServerReceiveActionCreator":449,"../constants/Constants":469,"react-cookie":221,"superagent":441}],474:[function(require,module,exports){
 var Constants = require('../constants/Constants');
 var request = require('superagent');
 var WebGetUtils = require('./WebGetUtils');
@@ -63114,4 +63062,4 @@ var WebPostUtils = {
 
 module.exports = WebPostUtils;
 
-},{"../actions/ServerReceiveActionCreator":449,"../constants/Constants":469,"./WebGetUtils":474,"react-cookie":221,"superagent":441}]},{},[471]);
+},{"../actions/ServerReceiveActionCreator":449,"../constants/Constants":469,"./WebGetUtils":473,"react-cookie":221,"superagent":441}]},{},[471]);
