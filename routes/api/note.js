@@ -52,9 +52,9 @@ var getSelectNoteWithMemo = function(req, res) {
                         if (result == null) { return next("노트가 없습니다."); }
                         else {
                             var selectNodeId = _findNodeId(treeTable, selectNoteId.toString());
-                            console.log("selectNoteId", selectNoteId);
-                            console.log("treeTable", treeTable);
-                            console.log("selectNodeId", selectNodeId);
+                           // console.log("selectNoteId", selectNoteId);
+                            //console.log("treeTable", treeTable);
+                            //console.log("selectNodeId", selectNodeId);
                             var _note = {
                                 title: result.title,
                                 idAttribute: result._id,
@@ -201,8 +201,8 @@ function _findNodeId(treeTable, targetId) {
     var len = treeTable.length;
     for (var idx=0; idx<len; idx++) {
         if (treeTable[idx]['nid'] != null) {
-            console.log("yaho");
-            console.log(treeTable[idx]['nid']);
+            //console.log("yaho");
+            //console.log(treeTable[idx]['nid']);
             if (treeTable[idx]['nid'].toString() == targetId) {
                 return treeTable[idx]['id'];
             }

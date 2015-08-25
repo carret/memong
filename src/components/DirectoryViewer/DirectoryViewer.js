@@ -232,10 +232,12 @@ var DirectoryViewer = React.createClass({
     _deleteNode : function() {
         var node = $(elTree).tree('getSelectedNode');
         var treeData, preTreeData = $(elTree).tree('toJson');
-        var childrenOfFolder = node.getData;
+        var childrenOfFolder = node.getData();
 
         $(elTree).tree('removeNode', node);
         treeData = $(elTree).tree('toJson');
+
+        console.log(childrenOfFolder);
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }

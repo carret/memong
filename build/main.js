@@ -61149,10 +61149,12 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     _deleteNode : function() {
         var node = $(elTree).tree('getSelectedNode');
         var treeData, preTreeData = $(elTree).tree('toJson');
-        var childrenOfFolder = node.getData;
+        var childrenOfFolder = node.getData();
 
         $(elTree).tree('removeNode', node);
         treeData = $(elTree).tree('toJson');
+
+        console.log(childrenOfFolder);
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
@@ -63034,7 +63036,9 @@ var WebPostUtils = {
             tree : _tree,
             data : _data,
             data2 : _data2
-            } ;
+            };
+
+        console.log(_action);
 
         request
             .post(Constants.API.POST_DIRECTORY)

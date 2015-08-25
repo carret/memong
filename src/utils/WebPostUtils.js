@@ -38,7 +38,9 @@ var WebPostUtils = {
             tree : _tree,
             data : _data,
             data2 : _data2
-            } ;
+            };
+
+        console.log(_action);
 
         request
             .post(Constants.API.POST_DIRECTORY)
