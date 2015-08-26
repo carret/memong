@@ -1,11 +1,12 @@
 var React = require('react');
 var jqtree = require('jqtree');
 var Dialog = require('rc-dialog');
-var async = require('async');
 var WebGetUtils = require('../../utils/WebGetUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
 var NoteStore = require('../../stores/NoteStore');
+var RemoveDialog = require('./RemoveDialog');
+var TitleCheckingDialog = require('./TitleCheckingDialog');
 
 var elTree, container;
 var _id, _selectedNode=null, _selectedNoteId = 0;
@@ -29,140 +30,6 @@ function showDialog(content, props) {
     var dialog = React.render(<Dialog {...props} renderToBody={false}>{content}</Dialog>, container);
     dialog.show();
     return dialog;
-}
-
-var DialogContentOfRemove = React.createClass({
-    getInitialState: function() {
-        return {value: ''};
-    },
-
-    componentDidMount: function() {
-        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
-            if (event.keyCode == 13) {
-                this.props.actionItem();
-            }
-        });
-    },
-
-    _removeNode: function() {
-
-        var result = _noteCheck();
-        if (result.value == true) {
-            this.props.actionItem(result.tree, result.node, result.childrenOfFolder);
-            this.props.handleClose();
-        }
-        else
-        {
-            var redundancy = document.getElementById('remove-alert');
-            redundancy.style.display = "block";
-        }
-    },
-
-    handleChange: function(event) {
-        this.setState({value: event.target.value});
-    },
-
-    render : function() {
-        return (
-            <div ref="_dialog">
-                <div className="redundancyCheckDialog-text"><span>정말 삭제하시겠습니까?</span></div>
-                <span id="remove-alert" style={{"color":"red",  "display":"none"}}>! 마지막 노트는 삭제할 수 없습니다.</span>
-                <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._removeNode} >확인</button>
-                    <button onClick={this.props.handleClose} >취소</button>
-                </div>
-            </div>
-        );
-    }
-});
-
-var DialogContent = React.createClass({
-    getInitialState: function() {
-        return {value: ''};
-    },
-
-    componentDidMount: function() {
-        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
-            if (event.keyCode == 13) {
-                this.props.actionItem();
-            }
-        });
-    },
-
-    _IsRedundancy: function() {
-        var node = $(elTree).tree('getSelectedNode'), nodeParent;
-        var title = document.getElementById('title').value;
-        var type = this.props.type;
-
-        if(type == 'rename') { node = this.props.selectedNode; }
-        else if (node == false) { node = $(elTree).tree('getNodeById', 0); }
-        nodeParent = (node.type == 'note')? node.parent: node;
-
-        var val = _redundancyCheck(nodeParent, title);
-
-        if(val== false) {
-            var redundancy = document.getElementById('redundancy-alert');
-            redundancy.style.display = "block";
-        }
-        else {
-            this.props.actionItem(title, type, node);
-            this.props.handleClose();
-        }
-    },
-
-    handleChange: function(event) {
-        this.setState({value: event.target.value});
-    },
-
-    render : function() {
-        return (
-            <div ref="_dialog">
-                <div className="redundancyCheckDialog-text"><span>타이틀 중복 확인</span></div>
-                <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
-                <span id="redundancy-alert" style={{"color":"red",  "display":"none"}}>! 중복 타이틀입니다.</span>
-                <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._IsRedundancy} >확인</button>
-                    <button onClick={this.props.handleClose} >취소</button>
-                </div>
-            </div>
-        );
-    }
-});
-
-function _noteCheck(){
-
-    var _node =  $(elTree).tree('getSelectedNode');
-    var _treeData, _preTreeData = $(elTree).tree('toJson');
-    var _childrenOfFolder = _node.getData();
-
-    $(elTree).tree('removeNode', _node);
-    _treeData = $(elTree).tree('toJson');
-
-    var stringData  = _treeData.toString();
-
-    if(stringData.indexOf('note') == -1)  {
-        $(elTree).tree('loadData', JSON.parse(_preTreeData));
-        return {value : false};
-    }
-    else{
-        return{
-            value : true,
-            node :  _node,
-            childrenOfFolder: _childrenOfFolder,
-            tree : _treeData
-        };
-    }
-}
-
-function _redundancyCheck(parentNode, noteTitle) {
-    var i;
-    for ( i=0; i < parentNode.children.length; i++) {
-        var child = parentNode.children[i];
-        if(child.name == noteTitle) { break; }
-    }
-
-    if (parentNode.children.length == i) { return true; }
-    else { return false; }
 }
 
 function blockBtn(_nodeId){
@@ -336,7 +203,7 @@ var DirectoryViewer = React.createClass({
     },
 
     handleTrigger_AddNote: function () {
-        this.d = showDialog(<DialogContent actionItem={this._addNodeToTree} handleClose={this._onClose} selectedNode={_selectedNode}  type='note'/>,{
+        this.d = showDialog(<TitleCheckingDialog actionItem={this._addNodeToTree} handleClose={this._onClose} elTree={$(elTree)} selectedNode={_selectedNode}  type='note'/>,{
             title: <p className="redundancyCheckDialog-title">노트 생성</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
@@ -346,7 +213,7 @@ var DirectoryViewer = React.createClass({
     },
 
     handleTrigger_AddFolder: function () {
-        this.d = showDialog(<DialogContent actionItem={this._addNodeToTree} handleClose={this._onClose} selectedNode={_selectedNode}  type='folder'/>,{
+        this.d = showDialog(<TitleCheckingDialog actionItem={this._addNodeToTree} handleClose={this._onClose} elTree={$(elTree)}  selectedNode={_selectedNode}  type='folder'/>,{
             title: <p className="redundancyCheckDialog-title">폴더 생성</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
@@ -357,7 +224,7 @@ var DirectoryViewer = React.createClass({
 
     handleTrigger_RenameNode: function () {
 
-        this.d = showDialog(<DialogContent actionItem={this._renameNode} handleClose={this._onClose} selectedNode={_selectedNode} type='rename'/>,{
+        this.d = showDialog(<TitleCheckingDialog actionItem={this._renameNode} handleClose={this._onClose} elTree={$(elTree)}  selectedNode={_selectedNode} type='rename'/>,{
             title: <p className="redundancyCheckDialog-title">타이틀 변경</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
@@ -368,7 +235,7 @@ var DirectoryViewer = React.createClass({
 
     handleTrigger_RemoveNode: function () {
 
-        this.d = showDialog(<DialogContentOfRemove actionItem={this._deleteNode} handleClose={this._onClose} selectedNode={_selectedNode} type='remove'/>,{
+        this.d = showDialog(<RemoveDialog actionItem={this._deleteNode} handleClose={this._onClose} elTree={$(elTree)} selectedNode={_selectedNode} type='remove'/>,{
             title: <p className="confirmDialog-title">아이템 삭제</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
