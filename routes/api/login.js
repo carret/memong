@@ -155,9 +155,9 @@ var _treeProto = [
         label: 'root', id: 0, type: 'folder',
         children: [
             {
-                label: 'New Folder', id: 1, type: 'folder',
+                label: '새로운 폴더', id: 1, type: 'folder',
                 children: [
-                    {label: 'child1', id: 2, type: 'note'}
+                    {label: '새로운 노트', id: 2, type: 'note'}
                 ]
             }
         ]

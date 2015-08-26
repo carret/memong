@@ -73,8 +73,8 @@ var DialogContent = React.createClass({
                 <div className="redundancyCheckDialog-text"><span>Check for duplicated TITLE</span></div>
                 <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
                 <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._IsRedundancy} >확인</button>
-                    <button onClick={this.props.handleClose} >취소</button>
+                    <button onClick={this._IsRedundancy}>확인</button>
+                    <button onClick={this.props.handleClose}>취소</button>
                 </div>
             </div>
         );
@@ -95,12 +95,12 @@ function _redundancyCheck(parentNode, noteTitle) {
 
 function visibleBtn(_nodeId){
     if(_nodeId == 0) return;
-    $('#btn_mod'+_nodeId).css("visibility","visible");
-    $('#btn_del'+_nodeId).css("visibility","visible");
+    $('#btn_mod'+_nodeId).css("display","inline-block");
+    $('#btn_del'+_nodeId).css("display","inline-block");
 }
 function hiddenBtn(_nodeId){
-    $('#btn_mod'+_nodeId).css("visibility","hidden");
-    $('#btn_del'+_nodeId).css("visibility","hidden");
+    $('#btn_mod'+_nodeId).css("display","none");
+    $('#btn_del'+_nodeId).css("display","none");
 }
 
 
@@ -124,8 +124,8 @@ var DirectoryViewer = React.createClass({
                 dragAndDrop: true,
 
                 onCreateLi: function(node, $li) {
-                    $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="visibility:hidden;"> del </button>');
-                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
+                    $li.find('.jqtree-title').after('<button class="btn_delNode" id="btn_del'+ node.id +'" style="display:none;">' + '<i class="material-icons">&#xE872;</i></button>');
+                    $li.find('.jqtree-title').after('<button class="btn_modNode" id="btn_mod'+ node.id +'" style="display:none;">' + '<i class="material-icons">&#xE3C9;</i></button>');
 
                     $('#btn_mod'+lastId).bind( 'click', that.handleTrigger_RenameNode );
                     $('#btn_del'+lastId).bind( 'click', that._deleteNode );
@@ -233,10 +233,12 @@ var DirectoryViewer = React.createClass({
     _deleteNode : function() {
         var node = $(elTree).tree('getSelectedNode');
         var treeData, preTreeData = $(elTree).tree('toJson');
-        var childrenOfFolder = node.getData;
+        var childrenOfFolder = node.getData();
 
         $(elTree).tree('removeNode', node);
         treeData = $(elTree).tree('toJson');
+
+        console.log(childrenOfFolder);
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
@@ -287,9 +289,9 @@ var DirectoryViewer = React.createClass({
             <div id="directory-viewer">
                 <div className="header">디렉토리</div>
                 <div className="addNode">
-                    <button className = "btn_addNode" onClick={this.handleTrigger_AddNote} >ADD NOTE</ button>
-                    <button className = "btn_addNode" onClick={this.handleTrigger_AddFolder} >ADD FOLDER</ button>
-                    </div>
+                    <button className = "btn_addNode" onClick={this.handleTrigger_AddNote} >노트 추가하기</ button>
+                    <button className = "btn_addNode" onClick={this.handleTrigger_AddFolder} >폴더 추가하기</ button>
+                </div>
                 <div className="content"> <div id="tree1" ref="tree1" className="directory-viewer-tree"></div></div>
             </div>
         )

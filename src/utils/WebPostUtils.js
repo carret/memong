@@ -39,7 +39,8 @@ var WebPostUtils = {
             tree : _tree,
             data : _data,
             data2 : _data2
-            } ;
+            };
+
 
         request
             .post(Constants.API.POST_DIRECTORY)
@@ -55,7 +56,6 @@ var WebPostUtils = {
                     console.log("res", res);
                     if (res.body != null) {
                         if(res.body.hasOwnProperty('noteId')) {
-                            //getSelectNote
                             WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
                         }
                     }

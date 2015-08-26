@@ -287,9 +287,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
     },
 
     getNoteNodeID: function() {
-        if (selectNote == null) {
-            return null;
-        }
         return selectNote.nodeId;
     },
 

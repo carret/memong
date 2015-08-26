@@ -456,6 +456,49 @@ html, body {
                     border-bottom: 1px solid @color-grey-400;
                     background-color: @color-grey-300;
                 }
+
+                .addNode {
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: -moz-box;
+                    display: -ms-flexbox;
+                    display: flex;
+
+                    padding: .5rem;
+                    padding-bottom: 0;
+
+                    button {
+                        -webkit-box-flex: 1;
+                        -webkit-flex: 1;
+                        -moz-box-flex: 1;
+                        -ms-flex: 1;
+                        flex: 1;
+
+                        outline: 0;
+                        border: 0;
+                        padding: .75rem 0;
+
+                        border-radius: 2px;
+
+                        font-size: 1em;
+
+                        cursor: pointer;
+                        will-change: background-color;
+
+                        &:first-child { margin-right: .5rem; }
+
+                        background-color: @color-teal-300;
+                        color: #FFF;
+
+                        -webkit-transition: background-color .3s ease;
+                        -moz-transition: background-color .3s ease;
+                        -ms-transition: background-color .3s ease;
+                        -o-transition: background-color .3s ease;
+                        transition: background-color .3s ease;
+
+                        &:hover { background-color: @color-teal-500; }
+                    }
+                }
             }
 
             #memo-viewer {
@@ -1752,17 +1795,88 @@ hr {
 
 
 
+button.btn_modNode {
+    outline: 0;
+    border: 0;
+
+    padding: 0;
+
+    margin-left: .75rem;
+    margin-right: .25rem;
+
+    vertical-align: middle;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    will-change: opacity;
+
+    -webkit-transition: opacity .3s ease;
+    -moz-transition: opacity .3s ease;
+    -ms-transition: opacity .3s ease;
+    -o-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+
+    &:hover { opacity: .7; }
+
+    i {
+        color: @color-grey-600;
+        font-size: 1.3em;
+        line-height: 1;
+    }
+}
+button.btn_delNode {
+    outline: 0;
+    border: 0;
+
+    padding: 0;
+
+    vertical-align: middle;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    will-change: opacity;
+
+    -webkit-transition: opacity .3s ease;
+    -moz-transition: opacity .3s ease;
+    -ms-transition: opacity .3s ease;
+    -o-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+
+    &:hover { opacity: .7; }
+
+    i {
+        color: @color-grey-600;
+        font-size: 1.3em;
+        line-height: 1;
+    }
+}
+
+
 ul.jqtree-tree {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
     list-style: none outside;
     margin-left: 0;
     margin-bottom: 0;
-    padding: 0; }
+    padding: 0 .5rem; }
 ul.jqtree-tree ul.jqtree_common {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
     list-style: none outside;
-    margin-left: 12px;
-    margin-right: 0;
-    margin-bottom: 0;
+
     padding: 0;
+    margin: 0;
+
+    padding-left: .5rem;
+
     display: block; }
 ul.jqtree-tree li.jqtree-closed > ul.jqtree_common {
     display: none; }
@@ -1771,12 +1885,12 @@ ul.jqtree-tree li.jqtree_common {
     list-style-type: none; }
 ul.jqtree-tree .jqtree-toggler {
     border-bottom: none;
-    color: #333;
+    color: @color-grey-800;
     text-decoration: none;
-    margin-right: 0.5em;
+    padding: 0 0.5em;
     vertical-align: middle; }
 ul.jqtree-tree .jqtree-toggler:hover {
-    color: #000;
+    color: @color-grey-900;
     text-decoration: none; }
 ul.jqtree-tree .jqtree-toggler.jqtree-closed {
     background-position: 0 0; }
@@ -1784,24 +1898,24 @@ ul.jqtree-tree .jqtree-element {
     cursor: pointer;
     position: relative; }
 ul.jqtree-tree .jqtree-title {
-    color: #1C4257;
+    color: @color-grey-800;
     vertical-align: middle;
-    margin-left: 1em; }
+    padding-left: .5rem; }
 ul.jqtree-tree .jqtree-title.jqtree-title-folder {
-    margin-left: 0; }
+    padding-left: 0; }
 ul.jqtree-tree li.jqtree-folder {
-    margin-bottom: .25em; }
+    padding-bottom: .25rem; }
 ul.jqtree-tree li.jqtree-folder.jqtree-closed {
-    margin-bottom: .15em; }
+    padding-bottom: .15rem; }
 ul.jqtree-tree li.jqtree-ghost {
     position: relative;
     z-index: 10;
-    margin-right: 10px;
+    padding-right: .25rem;
     /* todo: add classes to span? */ }
 ul.jqtree-tree li.jqtree-ghost span {
     display: block; }
 ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
-    border: solid 2px #0000ff;
+    border: solid 2px @color-teal-500;
     -webkit-border-radius: 100px;
     -moz-border-radius: 100px;
     border-radius: 100px;
@@ -1814,7 +1928,7 @@ ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
 ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
-    background-color: #0000ff;
+    background-color: @color-teal-500;
     height: 2px;
     padding: 0;
     position: absolute;
@@ -1822,32 +1936,28 @@ ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
     left: 2px;
     width: 100%; }
 ul.jqtree-tree li.jqtree-ghost.jqtree-inside {
-    margin-left: 48px; }
+    margin-left: 1em; }
 ul.jqtree-tree span.jqtree-border {
     position: absolute;
     display: block;
     left: -2px;
     top: 0;
-    border: solid 2px #0000ff;
+    border: solid 2px @color-teal-500;
     border-radius: 6px;
     margin: 0;
     box-sizing: content-box; }
 ul.jqtree-tree li.jqtree-selected > .jqtree-element,
 ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
-    background-color: #97BDD6;
-    background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA));
-    background: -moz-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -ms-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -o-linear-gradient(top, #BEE0F5, #89AFCA);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+    background-color: @color-teal-100;
+}
 ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
-    outline: dashed 1px #0000ff; }
+    outline: dashed 1px @color-teal-500; }
 
 ul.jqtree-tree.jqtree-rtl {
     direction: rtl; }
 ul.jqtree-tree.jqtree-rtl ul.jqtree_common {
     margin-left: 0;
-    margin-right: 12px; }
+}
 ul.jqtree-tree.jqtree-rtl .jqtree-toggler {
     margin-left: 0.5em;
     margin-right: 0; }

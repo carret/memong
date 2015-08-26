@@ -50,7 +50,12 @@ var getSelectNoteWithMemo = function(req, res) {
                 Note.findOne({_id: mongoose.Types.ObjectId(selectNoteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
-                        if (result == null) { return next("노트가 없습니다."); }
+                        if (result == null) {
+                            next({
+                                note: null,
+                                memos: null
+                            });
+                        }
                         else {
                             var selectNodeId = _findNodeId(treeTable, selectNoteId.toString());
                             var _note = {
@@ -101,6 +106,17 @@ var getSelectNoteWithMemo = function(req, res) {
                             next(null, noteId, nodeId);
                         }
                     }
+                })
+            },
+            function(noteId, nodeId, next) {
+                User.update(
+                    {username: userName},
+                    {selectNoteId: noteId},
+                    function(err, result) {
+                        if (err) { return next(err); }
+                        else {
+                            next(null, noteId, nodeId);
+                        }
                 })
             },
             function (noteId, nodeId, next) {

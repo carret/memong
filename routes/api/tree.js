@@ -18,6 +18,7 @@ exports.doRoutes = function(app) {
 };
 
 var postDir = function(req ,res){
+
     var userToken =  req.body.token;
     var _action = req.body.action;
 
@@ -26,7 +27,6 @@ var postDir = function(req ,res){
         userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
     }
 
-    //if(Constants.DirectoryAPIType.ADD_NOTE == _action.type) console.log(true);
     switch (_action.type){
 
         case Constants.DirectoryAPIType.ADD_NOTE :
@@ -46,7 +46,7 @@ var postDir = function(req ,res){
             break;
 
         case Constants.DirectoryAPIType.DELETE_FOLDER :
-            renameFolder_movingTreeToTree(userName, _action.tree, res);
+            deleteFolderToTree(userName, _action.tree, _action.data, res);
             break;
 
         case Constants.DirectoryAPIType.DELETE_NOTE :
@@ -138,7 +138,6 @@ var addFolderToTree = function(_username, _tree, res){
             },
 
             function (_treeTable, callback) {
-
                 User.update({username: _username}, {
                     $push: {
                         treeTable : {
@@ -227,7 +226,7 @@ var renameFolder_movingTreeToTree = function(_username, _tree, res) {
         [
             function (callback)
             {
-                User.findOne ( {username : _username } , function( err, validUser) {
+                User.findOne ({username : _username } , function( err, validUser) {
                     if (err)
                         callback(err);
 
@@ -266,15 +265,15 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
             },
 
             function (_treeTable, callback) {
-
-                for(var i=0;i<_children.length; i++) {
-
+                var i;
+                for(i=0;i<_children.length; i++) {
                     if(_children[i].type == "note") {
-                        var nid = _treeTable[(_children[i]._id)].nid;
+                        var nid = _treeTable[(_children[i].id)].nid;
+                        _treeTable[(_children[i].id)].nid = null;
 
                         Note.remove({_id: nid}, function (err) {
                             if (err) callback(err);
-                            else if(i == children.length-1) callback(null, _treeTable);
+                            else if(i == _children.length) callback(null, _treeTable);
                         });
                     }
                 }
@@ -287,16 +286,15 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
                         _noteId = _treeTable[i].nid;
                         break;
                     }
+                if(i==_treeTable.length) { _noteId = null; }
 
-                if(i==_treeTable.length) _noteId = null;
-                console.log (_noteId);
                 User.update({username: _username},  {
                     tree : _tree,
                     treeTable : _treeTable,
                     selectNoteId: _noteId
                 }, {upsert: true}, function (err, user) {
-                    if (err) callback(err);
-                    else callback(null, _noteId);
+                    if (err) { callback(err); }
+                    else { callback(null, _noteId); }
                 });
             }
         ],
@@ -312,6 +310,7 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
         });
 };
 var deleteNoteToTree = function(_username, _tree, _id, res) {
+
     async.waterfall(
         [
             function (callback)
@@ -326,33 +325,29 @@ var deleteNoteToTree = function(_username, _tree, _id, res) {
                         validUser.treeTable[_id].nid = null;
 
                         Note.findOne({ _id : noteId}, function( err, validNote) {
-                            if (err)
-                                callback(err);
+                            if (err) { callback(err); }
                             if (validNote === null) callback(true, 'unregistered Note');
-                            else  callback(null,validNote,validUser.treeTable);
+                            else  callback(null,noteId,validUser.treeTable);
                         });
                     }
                 });
             },
 
-            function (_validNote,_treeTable, callback) {
-                _validNote.remove(function (err) {
+            function (noteId,_treeTable, callback) {
+                Note.remove({ _id : noteId}, function (err) {
                     if (err) callback(err);
                     else callback(null, _treeTable);
                 });
             },
 
             function (_treeTable, callback) {
-
                 var i, _noteId;
                 for( i=0; i<_treeTable.length; i++)
                     if(_treeTable[i].nid != null){
-                        console.log(_treeTable[i].id);
                         _noteId = _treeTable[i].nid;
                         break;
                     }
                 if(i==_treeTable.length) _noteId = null;
-                console.log ('selectedNodeId',_noteId);
 
                 User.update({username: _username},  {
                     tree : _tree,
@@ -407,11 +402,11 @@ var loadTree = function(req ,res){
 
 
 function _findNodeId(treeTable, targetId) {
-
     var len = treeTable.length;
     for (var idx=0; idx<len; idx++) {
-        if (treeTable[idx]['nid'] == targetId) {
+        if (treeTable[idx]['nid'] == targetId.toString()) {
             return treeTable[idx]['id'];
         }
     }
+    return null;
 }
