@@ -5,9 +5,10 @@ var async = require('async');
 var WebGetUtils = require('../../utils/WebGetUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
+var NoteStore = require('../../stores/NoteStore');
 
 var elTree, container;
-var _id, _selectedNode;
+var _id, _selectedNode=null, _selectedNoteId = 0;
 var lastId= 0, preNodeId = 0;
 
 
@@ -164,14 +165,14 @@ function _redundancyCheck(parentNode, noteTitle) {
     else { return false; }
 }
 
-function visibleBtn(_nodeId){
+function blockBtn(_nodeId){
     if(_nodeId == 0) return;
-    $('#btn_mod'+_nodeId).css("visibility","visible");
-    $('#btn_del'+_nodeId).css("visibility","visible");
+    $('#btn_mod'+_nodeId).css("display","inline");
+    $('#btn_del'+_nodeId).css("display","inline");
 }
-function hiddenBtn(_nodeId){
-    $('#btn_mod'+_nodeId).css("visibility","hidden");
-    $('#btn_del'+_nodeId).css("visibility","hidden");
+function noneBtn(_nodeId){
+    $('#btn_mod'+_nodeId).css("display","none");
+    $('#btn_del'+_nodeId).css("display","none");
 }
 
 
@@ -185,7 +186,7 @@ var DirectoryViewer = React.createClass({
         var that = this;
 
         WebGetUtils.getDirectory(function(_data) {
-            var treeData = _data.tree, _selectNoteNodeId= _data.selectNoteNodeId;
+            var treeData = _data.tree;
             _id = _data.count;
 
             $(elTree).tree({
@@ -194,8 +195,8 @@ var DirectoryViewer = React.createClass({
                 dragAndDrop: true,
 
                 onCreateLi: function(node, $li) {
-                    $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="visibility:hidden;"> del </button>');
-                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_delNode" id="btn_del'+ node.id +'" style="display:none;"> del </button>');
+                    $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="display:none;"> mod </button>');
 
                     $('#btn_mod'+lastId).bind( 'click', that.handleTrigger_RenameNode );
                     $('#btn_del'+lastId).bind( 'click', that.handleTrigger_RemoveNode );
@@ -212,16 +213,13 @@ var DirectoryViewer = React.createClass({
             var node = event.node;
 
             if(_selectedNode == node) event.preventDefault();
+
             _selectedNode = node;
-
-            console.log(node);
-
             if (node.type == 'note')
                 DirectoryActionCreator.requestNote(_selectedNode.id);
 
-
-            if (preNodeId != 0) { hiddenBtn(preNodeId); }
-            visibleBtn(node.id);
+            if (preNodeId != 0) { noneBtn(preNodeId); }
+            blockBtn(node.id);
 
             preNodeId = node.id;
 
@@ -234,7 +232,7 @@ var DirectoryViewer = React.createClass({
     },
 
     _treeMoveEvent : function(event) {
-        var treeData, preTreeData=  $(elTree).tree('toJson');
+        var treeData;
 
         if(event.move_info.target_node.type == "note" && event.move_info.position == "inside") { event.preventDefault(); }
         else if(event.move_info.moved_node.id == 0) { event.preventDefault(); }
@@ -242,10 +240,12 @@ var DirectoryViewer = React.createClass({
         else {
             event.move_info.do_move();
             treeData = $(elTree).tree('toJson');
-            console.log(treeData);
-
             DirectoryActionCreator.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
         }
+    },
+
+    _treeInitEvent : function(){
+        this._onChange();
     },
 
     _bindTreeEvent: function() {
@@ -256,13 +256,16 @@ var DirectoryViewer = React.createClass({
 
         $(elTree).bind(
             'tree.move', function(event){ that._treeMoveEvent(event); } );
+
+        $('#tree1').bind(
+            'tree.init',  function(event){ that._treeInitEvent() }  );
     },
 
     /* FOR USER EVENT TRIGGER */
     _addNodeToTree : function(_title, _type){
         var position;
         var node = $(elTree).tree('getSelectedNode');
-        var treeData, preTreeData=  $(elTree).tree('toJson');
+        var treeData;
 
         if (node == false) { node = $(elTree).tree('getNodeById', 0); }
         position = (node.type == 'note')? 'addNodeAfter':'appendNode';
@@ -284,7 +287,7 @@ var DirectoryViewer = React.createClass({
 
     _renameNode : function(_title, _type, _node) {
         var node = _node;
-        var treeData, preTreeData=  $(elTree).tree('toJson');
+        var treeData;
 
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
@@ -299,39 +302,33 @@ var DirectoryViewer = React.createClass({
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
     },
 
-    componentWillUnmount: function(){
-        //irectoryStore.removeTreeChangeListener(this._onChange);
+    _onChange : function(){
+        var selector;
+        console.log(_selectedNoteId);
+
+        if(_selectedNoteId != 0) {
+            selector = $('#btn_mod'+_selectedNoteId);
+            selector.parent().children('span').css('font-weight','normal');
+        }
+
+        _selectedNoteId = NoteStore.getNoteNodeID();
+        selector = $('#btn_mod'+_selectedNoteId);
+        selector.parent().children('span').css('font-weight','800');
     },
 
+    componentWillMount : function(){
+        NoteStore.removeInitListener(this._onChange);
+    },
     componentDidMount: function() {
 
+        NoteStore.addInitListener(this._onChange);
         this._initComponent();
         this._getDataToDB();
         this._bindTreeEvent();
 
-        /*
-        $(elTree).bind(
-            'tree.init',
-            function() {
-                var node = $(elTree).tree('getNodeById', 3);
-
-                console.log(lastId);
-                var select = $('#btn_mod3');
-                select.parents('li').first().attr('class','jqtree_common jqtree-folder jqtree-selected');
-                visibleBtn(node.id);
-                _selectedNode = node;
-                preNodeId = node.id;
-            }
-        );*/
     },
 
     /* FOR HANDLE DIALOG */
-    _onChange: function() {
-        //var tree = DirectoryStore.getTree();
-        //$(elTree).tree('loadData', tree);
-        //var node = $(elTree).tree('getNodeById', _selectedNode.id);
-        //$(elTree).tree('addToSelection', node);
-    },
     _onClose: function() {
         this.d.close();
     },
