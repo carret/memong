@@ -62,6 +62,7 @@ var getSelectNoteWithMemo = function(req, res) {
                                 var arr = new Array();
                                 for (var idx=0, len=memos.length; idx<len; idx++) {
                                     var obj = {
+                                        _id: memos[idx]._id,
                                         date: memos[idx].date,
                                         title: memos[idx].title,
                                         text: memos[idx].text,
@@ -122,6 +123,7 @@ var getSelectNoteWithMemo = function(req, res) {
                                 var arr = new Array();
                                 for (var idx=0, len=memos.length; idx<len; idx++) {
                                     var obj = {
+                                        _id: memos[idx]._id,
                                         date: memos[idx].date,
                                         title: memos[idx].title,
                                         text: memos[idx].text,
@@ -157,17 +159,25 @@ var saveMemo = function(req, res) {
                 {$set: {memos: memos}},
                 {upsert: true},
                 function(err, result) {
-                    if (err) {
-                        console.log(err);
-                        res.send(err);
-                    }
+                    if (err) { res.send(err); }
                     else {
-                        //next();
+                        callback(null);
+                    }
+                }
+            )
+        },
+        function(callback) {
+            Note.findOne(
+                {_id: mongoose.Types.ObjectId(noteId)},
+                function(err, result) {
+                    if (err) { res.send(err); }
+                    else {
                         callback(null, result.memos);
                     }
                 }
             )
-        }, function(memos, callback) {
+        },
+        function(memos, callback) {
             callback();
         }
     ], function() {

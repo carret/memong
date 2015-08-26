@@ -35,6 +35,7 @@ function selectNote(_nodeId) {
     if (!needToWait && needToLoadNoteAndMemos.isTrue == true) {
         WebGetUtils.getNoteWithMemos(cookie.load('token'), needToLoadNoteAndMemos.nodeId);
         needToLoadNoteAndMemos.isTrue = false;
+        NoteLoader.emitAutoSaveComplete();
     }
 }
 
