@@ -121,6 +121,18 @@ html, body {
                 text-decoration: none;
 
                 font-weight: 300;
+
+                cursor: pointer;
+
+                will-change: opacity;
+
+                -webkit-transition: opacity .3s ease;
+                -moz-transition: opacity .3s ease;
+                -ms-transition: opacity .3s ease;
+                -o-transition: opacity .3s ease;
+                transition: opacity .3s ease;
+
+                &:hover { opacity: .7; }
             }
         }
 
@@ -259,6 +271,8 @@ html, body {
                 display: -ms-flexbox;
                 display: flex;
 
+                text-align: center;
+
                 button.login {
                     min-width: 107px;
                     outline: none;
@@ -269,6 +283,8 @@ html, body {
 
                     color: #FFF;
                     background-color: #FFB300;
+
+                    text-align: center;
 
                     -webkit-box-sizing: border-box;
                     -moz-box-sizing: border-box;
@@ -331,17 +347,6 @@ html, body {
 
                     cursor: pointer;
 
-                    display: -webkit-box;
-                    display: -webkit-flex;
-                    display: -moz-box;
-                    display: -ms-flexbox;
-                    display: flex;
-
-                    -webkit-box-pack: center;
-                    -webkit-justify-content: center;
-                    -moz-box-pack: center;
-                    -ms-flex-pack: center;
-                    justify-content: center;
 
                     &:hover { background-color: #FFA000; }
 
@@ -357,6 +362,7 @@ html, body {
                         display: inline-block;
                         font-size: 1rem;
                         line-height: 1.71428571rem;
+                        font-weight: 300;
 
                         padding: 0 1rem;
                     }
@@ -464,6 +470,8 @@ html, body {
                     display: -ms-flexbox;
                     display: flex;
 
+                    margin: .25rem;
+
                     padding: .5rem;
                     padding-bottom: 0;
 
@@ -498,6 +506,14 @@ html, body {
 
                         &:hover { background-color: @color-teal-500; }
                     }
+                }
+
+                .content {
+                    -webkit-box-flex: 1;
+                    -webkit-flex: 1;
+                    -moz-box-flex: 1;
+                    -ms-flex: 1;
+                    flex: 1;
                 }
             }
 
@@ -727,10 +743,11 @@ html, body {
                 .auto-saver {
                     display: inline-block;
                     font-size: 1em;
-                    line-height: 1.3rem;
+                    line-height: 1.4rem;
                     height: 1.3rem;
                     font-weight: 100;
                     margin-left: 1rem;
+                    vertical-align: bottom;
                 }
 
                 &:after {
@@ -768,6 +785,14 @@ html, body {
 
                     margin-right: .75rem;
                     z-index: 99999;
+                }
+
+                .date {
+                    float: right;
+
+                    span {
+                        color: @color-grey-400;
+                    }
                 }
             }
 
@@ -887,8 +912,6 @@ html, body {
                     flex-direction: column;
 
                     .complete-memo-inner {
-                        padding: 1.8rem 0;
-
                         position: relative;
 
                         will-change: opacity;
@@ -992,6 +1015,8 @@ html, body {
                     margin: 1.8rem 0;
                     border: 1px solid @color-grey-300;
 
+                    padding: .9rem;
+
                     will-change: opacity;
 
                     -webkit-transition: opacity .2s ease;
@@ -1001,6 +1026,10 @@ html, body {
                     transition: opacity .2s ease;
 
                     cursor: pointer;
+
+                    p {
+                        margin: 0;
+                    }
 
                     &:hover {
                         opacity: .8;
@@ -1420,10 +1449,30 @@ html, body {
                 display: -ms-flexbox;
                 display: flex;
 
-                margin: 2rem 0;
+                margin: 4rem 0;
 
+                img {
+                    width: 200px;
+                    height: 200px;
+                }
+
+                img.img1 {
+                    margin-right: 5rem;
+                }
+                img.img2 { margin-left: 5rem; }
+                img.img3 {
+                    width: 250px;
+                    height: 250px;
+                    margin-right: 5rem;
+                }
 
                 .main {
+                    -webkit-flex: 1;
+                    -moz-box-flex: 1;
+                    -ms-flex: 1;
+                    -o-flex: 1;
+                    flex: 1;
+
                     display: -webkit-box;
                     display: -webkit-flex;
                     display: -moz-box;
@@ -1437,8 +1486,6 @@ html, body {
                     -moz-box-direction: normal;
                     -ms-flex-direction: column;
                     flex-direction: column;
-
-                    padding: 0 2rem;
 
                     .header {
                         font-size: 2.25em;
@@ -1720,6 +1767,10 @@ hr {
     transition: width .3s linear; }
 .progress .indeterminate {
     background-color: #FFD54F;
+
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(97,97,97,1);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(97,97,97,1);
+    box-shadow: 0px 2px 5px 0px rgba(97,97,97,1);
 }
 .progress .indeterminate:before {
     content: '';
@@ -1821,7 +1872,7 @@ button.btn_modNode {
     &:hover { opacity: .7; }
 
     i {
-        color: @color-grey-600;
+        color: @color-grey-500;
         font-size: 1.3em;
         line-height: 1;
     }
@@ -1849,7 +1900,7 @@ button.btn_delNode {
     &:hover { opacity: .7; }
 
     i {
-        color: @color-grey-600;
+        color: @color-grey-500;
         font-size: 1.3em;
         line-height: 1;
     }
@@ -1864,7 +1915,18 @@ ul.jqtree-tree {
     list-style: none outside;
     margin-left: 0;
     margin-bottom: 0;
-    padding: 0 .5rem; }
+    padding: 0 .5rem;
+
+    .node-icon {
+        display: inline-block;
+        i {
+            vertical-align: middle;
+            font-size: 1.5em;
+            line-height: 1;
+            color: @color-grey-600;
+        }
+    }
+}
 ul.jqtree-tree ul.jqtree_common {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1875,7 +1937,7 @@ ul.jqtree-tree ul.jqtree_common {
     padding: 0;
     margin: 0;
 
-    padding-left: .5rem;
+    padding-left: .75rem;
 
     display: block; }
 ul.jqtree-tree li.jqtree-closed > ul.jqtree_common {
@@ -1885,28 +1947,30 @@ ul.jqtree-tree li.jqtree_common {
     list-style-type: none; }
 ul.jqtree-tree .jqtree-toggler {
     border-bottom: none;
-    color: @color-grey-800;
+    color: @color-grey-700;
     text-decoration: none;
-    padding: 0 0.5em;
+    margin-right: .5rem;
     vertical-align: middle; }
 ul.jqtree-tree .jqtree-toggler:hover {
-    color: @color-grey-900;
+    color: @color-grey-700;
     text-decoration: none; }
 ul.jqtree-tree .jqtree-toggler.jqtree-closed {
     background-position: 0 0; }
 ul.jqtree-tree .jqtree-element {
+    padding: .25rem .5rem;
     cursor: pointer;
     position: relative; }
 ul.jqtree-tree .jqtree-title {
-    color: @color-grey-800;
+    color: @color-grey-700;
     vertical-align: middle;
-    padding-left: .5rem; }
+    padding-left: .25rem;
+}
 ul.jqtree-tree .jqtree-title.jqtree-title-folder {
-    padding-left: 0; }
+    padding-left: .25rem; }
 ul.jqtree-tree li.jqtree-folder {
-    padding-bottom: .25rem; }
+    padding-bottom: 0; }
 ul.jqtree-tree li.jqtree-folder.jqtree-closed {
-    padding-bottom: .15rem; }
+    padding-bottom: 0; }
 ul.jqtree-tree li.jqtree-ghost {
     position: relative;
     z-index: 10;

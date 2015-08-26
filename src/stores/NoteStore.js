@@ -294,6 +294,10 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return selectNote.title;
     },
 
+    getNoteDate: function() {
+        return selectNote.date;
+    },
+
     emitChange: function() {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },

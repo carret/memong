@@ -124,6 +124,16 @@ var DirectoryViewer = React.createClass({
                 dragAndDrop: true,
 
                 onCreateLi: function(node, $li) {
+                    switch(node.type) {
+                        case 'folder':
+                            $li.find('.jqtree-title').before('<span class="node-icon"><i class="material-icons">&#xE2C7;</i></span>');
+                            break;
+
+                        case 'note':
+                            $li.find('.jqtree-title').before('<span class="node-icon"><i class="material-icons">&#xE873;</i></span>');
+                            break;
+                    }
+
                     $li.find('.jqtree-title').after('<button class="btn_delNode" id="btn_del'+ node.id +'" style="display:none;">' + '<i class="material-icons">&#xE872;</i></button>');
                     $li.find('.jqtree-title').after('<button class="btn_modNode" id="btn_mod'+ node.id +'" style="display:none;">' + '<i class="material-icons">&#xE3C9;</i></button>');
 
@@ -153,7 +163,6 @@ var DirectoryViewer = React.createClass({
             _selectedNode = node;
 
             if (node.type == 'note') {
-                console.log("ya");
                 DirectoryActionCreator.requestNote(_selectedNode.id);
             }
 

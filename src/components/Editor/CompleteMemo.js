@@ -38,7 +38,6 @@ var CompleteMemo = React.createClass({
             <div ref="_completeMemo" className="complete-memo" >
                 <div className="complete-memo-inner" onClick={this.startEditMemo}>
                     <div dangerouslySetInnerHTML={{__html: context}} />
-                    <span className="date">{date}</span>
                 </div>
                 {toolbar}
             </div>

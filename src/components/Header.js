@@ -45,7 +45,7 @@ var Header = React.createClass({
                     <div id="logo-icon">
                         <img src="./logo.svg" />
                     </div>
-                    <a id="logo">memong</a>
+                    <a id="logo" href='/'>memong</a>
                 </div>
                 <div className="header-right" >
                     {this.props.isLogin ? <MemoSearcher /> : <div></div>}

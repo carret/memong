@@ -121,15 +121,29 @@ exports.doRoutes = function(app) {
                 }
             },
             function (userId, newNoteId, callback) {
+                User.findOne(
+                    {_id: mongoose.Types.ObjectId(userId)},
+                    function (err, result) {
+                        if (err) {
+                            console.log(err);
+                            res.send(err);
+                        }
+                        else {
+                            callback(null, userId, result.username, newNoteId);
+                        }
+                    }
+                )
+            },
+            function (userId, username, newNoteId, callback) {
+                _treeProto[0].label = username;
                 var treeProto = JSON.stringify(_treeProto);
-
                 var treeTableProto = [
                     {id: 0, nid: null},
                     {id: 1, nid: null},
                     {id: 2, nid: mongoose.Types.ObjectId(newNoteId)}
                 ];
 
-                User.findOneAndUpdate(
+                User.update(
                     {_id: mongoose.Types.ObjectId(userId)},
                     {$set: {selectNoteId: mongoose.Types.ObjectId(newNoteId), tree: treeProto, treeTable: treeTableProto}},
                     {upsert: true, 'new': true},
@@ -139,7 +153,7 @@ exports.doRoutes = function(app) {
                             res.send(err);
                         }
                         else {
-                            console.log( result);
+                            console.log("New User", result);
                             callback();
                         }
                     }

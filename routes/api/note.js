@@ -61,7 +61,8 @@ var getSelectNoteWithMemo = function(req, res) {
                             var _note = {
                                 title: result.title,
                                 idAttribute: result._id,
-                                nodeId: selectNodeId
+                                nodeId: selectNodeId,
+                                date: result.date
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
@@ -133,7 +134,8 @@ var getSelectNoteWithMemo = function(req, res) {
                             var _note = {
                                 title: result.title,
                                 idAttribute: result._id,
-                                nodeId: nodeId
+                                nodeId: nodeId,
+                                date: result.date
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
