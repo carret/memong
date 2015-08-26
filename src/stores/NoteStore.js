@@ -298,6 +298,10 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return selectNote.date;
     },
 
+    emitInit: function() {
+        this.emit('init');
+    },
+
     emitChange: function() {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     },
@@ -308,6 +312,14 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     emitFocus: function() {
         this.emit('focus');
+    },
+
+    addInitListener: function(callback) {
+        this.on('init', callback);
+    },
+
+    removeInitListener: function(callback) {
+        this.removeListener('init', callback);
     },
 
     addFocusListener: function(callback) {
@@ -344,6 +356,7 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            NoteStore.emitInit();
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:

@@ -31,9 +31,9 @@ var WebGetUtils = {
 
     getDirectory: function(callback) {
         request
-            .get(Constants.API.POST_ROAD_DIRECTORY)
+            .get(Constants.API.GET_LOAD_DIRECTORY)
             .query({username: cookie.load('token') })
-            .set('API-Key', Constants.API.POST_ROAD_DIRECTORY)
+            .set('API-Key', Constants.API.GET_LOAD_DIRECTORY)
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {

@@ -13,12 +13,11 @@ var pkgInfo = require('../../package');
 
 
 exports.doRoutes = function(app) {
-    app.get(Constants.API.POST_ROAD_DIRECTORY, loadTree);
+    app.get(Constants.API.GET_LOAD_DIRECTORY, loadTree);
     app.post(Constants.API.POST_DIRECTORY, postDir);
 };
 
 var postDir = function(req ,res){
-
     var userToken =  req.body.token;
     var _action = req.body.action;
 
@@ -94,7 +93,6 @@ var addNoteToTree = function(_username, _tree, _noteTitle, res) {
                     }, {upsert: true}, function (err, user) {
                         if (err)
                             callback(err);
-                        console.log(savedNote._id);
                         callback(null, savedNote._id);
                     });
 
@@ -115,10 +113,8 @@ var addNoteToTree = function(_username, _tree, _noteTitle, res) {
         function (err, _noteId) {
             if (err) {
                 if(_noteId == false) res.send('Unregistered User');
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
+                else res.send('error');
+
             }
             else res.send({noteId: _noteId});
         });
@@ -211,10 +207,8 @@ var renameNoteToTree = function(_username, _tree, _newTitle, _id, res) {
         function (err, _noteId) {
             if (err) {
                 if(_noteId != null) res.send(_noteId);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
+                else  res.send('error');
+
             }
             else res.send({noteId: _noteId});
         });
@@ -240,14 +234,14 @@ var renameFolder_movingTreeToTree = function(_username, _tree, res) {
                     tree : _tree
                 }, {upsert: true}, function (err, user) {
                     if (err) callback(err);
-                    else callback(null);
+                    else callback(null,user);
                 });
             }
         ],
 
-        function (err) {
+        function (err,user) {
             if (err) res.send('error');
-            else res.send('success');
+            else res.send({noteId: user.selectNoteId});
         });
 };
 
@@ -270,7 +264,6 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
                     if(_children[i].type == "note") {
                         var nid = _treeTable[(_children[i].id)].nid;
                         _treeTable[(_children[i].id)].nid = null;
-
                         Note.remove({_id: nid}, function (err) {
                             if (err) callback(err);
                             else if(i == _children.length) callback(null, _treeTable);
@@ -288,6 +281,7 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
                     }
                 if(i==_treeTable.length) { _noteId = null; }
 
+
                 User.update({username: _username},  {
                     tree : _tree,
                     treeTable : _treeTable,
@@ -301,10 +295,8 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
         function (err, _noteId) {
             if (err) {
                 if(_noteId != null) res.send(_noteId);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
+                else  res.send('error');
+
             }
             else res.send({noteId: _noteId});
         });
@@ -326,6 +318,7 @@ var deleteNoteToTree = function(_username, _tree, _id, res) {
 
                         Note.findOne({ _id : noteId}, function( err, validNote) {
                             if (err) { callback(err); }
+
                             if (validNote === null) callback(true, 'unregistered Note');
                             else  callback(null,noteId,validUser.treeTable);
                         });
@@ -362,10 +355,7 @@ var deleteNoteToTree = function(_username, _tree, _id, res) {
         function (err, _noteId) {
             if (err) {
                 if(_noteId != null) res.send(_noteId);
-                else {
-                    console.log(err);
-                    res.send('error');
-                }
+                else  res.send('error');
             }
             else res.send({noteId: _noteId});
         });
@@ -403,6 +393,7 @@ var loadTree = function(req ,res){
 
 function _findNodeId(treeTable, targetId) {
     var len = treeTable.length;
+
     for (var idx=0; idx<len; idx++) {
         if (treeTable[idx]['nid'] == targetId.toString()) {
             return treeTable[idx]['id'];
