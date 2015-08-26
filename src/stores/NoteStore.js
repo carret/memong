@@ -305,10 +305,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-request');
     },
 
-    emitAutoSaveReceive: function() {
-        this.emit('auto-save-receive');
-    },
-
     emitFocus: function() {
         this.emit('focus');
     },
@@ -335,14 +331,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeAutoSaveRequestListener: function(callback) {
         this.removeListener('auto-save-request', callback);
-    },
-
-    addAutoSaveReceiveListener: function(callback) {
-        this.on('auto-save-receive', callback);
-    },
-
-    removeAutoSaveReceiveListener: function(callback) {
-        this.removeListener('auto-save-receive', callback);
     }
 });
 
@@ -359,10 +347,6 @@ AppDispatcher.register(function(payload) {
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
-            break;
-
-        case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
-            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.ADD_MEMO:
@@ -402,14 +386,11 @@ AppDispatcher.register(function(payload) {
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
             break;
-
-        default:
-            return true;
     }
 
     if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE
         && action.actionType != Constants.AutoSaveActionTypes.REQUEST_SAVE
-        && action.actionType != Constants.DirectoryAction.SELECT_NOTE) {
+        && action.actionType != Constants.DirectoryAction) {
         NoteStore.emitChange();
     }
 

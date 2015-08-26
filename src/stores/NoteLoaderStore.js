@@ -2,6 +2,9 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 var WebGetUtils = require('../utils/WebGetUtils');
 
+var NoteStore = require('./NoteStore');
+
+var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var cookie = require('react-cookie');
 
@@ -35,33 +38,52 @@ function selectNote(_nodeId) {
     }
 }
 
-var NoteLoader = {};
+var NoteLoader = _.extend({}, EventEmitter.prototype, {
+    emitWait: function() {
+        this.emit('wait');
+    },
+
+    emitAutoSaveComplete: function() {
+        this.emit('auto-save-receive');
+    },
+
+    addWait: function(callback) {
+        this.on('wait', callback);
+    },
+
+    removeWait: function(callback) {
+        this.removeListener('wait', callback);
+    },
+
+    addAutoSaveComplete: function(callback) {
+        this.on('auto-save-receive', callback);
+    },
+
+    removeAutoSaveComplete: function(callback) {
+        this.removeListener('auto-save-receive', callback);
+    }
+});
+
+NoteStore.addAutoSaveRequestListener(wait);
 
 
-NoteLoader.dispatcherToken = AppDispatcher.register(function(payload) {
+AppDispatcher.register(function(payload) {
     var action = payload.action;
     console.log(action);
 
     switch(action.actionType) {
-        case Constants.AutoSaveActionTypes.REQUEST_SAVE:
-            console.log("NoteLoader REQUEST_SAVE");
-            wait();
-            break;
-
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
             console.log("NoteLoader RECEIVE_SAVE");
             autoSaveComplete();
+            NoteLoader.emitAutoSaveComplete();
             break;
 
         case Constants.DirectoryAction.SELECT_NOTE:
             console.log("NoteLoader SELECT_NOTE");
+            NoteLoader.emitWait();
             selectNote(action.nodeId);
             break;
-
-        default:
-            return true;
     }
-    return true;
 });
 
 module.exports = NoteLoader;

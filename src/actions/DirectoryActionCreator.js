@@ -62,7 +62,7 @@ var DirectoryActionCreator = {
             actionType: Constants.DirectoryAction.SELECT_NOTE,
             nodeId: _nodeId
         });
-        WebGetUtils.getNoteWithMemos(cookie.load('token'), _nodeId);
+        //WebGetUtils.getNoteWithMemos(cookie.load('token'), _nodeId);
     }
 };
 

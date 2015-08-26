@@ -40,6 +40,7 @@ var Header = React.createClass({
     render: function() {
         return (
             <div id="header">
+                <NoteLoader />
                 <div className="header-left">
                     <div id="logo-icon">
                         <img src="./logo.svg" />
@@ -50,7 +51,6 @@ var Header = React.createClass({
                     {this.props.isLogin ? <MemoSearcher /> : <div></div>}
                     {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
-                <NoteLoader />
             </div>
         );
     }
