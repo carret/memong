@@ -242,6 +242,7 @@ var DirectoryViewer = React.createClass({
             treeData = $(elTree).tree('toJson');
             DirectoryActionCreator.moveNode_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE);
         }
+
     },
 
     _treeInitEvent : function(){
@@ -282,7 +283,8 @@ var DirectoryViewer = React.createClass({
         treeData = $(elTree).tree('toJson');
 
         if(_type == 'note') { DirectoryActionCreator.addNote_updateDB(treeData, Constants.DirectoryAPIType.ADD_NOTE, _title); }
-        else { DirectoryActionCreator.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER); }
+        else { DirectoryActionCreator.addFolder_updateDB(treeData, Constants.DirectoryAPIType.ADD_FOLDER);
+            this._onChange();}
     },
 
     _renameNode : function(_title, _type, _node) {
@@ -292,8 +294,8 @@ var DirectoryViewer = React.createClass({
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
 
-        if (node.type == 'note') { DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id); }
-        else { DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title); }
+        if (node.type == 'note') DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id);
+        else  DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title);
     },
 
     _deleteNode : function(treeData, node, childrenOfFolder) {

@@ -56,6 +56,7 @@ var WebPostUtils = {
                     console.log("res", res);
                     if (res.body != null) {
                         if(res.body.hasOwnProperty('noteId')) {
+                            console.log('¹ß»ý');
                             //getSelectNote
                             WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
                         }

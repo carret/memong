@@ -223,6 +223,7 @@ var renameNoteToTree = function(_username, _tree, _newTitle, _id, res) {
 };
 
 var renameFolder_movingTreeToTree = function(_username, _tree, res) {
+    console.log('enter');
     async.waterfall(
         [
             function (callback)
@@ -241,14 +242,15 @@ var renameFolder_movingTreeToTree = function(_username, _tree, res) {
                     tree : _tree
                 }, {upsert: true}, function (err, user) {
                     if (err) callback(err);
-                    else callback(null);
+                    else callback(null,user);
                 });
             }
         ],
 
-        function (err) {
+        function (err,user) {
+            console.log( user.selectNoteId);
             if (err) res.send('error');
-            else res.send('success');
+            else res.send({noteId: user.selectNoteId});
         });
 };
 
