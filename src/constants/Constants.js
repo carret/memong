@@ -12,7 +12,7 @@ module.exports = {
         GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory",
-        POST_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
+        GET_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
         // 나머지...
     },
 

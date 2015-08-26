@@ -60918,7 +60918,7 @@ module.exports = AutoSaver;
 var React = require('react');
 var jqtree = require('jqtree');
 var Dialog = require('rc-dialog');
-
+var async = require('async');
 var WebGetUtils = require('../../utils/WebGetUtils');
 var Constants = require('../../constants/Constants');
 var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
@@ -60926,8 +60926,6 @@ var DirectoryActionCreator = require('../../actions/DirectoryActionCreator');
 var elTree, container;
 var _id, _selectedNode;
 var lastId= 0, preNodeId = 0;
-
-var async = require('async');
 
 
 function showDialog(content, props) {
@@ -60948,6 +60946,51 @@ function showDialog(content, props) {
     dialog.show();
     return dialog;
 }
+
+var DialogContentOfRemove = React.createClass({displayName: "DialogContentOfRemove",
+    getInitialState: function() {
+        return {value: ''};
+    },
+
+    componentDidMount: function() {
+        $(React.findDOMNode(this.refs._dialog)).on("keydown", function(event) {
+            if (event.keyCode == 13) {
+                this.props.actionItem();
+            }
+        });
+    },
+
+    _removeNode: function() {
+
+        var result = _noteCheck();
+        if (result.value == true) {
+            this.props.actionItem(result.tree, result.node, result.childrenOfFolder);
+            this.props.handleClose();
+        }
+        else
+        {
+            var redundancy = document.getElementById('remove-alert');
+            redundancy.style.display = "block";
+        }
+    },
+
+    handleChange: function(event) {
+        this.setState({value: event.target.value});
+    },
+
+    render : function() {
+        return (
+            React.createElement("div", {ref: "_dialog"}, 
+                React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "정말 삭제하시겠습니까?")), 
+                React.createElement("span", {id: "remove-alert", style: {"color":"red",  "display":"none"}}, "! 마지막 노트는 삭제할 수 없습니다."), 
+                React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
+                    React.createElement("button", {onClick: this._removeNode}, "확인"), 
+                    React.createElement("button", {onClick: this.props.handleClose}, "취소")
+                )
+            )
+        );
+    }
+});
 
 var DialogContent = React.createClass({displayName: "DialogContent",
     getInitialState: function() {
@@ -60973,7 +61016,10 @@ var DialogContent = React.createClass({displayName: "DialogContent",
 
         var val = _redundancyCheck(nodeParent, title);
 
-        if(val== false) { console.log('중복!'); }
+        if(val== false) {
+            var redundancy = document.getElementById('redundancy-alert');
+            redundancy.style.display = "block";
+        }
         else {
             this.props.actionItem(title, type, node);
             this.props.handleClose();
@@ -60987,8 +61033,9 @@ var DialogContent = React.createClass({displayName: "DialogContent",
     render : function() {
         return (
             React.createElement("div", {ref: "_dialog"}, 
-                React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "Check for duplicated TITLE")), 
+                React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "타이틀 중복 확인")), 
                 React.createElement("input", {id: "title", type: "text", onChange: this.handleChange, value: this.state.value}), 
+                React.createElement("span", {id: "redundancy-alert", style: {"color":"red",  "display":"none"}}, "! 중복 타이틀입니다."), 
                 React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
                     React.createElement("button", {onClick: this._IsRedundancy}, "확인"), 
                     React.createElement("button", {onClick: this.props.handleClose}, "취소")
@@ -60998,6 +61045,30 @@ var DialogContent = React.createClass({displayName: "DialogContent",
     }
 });
 
+function _noteCheck(){
+
+    var _node =  $(elTree).tree('getSelectedNode');
+    var _treeData, _preTreeData = $(elTree).tree('toJson');
+    var _childrenOfFolder = _node.getData();
+    $(elTree).tree('removeNode', _node);
+    _treeData = $(elTree).tree('toJson');
+
+    var stringData  = _treeData.toString();
+
+    if(stringData.indexOf('note') == -1)  {
+        $(elTree).tree('loadData', JSON.parse(_preTreeData));
+        console.log('마지막 노트');
+        return {value : false};
+    }
+    else{
+        return{
+            value : true,
+            node :  _node,
+            childrenOfFolder: _childrenOfFolder,
+            tree : _treeData
+        };
+    }
+}
 
 function _redundancyCheck(parentNode, noteTitle) {
     var i;
@@ -61021,7 +61092,6 @@ function hiddenBtn(_nodeId){
 }
 
 
-
 var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     /* FOR INIT COMPONENT*/
     _initComponent : function(){
@@ -61032,7 +61102,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         var that = this;
 
         WebGetUtils.getDirectory(function(_data) {
-            var treeData = _data.tree;
+            var treeData = _data.tree, _selectNoteNodeId= _data.selectNoteNodeId;
             _id = _data.count;
 
             $(elTree).tree({
@@ -61045,20 +61115,11 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                     $li.find('.jqtree-title').after('<button className="btn_modNode" id="btn_mod'+ node.id +'" style="visibility:hidden;"> mod </button>');
 
                     $('#btn_mod'+lastId).bind( 'click', that.handleTrigger_RenameNode );
-                    $('#btn_del'+lastId).bind( 'click', that._deleteNode );
+                    $('#btn_del'+lastId).bind( 'click', that.handleTrigger_RemoveNode );
 
                     lastId = node.id;
                 }
             });
-
-            $(elTree).bind(
-                'tree.init',
-                function() {
-                    var node = $(elTree).tree('getNodeById', _data.selectNoteNodeId);
-                    $(elTree).tree('addToSelection', node);
-                    _selectedNode = node;
-                }
-            );
         });
     },
 
@@ -61066,12 +61127,15 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     _treeClickEvent : function(event){
         if (event.node) {
             var node = event.node;
+
+            if(_selectedNode == node) event.preventDefault();
             _selectedNode = node;
 
-            console.log(_selectedNode);
-            if (node.type == 'note') {
+            console.log(node);
+
+            if (node.type == 'note')
                 DirectoryActionCreator.requestNote(_selectedNode.id);
-            }
+
 
             if (preNodeId != 0) { hiddenBtn(preNodeId); }
             visibleBtn(node.id);
@@ -61080,7 +61144,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
 
             if (lastId != 0) {
                 $('#btn_mod'+lastId).bind('click', this.handleTrigger_RenameNode );
-                $('#btn_del'+lastId).bind('click', this._deleteNode );
+                $('#btn_del'+lastId).bind('click', this.handleTrigger_RemoveNode );
                 lastId = 0;
             }
         }
@@ -61146,15 +61210,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         else { DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title); }
     },
 
-    _deleteNode : function() {
-        var node = $(elTree).tree('getSelectedNode');
-        var treeData, preTreeData = $(elTree).tree('toJson');
-        var childrenOfFolder = node.getData();
-
-        $(elTree).tree('removeNode', node);
-        treeData = $(elTree).tree('toJson');
-
-        console.log(childrenOfFolder);
+    _deleteNode : function(treeData, node, childrenOfFolder) {
 
         if(node.type=='note') { DirectoryActionCreator.deleteNote_updateDB(treeData, Constants.DirectoryAPIType.DELETE_NOTE, node.id); }
         else { DirectoryActionCreator.deleteFolder_updateDB(treeData, Constants.DirectoryAPIType.DELETE_FOLDER, childrenOfFolder); }
@@ -61165,11 +61221,25 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     },
 
     componentDidMount: function() {
-       // DirectoryStore.addTreeChangeListener(this._onChange);
 
         this._initComponent();
         this._getDataToDB();
         this._bindTreeEvent();
+
+        /*
+        $(elTree).bind(
+            'tree.init',
+            function() {
+                var node = $(elTree).tree('getNodeById', 3);
+
+                console.log(lastId);
+                var select = $('#btn_mod3');
+                select.parents('li').first().attr('class','jqtree_common jqtree-folder jqtree-selected');
+                visibleBtn(node.id);
+                _selectedNode = node;
+                preNodeId = node.id;
+            }
+        );*/
     },
 
     /* FOR HANDLE DIALOG */
@@ -61206,7 +61276,18 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     handleTrigger_RenameNode: function () {
 
         this.d = showDialog(React.createElement(DialogContent, {actionItem: this._renameNode, handleClose: this._onClose, selectedNode: _selectedNode, type: "rename"}),{
-            title: React.createElement("p", {className: "redundancyCheckDialog-title"}, "Title 변경"),
+            title: React.createElement("p", {className: "redundancyCheckDialog-title"}, "타이틀 변경"),
+            animation: 'zoom',
+            maskAnimation: 'fade',
+            onBeforeClose: this.beforeClose,
+            style: {width: 300}
+        });
+    },
+
+    handleTrigger_RemoveNode: function () {
+
+        this.d = showDialog(React.createElement(DialogContentOfRemove, {actionItem: this._deleteNode, handleClose: this._onClose, selectedNode: _selectedNode, type: "remove"}),{
+            title: React.createElement("p", {className: "confirmDialog-title"}, "아이템 삭제"),
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -62343,7 +62424,7 @@ module.exports = {
         GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory",
-        POST_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
+        GET_ROAD_DIRECTORY: APIRoot + "/loadDirectory"
         // 나머지...
     },
 
@@ -62962,12 +63043,13 @@ var WebGetUtils = {
 
     getDirectory: function(callback) {
         request
-            .get(Constants.API.POST_ROAD_DIRECTORY)
+            .get(Constants.API.GET_ROAD_DIRECTORY)
             .query({username: cookie.load('token') })
             .set('API-Key', Constants.API.POST_ROAD_DIRECTORY)
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
+                    console.log(res.body);
                     ServerReceiveActionCreator.receiveTree(res.body.tree);
                     callback(res.body);
                 }

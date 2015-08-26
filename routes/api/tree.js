@@ -13,7 +13,7 @@ var pkgInfo = require('../../package');
 
 
 exports.doRoutes = function(app) {
-    app.get(Constants.API.POST_ROAD_DIRECTORY, loadTree);
+    app.get(Constants.API.GET_ROAD_DIRECTORY, loadTree);
     app.post(Constants.API.POST_DIRECTORY, postDir);
 };
 
@@ -272,7 +272,6 @@ var deleteFolderToTree = function(_username, _tree, _children, res) {
                     if(_children[i].type == "note") {
                         var nid = _treeTable[(_children[i].id)].nid;
                         _treeTable[(_children[i].id)].nid = null;
-
                         Note.remove({_id: nid}, function (err) {
                             if (err) callback(err);
                             else if(i == _children.length) callback(null, _treeTable);
@@ -414,9 +413,11 @@ var loadTree = function(req ,res){
 function _findNodeId(treeTable, targetId) {
 
     var len = treeTable.length;
+
     for (var idx=0; idx<len; idx++) {
-        if (treeTable[idx]['nid'] == targetId) {
+        if (treeTable[idx]['nid'] == targetId.toString()) {
             return treeTable[idx]['id'];
         }
     }
+    return null;
 }
