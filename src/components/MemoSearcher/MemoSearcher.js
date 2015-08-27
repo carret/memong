@@ -34,23 +34,24 @@ var AutoInput = React.createClass({
     getSuggestion:function(input, callback) {
         word = input;
         callback2 = callback;
-        WebGetUtils.getIndexingTable(userName, input);
     },
     _onChange : function() {
-        var result = getIndexingTable();
-        var requestDelay = 50 + Math.floor(300 * Math.random());
-        const escapedInput = utils.escapeRegexCharacters(word.trim());
-        const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
-        var suggestions = result.filter(function (memo) {
-            return suburbMatchRegex.test(memo.title,  decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
+        if ( word != null ) {
+            var result = getIndexingTable();
+            var requestDelay = 50 + Math.floor(300 * Math.random());
+            const escapedInput = utils.escapeRegexCharacters(word.trim());
+            const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
+            var suggestions = result.filter(function (memo) {
+                return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
 
-        }).sort(function (suburbObj1, suburbObj2) {
-            //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
-            //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
-        });
-        setTimeout(function() {
-            callback2(null, suggestions), requestDelay;
-        });
+            }).sort(function (suburbObj1, suburbObj2) {
+                //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
+                //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
+            });
+            setTimeout(function () {
+                callback2(null, suggestions), requestDelay;
+            });
+        }
     },
     renderSuggestion : function(suggestionObj, input) {
         return (
