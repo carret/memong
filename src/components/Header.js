@@ -40,17 +40,17 @@ var Header = React.createClass({
     render: function() {
         return (
             <div id="header">
+                <NoteLoader />
                 <div className="header-left">
                     <div id="logo-icon">
                         <img src="./logo.svg" />
                     </div>
-                    <a id="logo">memong</a>
+                    <a id="logo" href='/'>memong</a>
                 </div>
                 <div className="header-right" >
                     {this.props.isLogin ? <MemoSearcher /> : <div></div>}
                     {this.props.isLogin ? <Logout /> : <Login />}
                 </div>
-                <NoteLoader />
             </div>
         );
     }

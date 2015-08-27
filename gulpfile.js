@@ -1,13 +1,13 @@
 var gulp = require('gulp');
 var less = require('gulp-less');
-var concatCss = require('gulp-concat-css');
 var minifyCss = require('gulp-minify-css');
 var ejsmin = require('gulp-ejsmin');
+var uglify = require('gulp-uglify');
+var buffer = require('vinyl-buffer');
 
 var browserify = require('browserify');
 var reactify = require('reactify');
 var source = require('vinyl-source-stream');
-
 
 var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync').create();
@@ -24,6 +24,8 @@ gulp.task('build-js', function() {
         .transform(reactify)
         .bundle()
         .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(uglify())
         .pipe(gulp.dest('./build'))
         .pipe(browserSync.stream());
 });
@@ -38,7 +40,6 @@ gulp.task('build-less', function() {
 
 gulp.task('build-views', function() {
     return gulp.src(paths.views)
-        .pipe(ejsmin({removeComment: true}))
         .pipe(gulp.dest('./build/views'))
         .pipe(browserSync.stream());
 });

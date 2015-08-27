@@ -1,13 +1,9 @@
-/**
- * Created by Jaewook on 2015-08-01.
- */
-
 var mongoose = require('mongoose');
 var noteSchema = require('./models/note');
 var userSchema = require('./models/user');
 var indexSchema = require('./models/index');
 
-mongoose.connect('mongodb://localhost:27017/memong'); // �⺻ ������ ��� ��Ʈ�� ���� �� �� �ֽ��ϴ�.
+mongoose.connect('mongodb://localhost:27017/memong');
 
 var db = mongoose.connection;
 

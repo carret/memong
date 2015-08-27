@@ -49,7 +49,7 @@ var DialogContent = React.createClass({
     render : function() {
         return (
             <div ref="_dialog">
-                <div className="memoDeleteDialog-text"><span>정말로 삭제하시겠습니까?</span></div>
+                <div className="memoDeleteDialog-text"><span>정말 삭제하시겠습니까?</span></div>
                 <div className="memoDeleteDialog-btnMenu">
                     <button className="delete-ok" onClick={this._deleteItem} >삭제</button>
                     <button className="delete-cancel" onClick={this.props.handleClose} >취소</button>
@@ -70,7 +70,7 @@ var MemoItem = React.createClass({
 
     handleTrigger: function () {
         this.d = showDialog(<DialogContent deleteItem={this._onDelete} handleClose={this._onClose} />,{
-            title: <p className="memoDeleteDialog-title">메모 삭제</p>,
+            title: <p className="dialog-title">메모 삭제</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,

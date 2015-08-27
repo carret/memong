@@ -39,7 +39,7 @@ var DialogContent = React.createClass({
         return (
             <div id='logoutModel'>
                 <div className="content">
-                    <span>정말로 로그아웃 하시겠습니까?</span>
+                    <span>정말 로그아웃 하시겠습니까?</span>
                 </div>
                 <div className="btn">
                     <a className="logout-ok" href="/logout"><span>로그아웃</span></a>
@@ -50,10 +50,11 @@ var DialogContent = React.createClass({
     }
 });
 
+
 var Logout = React.createClass({
     handleTrigger: function () {
         this.d = showDialog(<DialogContent handleClose={this._onClose}  />,{
-            title: <p id="logoutModelTitle">로그아웃</p>,
+            title: <p className="dialog-title">로그아웃</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,

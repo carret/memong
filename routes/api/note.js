@@ -9,57 +9,30 @@ var mongoose = require('mongoose');
 
 var async = require('async');
 
-
 var jwt = require('jwt-simple');
 var pkgInfo = require('../../package');
 var mecab = require('mecab-ffi');
 
 var userName;
 
+
+
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
 
-    //app.post('/test/addUser', testAddUser);
-    //app.post('/test/addNote', testAddNote);
 };
 
-var testAddNote = function(req, res) {
-    var note = req.body;
-    console.log(note);
-    var newNote = new Note({
-        title: note.title,
-        memos: note["memos"]
-    });
-    newNote.save(function(err, result) {
-        console.log("Note Saved: " + result);
-        res.send(result);
-    });
-};
-
-var testAddUser = function(req, res) {
-    var user = req.body;
-    var newUser = new User({
-        token: user.token,
-        username: user.username,
-        selectNoteId: mongoose.Types.ObjectId(user.selectNoteId),
-        servicetype: user.servicetype
-    });
-    newUser.save(function(err, result) {
-        console.log("User Saved: " + result);
-        res.send(result);
-    })
-};
 
 var getSelectNoteWithMemo = function(req, res) {
-    var userToken = replaceXss(req.query.userToken);
-    var noteId = replaceXss(req.query.noteId);
+    var userToken = _replaceXss(req.query.userToken);
+    var nodeId = _replaceXss(req.query.noteId);
 
     if ( userToken != null ) {
         userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
     }
     //noteID가 null인 경우, selectNote를 불러옴
-    if (noteId == null) {
+    if (nodeId == null) {
         async.waterfall([
             function(next) {
                 //유저 검색 및
@@ -71,25 +44,34 @@ var getSelectNoteWithMemo = function(req, res) {
                             return next("유저가 없습니다.");
                         }
                         else {
-                            next(null, result.selectNoteId);
+                            next(null, result.selectNoteId, result.treeTable);
                         }
                     }
                 });
             },
-            function(selectNoteId, next) {
+            function(selectNoteId, treeTable, next) {
                 Note.findOne({_id: mongoose.Types.ObjectId(selectNoteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
-                        if (result == null) { return next("노트가 없습니다."); }
+                        if (result == null) {
+                            next({
+                                note: null,
+                                memos: null
+                            });
+                        }
                         else {
+                            var selectNodeId = _findNodeId(treeTable, selectNoteId.toString());
                             var _note = {
                                 title: result.title,
-                                idAttribute: result._id
+                                idAttribute: result._id,
+                                nodeId: selectNodeId,
+                                date: result.date
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
                                 for (var idx=0, len=memos.length; idx<len; idx++) {
                                     var obj = {
+                                        _id: memos[idx]._id,
                                         date: memos[idx].date,
                                         title: memos[idx].title,
                                         text: memos[idx].text,
@@ -112,23 +94,57 @@ var getSelectNoteWithMemo = function(req, res) {
             res.send(result);
         });
     }
-    //noteID가 null이 아닌 경우, 해당 NoteID의 노트를 불러옴
+    //noteID가 null이 아닌 경우, 선택된 NoteID의 노트를 불러옴
     else {
         async.waterfall([
-            function (next) {
+            function(next) {
+                User.findOne({username: userName}, function(err, result) {
+                    if (err) { return next(err); }
+                    else {
+                        if (result == null) {
+                            console.log("유저 없음");
+                            return next("유저가 없습니다");
+                        }
+                        else {
+                            var noteId = _findNid(result.treeTable, nodeId);
+                            next(null, noteId, nodeId);
+                        }
+                    }
+                })
+            },
+            function(noteId, nodeId, next) {
+                User.update(
+                    {username: userName},
+                    {selectNoteId: noteId},
+                    function(err, result) {
+                        if (err) { return next(err); }
+                        else {
+                            next(null, noteId, nodeId);
+                        }
+                })
+            },
+            function (noteId, nodeId, next) {
                 Note.findOne({_id: mongoose.Types.ObjectId(noteId)}, function(err, result) {
                     if (err) { return next(err); }
                     else {
-                        if (result == null) { return next("노트가 없습니다."); }
+                        if (result == null) {
+                            next({
+                                note: null,
+                                memos: null
+                            });
+                        }
                         else {
                             var _note = {
                                 title: result.title,
-                                idAttribute: result._id
+                                idAttribute: result._id,
+                                nodeId: nodeId,
+                                date: result.date
                             };
                             var _memos = (function(memos){
                                 var arr = new Array();
                                 for (var idx=0, len=memos.length; idx<len; idx++) {
                                     var obj = {
+                                        _id: memos[idx]._id,
                                         date: memos[idx].date,
                                         title: memos[idx].title,
                                         text: memos[idx].text,
@@ -148,7 +164,6 @@ var getSelectNoteWithMemo = function(req, res) {
                 })
             }
         ], function(result) {
-            //console.log(result);
             res.send(result);
         });
     }
@@ -171,7 +186,8 @@ var saveMemo = function(req, res) {
                     }
                 }
             )
-        }, function(callback) {
+        },
+        function(callback) {
             Note.findOne(
                 {_id: mongoose.Types.ObjectId(noteId)},
                 function(err, result) {
@@ -181,7 +197,8 @@ var saveMemo = function(req, res) {
                     }
                 }
             )
-        }, function(memos, callback) {
+        },
+        function(memos, callback) {
             //console.log(memos);
             Index.remove({username: userName}).exec();
             var search = [];
@@ -204,23 +221,19 @@ var saveMemo = function(req, res) {
                                     callback(null, titleNouns, result);
                             })
                         }, function (contentNouns, titleNouns, callback) {
-                            //console.log('content');
-                            //console.log(contentNouns);
-                            //console.log('title');
-                            //console.log(titleNouns);
                             var result = [];
                             for (var i = 0; i < titleNouns.length; i++) {
                                 var newNoun = {
                                     noun: titleNouns[i].noun,
                                     weight: titleNouns[i].count * 5
-                                }
+                                };
                                 result.push(newNoun);
                             }
                             for (var i = 0; i < contentNouns.length; i++) {
                                 var isSame = false;
                                 for (var j = 0; j < result.length; j++) {
                                     if (result[j].noun == contentNouns[i].noun) {
-                                        result[j].weight += contentNouns[i].count * 3
+                                        result[j].weight += contentNouns[i].count * 3;
                                         isSame = true;
                                         break;
                                     }
@@ -230,7 +243,7 @@ var saveMemo = function(req, res) {
                                     var newNoun = {
                                         noun: contentNouns[i].noun,
                                         weight: contentNouns[i].count * 3
-                                    }
+                                    };
                                     result.push(newNoun);
                                 }
                             }
@@ -271,7 +284,7 @@ var saveMemo = function(req, res) {
 
 
 
-function replaceXss(str){
+function _replaceXss(str){
     if(str == null) {
         return null;
     } else {
@@ -282,4 +295,24 @@ function replaceXss(str){
     }
 
     return str;
+}
+
+function _findNid(treeTable, targetId) {
+    var len = treeTable.length;
+    for (var idx=0; idx<len; idx++) {
+        if (treeTable[idx]['id'] == targetId) {
+            return treeTable[idx]['nid'];
+        }
+    }
+}
+
+function _findNodeId(treeTable, targetId) {
+    var len = treeTable.length;
+    for (var idx=0; idx<len; idx++) {
+        if (treeTable[idx]['nid'] != null) {
+            if (treeTable[idx]['nid'].toString() == targetId) {
+                return treeTable[idx]['id'];
+            }
+        }
+    }
 }

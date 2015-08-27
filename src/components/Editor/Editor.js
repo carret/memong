@@ -36,28 +36,29 @@ var Editor = React.createClass({
 
 
     render: function() {
-        var items = _.map(this.state.memos, function(memo, index) {
-            var type = memo.mtype;
-            switch(type) {
-                case Constants.MemoType.COMPLETE_MEMO :
-                    if (index == this.state.memos.length - 2) {
-                        return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={true}/>;
+        var items;
+            items = _.map(this.state.memos, function(memo, index) {
+                var type = memo.mtype;
+                    switch(type) {
+                        case Constants.MemoType.COMPLETE_MEMO :
+                            if (index == this.state.memos.length - 2) {
+                                return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={true}/>;
+                            }
+                            return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={false} />;
+
+                        case Constants.MemoType.EDIT_MEMO :
+                            if (index == 0) {
+                                return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={true} />;
+                            }
+                            return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={false} />;
+
+                        case Constants.MemoType.NONE_MEMO :
+                            return <NoneMemo memo={memo} key={memo.key}/>;
+
+                        case Constants.MemoType.GLOBAL_EDIT_MEMO :
+                            return <GlobalEditMemo memo={memo} key={memo.key} />;
                     }
-                    return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={false} />;
-
-                case Constants.MemoType.EDIT_MEMO :
-                    if (index == 0) {
-                        return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={true} />;
-                    }
-                    return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={false} />;
-
-                case Constants.MemoType.NONE_MEMO :
-                    return <NoneMemo memo={memo} key={memo.key}/>;
-
-                case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                    return <GlobalEditMemo memo={memo} key={memo.key} />;
-            }
-        }.bind(this));
+                }.bind(this));
 
         return (
             <div id="editor" ref="_editor">{items}</div>
@@ -66,7 +67,6 @@ var Editor = React.createClass({
 
     _onChange: function() {
         this.setState(getMemos()); //Store의 데이터가 변경되었을 시 데이터를 불러온다.
-        //console.log(this.state.memos);
     },
 
     _scrollAndFocusTarget: function(position) {

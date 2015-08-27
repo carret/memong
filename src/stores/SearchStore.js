@@ -1,4 +1,3 @@
-
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
@@ -23,7 +22,7 @@ var SearchStore = _.extend({}, EventEmitter.prototype, {
         this.emit('change'); //데이터가 변경됬을 때, 이벤트를 발생합니다.
     }
 
-})
+});
 
 AppDispatcher.register(function(payload) {
     var action = payload.action;

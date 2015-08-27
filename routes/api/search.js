@@ -8,17 +8,15 @@ exports.doRoutes = function(app) {
 };
 
 
-searchNoteAndMemo = function (req, res) {
+var searchNoteAndMemo = function (req, res) {
     var word = req.query.word;
     var user = req.query.username;
-    console.log (word);
-    console.log(user);
 
-    Index.find({word: { $regex : word }, username:user}, function(err, memos) {
+    Index.find({word: { $regex : word }, username: user}, function(err, memos) {
         if ( err )
             res.send(err);
         else {
-            var result = []
+            var result = [];
             var memoIds = [];
             for ( var i = 0; i < memos.length; i++ ) {
                 if ( memos[i].memos == null )
@@ -28,7 +26,7 @@ searchNoteAndMemo = function (req, res) {
                         title : encodeURI(" " + memos[i].memos[j].memo.title),
                         summary : encodeURI(" " + memos[i].memos[j].memo.summary),
                         memoId : memos[i].memos[j].memo.memoId
-                    }
+                    };
                     if ( memoIds.indexOf(memos[i].memos[j].memo.memoId) == -1 ) {
                         memoIds.push(memos[i].memos[j].memo.memoId);
                         result.push(search);
@@ -36,7 +34,7 @@ searchNoteAndMemo = function (req, res) {
                     var search = {
                         title : memos[i].memos[j].memo.title,
                         summary : memos[i].memos[j].memo.summary
-                    }
+                    };
                     if ( memoIds.indexOf(memos[i].memos[j].memo.memoId) == -1 ) {
                         memoIds.push(memos[i].memos[j].memo.memoId);
                         result.push(search);
@@ -45,7 +43,6 @@ searchNoteAndMemo = function (req, res) {
             }
             console.log(result);
             res.send({memos : result});
-            //res.json(result);
         }
     });
-}
+};

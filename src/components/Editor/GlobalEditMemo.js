@@ -134,9 +134,8 @@ var GlobalEditMemo = React.createClass({
         return false;
     },
 
-    __focusThis: function() {
-        //TextareaDOM.focus();
-    },
+
+
 
     render: function() {
         return(

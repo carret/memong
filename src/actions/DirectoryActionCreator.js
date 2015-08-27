@@ -1,22 +1,68 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
+var WebPostUtils = require('../utils/WebPostUtils');
+var WebGetUtils = require('../utils/WebGetUtils');
 var Constants = require('../constants/Constants');
 
-var WebGetUtils = require('../utils/WebGetUtils');
+var ServerReceiveActionCreator = require('./ServerReceiveActionCreator');
 
+var cookie = require('react-cookie');
 
 var DirectoryActionCreator = {
-    requestDirectory: function() {
+    addNote_updateDB: function(_tree , _type, _noteTitle) {
         AppDispatcher.handleClientAction({
-            actionType: Constants.NoteActionTypes.REQUEST_NOTE
+            actionType: Constants.DirectoryAction.ADD_NOTE
         });
-        WebGetUtils.getDirectory();
+        WebPostUtils.postDirectory(_tree , _type, _noteTitle);
     },
 
-    selectNote: function(_noteId) {
+    renameNote_updateDB: function(_tree, _type, _newTitle, _nodeId) {
         AppDispatcher.handleClientAction({
-            actionType: COnstnat.DirectotyActionTypes.SELECT_NOE,
+            actionType: Constants.DirectoryAction.RENAME_NOTE
         });
-        WebGetUtils.getNoteWithMemos(c, _noteId)
+        WebPostUtils.postDirectory(_tree, _type, _newTitle, _nodeId)
+    },
+
+    deleteNote_updateDB: function(_tree, _type ,_nodeId) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.DELETE_NOTE
+        });
+        WebPostUtils.postDirectory(_tree, _type, _nodeId);
+    },
+
+    addFolder_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.ADD_FOLDER
+        });
+        WebPostUtils.postDirectory(_tree, _type)
+    },
+    
+    renameFolder_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.RENAME_FOLDER
+        });
+        WebPostUtils.postDirectory(_tree, _type)
+    },
+    
+    deleteFolder_updateDB: function(_tree, _type, _children) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.DELETE_FOLDER
+        });
+        WebPostUtils.postDirectory(_tree, _type, _children)
+    },
+
+    moveNode_updateDB: function(_tree, _type) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.MOVE_TREE
+        });
+        WebPostUtils.postDirectory(_tree, _type)
+    },
+
+    requestNote: function(_nodeId) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.DirectoryAction.SELECT_NOTE,
+            nodeId: _nodeId
+        });
+        //WebGetUtils.getNoteWithMemos(cookie.load('token'), _nodeId);
     }
 };
 

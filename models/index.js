@@ -1,30 +1,24 @@
 var Index = {
     username : {
-        type:String,
-        required:true
+        type:String
     },
     word : {
-        type:String,
-        required:true
+        type:String
     },
     memos : [
         {
             memo : {
                 memoId : {
-                  type:String,
-                    required:true
+                    type:String
                 },
                 title: {
-                    type:String,
-                    required:true
+                    type:String
                 },
                 summary:{
-                    type:String,
-                    required:true
+                    type:String
                 },
                 weight : {
-                    type:Number,
-                    required:true
+                    type:Number
                 }
             },
         }

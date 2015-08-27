@@ -2,6 +2,7 @@ var React = require('react');
 
 var AutoSaveActionCreator = require('../../actions/AutoSaveActionCreator');
 var NoteStore = require('../../stores/NoteStore');
+var NoteLoaderStore = require('../../stores/NoteLoaderStore');
 var Constants = require('../../constants/Constants');
 
 
@@ -14,12 +15,12 @@ var AutoSaver = React.createClass({
 
     componentDidMount: function() {
         NoteStore.addAutoSaveRequestListener(this._onRequest);
-        NoteStore.addAutoSaveReceiveListener(this._onReceive);
+        NoteLoaderStore.addAutoSaveComplete(this._onReceive);
     },
 
     componentWillUnmount: function() {
         NoteStore.removeAutoSaveRequestListener(this._onRequest);
-        NoteStore.removeAutoSaveReceiveListener(this._onReceive);
+        NoteLoaderStore.removeAutoSaveComplete(this._onReceive);
     },
 
     render: function() {

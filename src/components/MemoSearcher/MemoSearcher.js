@@ -12,7 +12,7 @@ var userToken = cookie.load('token', null);
 var userName;
 
 var word;
-var callback2;
+var thisCallback;
 if ( userToken != null ) {
     userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
 }
@@ -24,7 +24,6 @@ function getIndexingTable() {
 
 
 var AutoInput = React.createClass({
-
     componentDidMount: function() {
         SearchStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
@@ -33,7 +32,8 @@ var AutoInput = React.createClass({
     },
     getSuggestion:function(input, callback) {
         word = input;
-        callback2 = callback;
+        thisCallback = callback;
+        WebGetUtils.getIndexingTable(userName, input);
     },
     _onChange : function() {
         if ( word != null ) {
@@ -43,13 +43,12 @@ var AutoInput = React.createClass({
             const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
             var suggestions = result.filter(function (memo) {
                 return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
-
             }).sort(function (suburbObj1, suburbObj2) {
                 //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
                 //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
             });
             setTimeout(function () {
-                callback2(null, suggestions), requestDelay;
+                thisCallback(null, suggestions), requestDelay;
             });
         }
     },

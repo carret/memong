@@ -6,6 +6,11 @@ var Constants = require('../constants/Constants');
 var _ = require('underscore');
 var uuid = require('node-uuid');
 
+var WebGetUtils = require('../utils/WebGetUtils');
+var cookie = require('react-cookie');
+
+
+
 
 //Note Data
 var selectNote = {};
@@ -27,6 +32,7 @@ var globalEditMemo = {
 
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
+    memos = [];
     _.each(_memos, function(memo) {
         memo.key = uuid.v4();
     });
@@ -279,8 +285,20 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         return selectNote.idAttribute;
     },
 
+    getNoteNodeID: function() {
+        return selectNote.nodeId;
+    },
+
     getNoteTitle: function() {
         return selectNote.title;
+    },
+
+    getNoteDate: function() {
+        return selectNote.date;
+    },
+
+    emitInit: function() {
+        this.emit('init');
     },
 
     emitChange: function() {
@@ -291,12 +309,16 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
         this.emit('auto-save-request');
     },
 
-    emitAutoSaveReceive: function() {
-        this.emit('auto-save-receive');
-    },
-
     emitFocus: function() {
         this.emit('focus');
+    },
+
+    addInitListener: function(callback) {
+        this.on('init', callback);
+    },
+
+    removeInitListener: function(callback) {
+        this.removeListener('init', callback);
     },
 
     addFocusListener: function(callback) {
@@ -321,14 +343,6 @@ var NoteStore = _.extend({}, EventEmitter.prototype, {
 
     removeAutoSaveRequestListener: function(callback) {
         this.removeListener('auto-save-request', callback);
-    },
-
-    addAutoSaveReceiveListener: function(callback) {
-        this.on('auto-save-receive', callback);
-    },
-
-    removeAutoSaveReceiveListener: function(callback) {
-        this.removeListener('auto-save-receive', callback);
     }
 });
 
@@ -341,14 +355,11 @@ AppDispatcher.register(function(payload) {
     switch(action.actionType) {
         case Constants.NoteActionTypes.RECEIVE_NOTE:
             initNote(action.selectNote);
+            NoteStore.emitInit();
             break;
 
         case Constants.MemoActionTypes.RECEIVE_MEMO:
             initMemo(action.memos);
-            break;
-
-        case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
-            NoteStore.emitAutoSaveReceive();
             break;
 
         case Constants.MemoActionTypes.ADD_MEMO:
@@ -388,12 +399,11 @@ AppDispatcher.register(function(payload) {
         case Constants.MemoActionTypes.END_EDIT_MEMO:
             endEditMemo(action.targetEditMemo);
             break;
-
-        default:
-            return true;
     }
 
-    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE) {
+    if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE
+        && action.actionType != Constants.AutoSaveActionTypes.REQUEST_SAVE
+        && action.actionType != Constants.DirectoryAction) {
         NoteStore.emitChange();
     }
 

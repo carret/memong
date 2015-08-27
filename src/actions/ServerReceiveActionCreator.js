@@ -16,10 +16,11 @@ var ServerReceiveActionCreator = {
         });
     },
 
-    receiveDirectory: function(_tree) {
+    receiveTree: function(_tree, _selectNodeId) {
         AppDispatcher.handleServerAction({
-            actionType: Constants.DirectoryActionTypes.RECEIVE_DIRECTORY,
-            tree: _tree
+            actionType: Constants.DirectoryAction.RECEIVE_TREE,
+            tree: _tree,
+            selectNodeId: _selectNodeId
         });
     },
 

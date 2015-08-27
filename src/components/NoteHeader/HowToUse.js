@@ -29,7 +29,7 @@ var DialogContent = React.createClass({
     },
     render : function() {
         return (
-            <div id='loginModel'>
+            <div id='howToUseModel'>
                 <div>
                     <a className="facebook-login" href="/login/facebook"><img src="./facebook.png" /><span>Facebook으로 시작하기</span></a>
                 </div>
@@ -41,23 +41,22 @@ var DialogContent = React.createClass({
     }
 });
 
-var LoginBtn = React.createClass({
+var HowToUse = React.createClass({
     handleTrigger: function () {
         this.d = showDialog(<DialogContent />,{
-            title: <p className="dialog-title">로그인</p>,
+            title: <p id="logModelTitle">사용법 설명</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
-            style: {width: 400}
+            style: {width: 750}
         });
     },
-    render: function () {
+
+    render: function() {
         return (
-            <div className="account">
-                <button className="login" onClick={this.handleTrigger}><span>로그인</span></button>
-            </div>
+            <button id="how-to-use" onClick={this.handleTrigger}><i className="material-icons">&#xE88E;</i></button>
         );
     }
 });
 
-module.exports = LoginBtn;
+module.exports = HowToUse;
