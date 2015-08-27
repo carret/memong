@@ -203,6 +203,7 @@ var saveMemo = function(req, res) {
             Index.remove({username: userName}).exec();
             var search = [];
 
+
             for (var i = 0; i < memos.length; i++) {
 
                 (function(currentI) {
@@ -249,7 +250,6 @@ var saveMemo = function(req, res) {
                             }
                             callback(null, result);
                         }, function(result, callback) {
-                            console.log(memo.title);
                             console.log(result);
                             for ( var i = 0; i < result.length; i++ ) {
                                 (function(currentI) {

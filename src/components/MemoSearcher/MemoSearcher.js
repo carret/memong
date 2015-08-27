@@ -13,12 +13,12 @@ var userName;
 
 var word;
 var thisCallback;
+
 if ( userToken != null ) {
     userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
 }
 
 function getIndexingTable() {
-    //return {table : SearchStore.getSearchResult()}
     return SearchStore.getSearchResult();
 }
 

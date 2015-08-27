@@ -68,7 +68,7 @@ exports.doRoutes = function(app) {
         console.log('write cookie');
         token = jwt.encode({username: req.session.passport.user.email}, pkginfo.oauth.token.secret);
         res.cookie('token', token, {
-            expires: new Date(Date.now() + 99999999999)
+            expires: new Date(Date.now() + 60*60*24*3*30*1000)
         });
         //next();
     }
@@ -78,11 +78,11 @@ exports.doRoutes = function(app) {
             function (callback) {
                 console.log("1");
                 client.set(token, req.session.passport.user.email, redis.print);
+                client.expire(token, 60*60*24*3*30);
                 client.get(token, function (err, name) {
                     console.log('redis name : ' + name);
                     User.findOne({username: req.session.passport.user.email}, function (err, user) {
                         if (user == null) {
-                            console.log("2");
                             var newUser = new User({
                                 username: req.session.passport.user.email
                             });
