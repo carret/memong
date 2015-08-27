@@ -29,12 +29,12 @@ var DialogContent = React.createClass({
     },
     render : function() {
         return (
-            <div>
+            <div id='loginModel'>
                 <div>
-                    <a href="/login/facebook">Login Facebook</a>
+                    <a className="facebook-login" href="/login/facebook"><img src="./facebook.png" /><span>Facebook으로 시작하기</span></a>
                 </div>
                 <div>
-                    <a href="/login/google">Login Google</a>
+                    <a className="google-login" href="/login/google"><img src="./google.png" /><span>Google로 시작하기</span></a>
                 </div>
             </div>
         );
@@ -44,17 +44,17 @@ var DialogContent = React.createClass({
 var LoginBtn = React.createClass({
     handleTrigger: function () {
         this.d = showDialog(<DialogContent />,{
-            title: <p> Login memong</p>,
+            title: <p id="logModelTitle">로그인</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
-            style: {width: 300}
+            style: {width: 350}
         });
     },
     render: function () {
         return (
-            <div>
-                <button className="account" onClick={this.handleTrigger}>로그인</button>
+            <div className="account">
+                <button className="login" onClick={this.handleTrigger}><span>로그인</span></button>
             </div>
         );
     }

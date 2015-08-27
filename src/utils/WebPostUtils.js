@@ -8,13 +8,11 @@ var DirectoryActionCreator = require('../actions/DirectoryActionCreator');
 var WebPostUtils = {
     postNoteWithMemo: function(_noteId, _memos) {
         var memos = new Array();
-        for (var idx=0,len=_memos.length; idx<len; idx++) {
-            if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        for (var idx=0,len=_memos.length; idx<len-1; idx++) {
                 if (_memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
                     _memos[idx].mtype = Constants.MemoType.COMPLETE_MEMO;
                 }
-                memos.push(_memos[idx]);
-            }
+            memos.push(_memos[idx]);
         }
 
         request
@@ -33,10 +31,11 @@ var WebPostUtils = {
             });
     },
 
-    postDirectory: function(_tree) {
-        var _escapedTree = (function() {
-
-        })(_tree);
+    postDirectory: function(_user, _tree, _query) {
+        var _query = {
+            type: NOTE,
+            data: data
+        }
 
         request
             .post(Constants.API.POST_DIRECTORY)

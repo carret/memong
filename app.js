@@ -8,12 +8,14 @@ var app = express();
 var routes = require('./routes/routes.js');
 
 var passports = require('./passports');
+var mecab = require('mecab-ffi');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('myKey'));
 app.use(session({
-    secret: 'myKey',
+    secret: 'my secret',
+    cookie: { maxAge: 60000 },
     proxy: true,
     resave: true,
     saveUninitialized: true}));
@@ -28,5 +30,9 @@ app.use(express.static(__dirname + '/assets'));
 routes.doRoutes(app);
 
 app.listen(8888);
+var string = "황사바람 부는 거리에서 전경들이 점심을 먹는다.";
+mecab.extractSortedNounCounts(string, function(err, result) {
 
+    console.log (err);
+});
 console.log("Running at Port 8888");

@@ -13,6 +13,14 @@ var MemoActionCreator = {
         });
     },
 
+    addMemoInEditMemo: function(_targetEdiMemo, _allContext) {
+        AppDispatcher.handleClientAction({
+            actionType: Constants.MemoActionTypes.ADD_MEMO_IN_EDIT_MEMO,
+            targetEditMemo: _targetEdiMemo,
+            allContext: _allContext
+        });
+    },
+
     addNewMemo: function(_targetEditMemo, _context) {
         AppDispatcher.handleClientAction({
             actionType: Constants.MemoActionTypes.ADD_NEW_MEMO,

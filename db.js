@@ -5,8 +5,9 @@
 var mongoose = require('mongoose');
 var noteSchema = require('./models/note');
 var userSchema = require('./models/user');
+var indexSchema = require('./models/index');
 
-mongoose.connect('mongodb://localhost:27017/memong'); // ±âº» ¼³Á¤¿¡ µû¶ó Æ÷Æ®°¡ »óÀÌ ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+mongoose.connect('mongodb://localhost:27017/memong'); // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.
 
 var db = mongoose.connection;
 
@@ -18,5 +19,6 @@ db.once('open', function callback () {
 
 mongoose.model('Note', noteSchema, 'Notes');
 mongoose.model('User', userSchema, 'Users');
+mongoose.model('Index', indexSchema, 'Index');
 
 module.exports = mongoose;

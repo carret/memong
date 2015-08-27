@@ -1,4 +1,4 @@
-var passport=require('../../passports');
+var passport = require('../../passports');
 
 var db = require('../../db');
 var User = db.model('User');

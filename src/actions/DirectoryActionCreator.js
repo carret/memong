@@ -10,6 +10,13 @@ var DirectoryActionCreator = {
             actionType: Constants.NoteActionTypes.REQUEST_NOTE
         });
         WebGetUtils.getDirectory();
+    },
+
+    selectNote: function(_noteId) {
+        AppDispatcher.handleClientAction({
+            actionType: COnstnat.DirectotyActionTypes.SELECT_NOE,
+        });
+        WebGetUtils.getNoteWithMemos(c, _noteId)
     }
 };
 

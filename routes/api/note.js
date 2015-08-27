@@ -1,6 +1,7 @@
 var db = require('../../db');
 var Note = db.model('Note');
 var User = db.model('User');
+var Index = db.model('Index');
 
 var Constants = require('../../src/constants/Constants');
 
@@ -8,10 +9,12 @@ var mongoose = require('mongoose');
 
 var async = require('async');
 
-var mecab = require('mecab-ffi');
 
 var jwt = require('jwt-simple');
 var pkgInfo = require('../../package');
+var mecab = require('mecab-ffi');
+
+var userName;
 
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
@@ -51,9 +54,10 @@ var testAddUser = function(req, res) {
 var getSelectNoteWithMemo = function(req, res) {
     var userToken = replaceXss(req.query.userToken);
     var noteId = replaceXss(req.query.noteId);
-    var userName;
-    if ( userToken != null )
+
+    if ( userToken != null ) {
         userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
+    }
     //noteID가 null인 경우, selectNote를 불러옴
     if (noteId == null) {
         async.waterfall([
@@ -159,25 +163,109 @@ var saveMemo = function(req, res) {
             Note.findOneAndUpdate(
                 {_id: mongoose.Types.ObjectId(noteId)},
                 {$set: {memos: memos}},
+                {upsert: true},
                 function(err, result) {
-                    if (err) {
-                        console.log(err);
-                        res.send(err);
-                    }
+                    if (err) { res.send(err); }
                     else {
-                        //next();
-                        callback(null, result);
+                        callback(null);
+                    }
+                }
+            )
+        }, function(callback) {
+            Note.findOne(
+                {_id: mongoose.Types.ObjectId(noteId)},
+                function(err, result) {
+                    if (err) { res.send(err); }
+                    else {
+                        callback(null, result.memos);
                     }
                 }
             )
         }, function(memos, callback) {
-            console.log('save memo ' + memos.memos.length);
-            console.log(memos.memos);
-            callback();
+            //console.log(memos);
+            Index.remove({username: userName}).exec();
+            var search = [];
+
+            for (var i = 0; i < memos.length; i++) {
+
+                (function(currentI) {
+                    var memo = memos[currentI];
+                    var splitIndex = memo.text.indexOf("\n");
+                    var content = (memo.text.substring(splitIndex, memo.text.length)).substring(0, 20);
+                    async.waterfall([
+                        function (callback) {
+                            mecab.extractSortedNounCounts(memo.title, function (err, result) {
+                                if (!err)
+                                    callback(null, result);
+                            });
+                        }, function (titleNouns, callback) {
+                            mecab.extractSortedNounCounts(content, function (err, result) {
+                                if (!err)
+                                    callback(null, titleNouns, result);
+                            })
+                        }, function (contentNouns, titleNouns, callback) {
+                            //console.log('content');
+                            //console.log(contentNouns);
+                            //console.log('title');
+                            //console.log(titleNouns);
+                            var result = [];
+                            for (var i = 0; i < titleNouns.length; i++) {
+                                var newNoun = {
+                                    noun: titleNouns[i].noun,
+                                    weight: titleNouns[i].count * 5
+                                }
+                                result.push(newNoun);
+                            }
+                            for (var i = 0; i < contentNouns.length; i++) {
+                                var isSame = false;
+                                for (var j = 0; j < result.length; j++) {
+                                    if (result[j].noun == contentNouns[i].noun) {
+                                        result[j].weight += contentNouns[i].count * 3
+                                        isSame = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!isSame) {
+                                    var newNoun = {
+                                        noun: contentNouns[i].noun,
+                                        weight: contentNouns[i].count * 3
+                                    }
+                                    result.push(newNoun);
+                                }
+                            }
+                            callback(null, result);
+                        }, function(result, callback) {
+                            console.log(memo.title);
+                            console.log(result);
+                            for ( var i = 0; i < result.length; i++ ) {
+                                (function(currentI) {
+                                    Index.update({word:result[currentI].noun, username:userName}, {
+                                        $push : {
+                                            memos : {
+                                                memo : {
+                                                    memoId : memo._id,
+                                                    title : ' ' + memo.title,
+                                                    summary : ' ' + content,
+                                                    weight : ' ' + result[currentI].weight
+                                                }
+                                            }
+                                        }
+                                    }, {upsert:true}, function(err ) {
+                                        if ( err )
+                                            console.log(err)
+                                    })
+                                }(i));
+                            }
+                            callback();
+                        }
+                    ])
+
+                }(i));
+
+            }
         }
-    ], function() {
-        res.end();
-    });
+    ])
 };
 
 

@@ -1,26 +1,34 @@
-var index = {
+var Index = {
     username : {
-        Type:String,
+        type:String,
         required:true
     },
     word : {
-        Type:String,
+        type:String,
         required:true
     },
     memos : [
         {
-            memoId : {
+            memo : {
+                memoId : {
+                  type:String,
+                    required:true
+                },
                 title: {
-                    Type:String,
+                    type:String,
                     required:true
                 },
                 summary:{
-                    Type:String,
+                    type:String,
+                    required:true
+                },
+                weight : {
+                    type:Number,
                     required:true
                 }
-            }
+            },
         }
     ]
 }
 
-module.exports = index;
+module.exports = Index;

@@ -2,11 +2,13 @@ var React = require('react');
 
 var EditMemoItem = React.createClass({
     componentDidMount: function() {
+        $(React.findDOMNode(this.refs._editMemoItem)).focus();
         if (!this.props.memo.haveToFocus) {
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;
-                this.props.scrollAndFocusTarget(position - 109);
-            }.bind(this), 150);
+                var height = $(React.findDOMNode(this.refs._editMemoItem)).height();
+                this.props.scrollAndFocusTarget(position - height);
+            }.bind(this), 300);
         }
     },
 

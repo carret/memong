@@ -4,7 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var Constants = require('../constants/Constants');
 
 var _ = require('underscore');
-var sui = require('simple-unique-id');
+var uuid = require('node-uuid');
 
 
 //Note Data
@@ -13,7 +13,7 @@ var selectNote = {};
 //Memo Data
 var memos = [];
 var globalEditMemo = {
-    key: sui.generate("globalEditMemo"),
+    key: uuid.v4(),
     title: null,
     text: "",
     mtype: Constants.MemoType.GLOBAL_EDIT_MEMO,
@@ -28,7 +28,7 @@ var globalEditMemo = {
 //서버로부터 불러온 초기 메모 데이터 설정
 function initMemo(_memos) {
     _.each(_memos, function(memo) {
-        memo.key = sui.generate(memo.text + (new Date()).toString());
+        memo.key = uuid.v4();
     });
     memos = memos.concat(_memos);
     memos.push(_.extend({}, globalEditMemo));
@@ -40,6 +40,7 @@ function initNote(_selectNote) {
 
 function addMemo(_targetEditMemo, _context) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
+
     var newMemo = _.extend({}, {
         text: _context
     });
@@ -50,6 +51,24 @@ function addMemo(_targetEditMemo, _context) {
         for (var idx=0; idx<len; idx++) {
             memos.splice(index+idx, 0, _newMemos[idx]);
         }
+    }
+}
+
+function addMemoInEditMemo(_targetEditMemo, _allContext) {
+    var index = _indexOf(memos, _targetEditMemo.key, "key");
+
+    var newMemo = _.extend({}, {
+        text: _allContext
+    });
+    var _newMemos = _parseMemo(newMemo);
+
+    memos.splice(index, 1);
+    if (_newMemos != null) {
+        var len = _newMemos.length;
+        for (var idx=0; idx<len; idx++) {
+            memos.splice(index+idx, 0, _newMemos[idx]);
+        }
+        memos[index + len -1].mtype = Constants.MemoType.EDIT_MEMO;
     }
 }
 
@@ -86,7 +105,6 @@ function startEditMemo(_targetCompleteMemo) {
     if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         return;
     }
-
     _targetCompleteMemo.mtype = Constants.MemoType.EDIT_MEMO;
     _targetCompleteMemo.haveToFocus = false;
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
@@ -110,6 +128,7 @@ function startEditMemoFromMemoViewer(_targetCompleteMemo) {
     memos[index] = _.extend({}, memos[index], _targetCompleteMemo);
 }
 
+
 function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     if (index == memos.length - 2) {
@@ -121,6 +140,7 @@ function endEditMemoAndStartNextEditMemo(_targetEditMemo) {
     startEditMemo(_nextTargetMemo);
 }
 
+
 function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
     if (index == 0) {
@@ -129,12 +149,6 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        memos[index-1] = _.extend(memos[index-1], {
-            text: memos[index-1].text + '\n\n' + context
-        });
-        memos[index] = _.extend(memos[index], {
-            text: ""
-        });
         startEditMemo(memos[index-1]);
         return;
     }
@@ -144,6 +158,7 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
         startEditMemo(_previousTargetMemo);
     }
 }
+
 
 function endEditMemo(_targetEditMemo) {
     var index = _indexOf(memos, _targetEditMemo.key, "key");
@@ -224,12 +239,13 @@ function _parseMemo(_unParsedMemo) {
                 index = result[idx+1]._index;
             }
 
-            var _memo = _.extend(protoMemo, {
+            var _memo = _.extend({
                 title: (result[idx]._title).slice(2, (result[idx]._title).length),
                 text: text,
                 mtype: Constants.MemoType.COMPLETE_MEMO,
                 date: new Date()
             });
+
             resultMemos.push(_memo);
         }
     }
@@ -240,9 +256,10 @@ function _parseMemo(_unParsedMemo) {
     else {
         for (var idx=0; idx<resultMemos.length; idx++) {
             resultMemos[idx] = _.extend({}, resultMemos[idx], {
-                key: sui.generate(resultMemos[idx].text + resultMemos[idx].date.toString())
+                key: uuid.v4()
             });
         }
+        console.log("resultMemos", resultMemos);
     }
     return resultMemos;
 }
@@ -338,6 +355,10 @@ AppDispatcher.register(function(payload) {
             addMemo(action.targetEditMemo, action.context);
             break;
 
+        case Constants.MemoActionTypes.ADD_MEMO_IN_EDIT_MEMO:
+            addMemoInEditMemo(action.targetEditMemo, action.allContext);
+            break;
+
         case Constants.MemoActionTypes.ADD_NEW_MEMO:
             addNewMemo(action.targetEditMemo, action.context);
             break;
@@ -378,6 +399,7 @@ AppDispatcher.register(function(payload) {
 
 
     if ( action.actionType == Constants.MemoActionTypes.ADD_MEMO
+        || action.actionType == Constants.MemoActionTypes.ADD_MEMO_IN_EDIT_MEMO
         || action.actionType == Constants.MemoActionTypes.DELETE_MEMO
         || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO
         || action.actionType == Constants.MemoActionTypes.END_EDIT_MEMO_AND_START_NEXT_EDIT_MEMO

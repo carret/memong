@@ -5,19 +5,20 @@ var redis = require("redis");
 var client = redis.createClient();
 
 exports.doRoutes = function(app) {
-    app.get ('/', index)
+    app.get ('/', index);
     app.get('/typography', function(req,res){
         res.render('__static__typography');
     });
-    require('./api/login').doRoutes(app)
-    require('./api/note').doRoutes(app)
-    require('./api/memo').doRoutes(app)
-}
+    require('./api/login').doRoutes(app);
+    require('./api/note').doRoutes(app);
+    require('./api/memo').doRoutes(app);
+    require('./api/search').doRoutes(app);
+};
 
 var index = function(req, res) {
 
     var cookieToken = req.cookies.token;
-    //console.log("쿠키 토큰 : " + cookieToken);
+    console.log("쿠키 토큰 : " + cookieToken);
 
     if ( cookieToken != null ) {
         client.get(cookieToken, function(err, name) {
@@ -34,5 +35,4 @@ var index = function(req, res) {
         console.log('token null, render');
         res.render('index', {title: "memong"});
     }
-    //res.render('index', {title: "memong"})
-}
+};

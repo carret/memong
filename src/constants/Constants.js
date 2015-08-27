@@ -9,9 +9,9 @@ module.exports = {
         LOGOUT: APIRoot + "/logout",
         GET_NOTE_WITH_MEMO: APIRoot + "/getNoteWithMemo",
         GET_DIRECTORY: APIRoot + "/getDirectory",
-        GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
-        POST_DIRECTORY: APIRoot + "/postDirectory"
+        POST_DIRECTORY: APIRoot + "/postDirectory",
+        GET_SEARCH:APIRoot + "/search"
         // 나머지...
     },
     NoteActionTypes: keyMirror({
@@ -27,6 +27,7 @@ module.exports = {
     MemoActionTypes: keyMirror({
         RECEIVE_MEMO: null,
         ADD_MEMO: null,
+        ADD_MEMO_IN_EDIT_MEMO: null,
         ADD_NEW_MEMO: null,
         DELETE_MEMO: null,
         START_EDIT_MEMO: null,
@@ -46,7 +47,7 @@ module.exports = {
     }),
 
     SearchActionTypes: keyMirror({
-        RECEIVE_HASH_TABLE: null
+        RECEIVE_INDEXING_TABLE: null
         // 나머지...
     }),
 
