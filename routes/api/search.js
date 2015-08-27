@@ -13,8 +13,7 @@ var searchNoteAndMemo = function (req, res) {
     var user = req.query.username;
 
     Index.find({word: { $regex : word }, username: user}, function(err, memos) {
-        if ( err )
-            res.send(err);
+        if ( err ) { res.send(err); }
         else {
             var result = [];
             var memoIds = [];
