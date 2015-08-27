@@ -9,10 +9,10 @@ module.exports = {
         LOGOUT: APIRoot + "/logout",
         GET_NOTE_WITH_MEMO: APIRoot + "/getNoteWithMemo",
         GET_DIRECTORY: APIRoot + "/getDirectory",
-        GET_HASH_TABLE: APIRoot + "/getHashTable",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory",
-        GET_LOAD_DIRECTORY: APIRoot + "/loadDirectory"
+        GET_LOAD_DIRECTORY: APIRoot + "/loadDirectory",
+        GET_SEARCH: APIRoot + "/search"
     },
 
     DirectoryAPI: {
@@ -80,8 +80,7 @@ module.exports = {
     }),
 
     SearchActionTypes: keyMirror({
-        RECEIVE_HASH_TABLE: null
-        // 나머지...
+        RECEIVE_INDEXING_TABLE: null
     }),
 
 

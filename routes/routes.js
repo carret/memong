@@ -4,13 +4,13 @@ var User = db.model('User');
 var redis = require("redis");
 var client = redis.createClient();
 
-
 exports.doRoutes = function(app) {
     app.get ('/', index);
 
-    require('./api/login').doRoutes(app)
-    require('./api/tree').doRoutes(app)
-    require('./api/note').doRoutes(app)
+    require('./api/login').doRoutes(app);
+    require('./api/note').doRoutes(app);
+    require('./api/tree').doRoutes(app);
+    require('./api/search').doRoutes(app);
 };
 
 var index = function(req, res) {

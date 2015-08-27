@@ -1,47 +1,69 @@
 var React = require('react');
 var Autosuggest = require('react-autosuggest');
 var utils = require('./utils');
+var cookie = require('react-cookie');
 
-var suburbs = [{"suburb":"15.07.31 DB","postcode":"Aaaaaaaaaaa"},
-    {"suburb":"14.08.23 네트워크","postcode":"가나다라마바사아자차카 타파"},
-    {"suburb":encodeURI("14.08.23 DB"),"postcode":encodeURI(" 가나다라마바")},
-    {"suburb":"15.02.10 네트워크","postcode":"weiojffjlaksfnlewiouwefsdf"},
-    {"suburb":"15.02.10 DB","postcode":"weeeerrqwerwqr"},
-    {"suburb":encodeURI("arduino"),"postcode":"asdfqwer"},
-    {"suburb":encodeURI("15.02.10 network"),"postcode":"bbbbbbbkkkkkk"},
-    {"suburb":encodeURI(" 김재욱 안녕하세요 하하"),"postcode":"bbbbbbbkkkkkk"},
-    {"suburb":encodeURI("자료구조 structure"),"postcode":"HelloKKKK"}];
+var WebGetUtils = require('../../utils/WebGetUtils');
+
+var SearchStore = require('../../stores/SearchStore');
+var jwt = require('jwt-simple');
+var pkgInfo = require('../../../package');
+var userToken = cookie.load('token', null);
+var userName;
+
+var word;
+var thisCallback;
+if ( userToken != null ) {
+    userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
+}
+
+function getIndexingTable() {
+    //return {table : SearchStore.getSearchResult()}
+    return SearchStore.getSearchResult();
+}
+
 
 var AutoInput = React.createClass({
+    componentDidMount: function() {
+        SearchStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
+    },
     onSuggestionFocused:function(suggestion) { // In this example 'suggestion' is a string
         console.log('Suggestion focused: [' + suggestion + ']');
     },
     getSuggestion:function(input, callback) {
-        const suburbMatchRegex = new RegExp('\\b' + encodeURI(input), 'i');
-        var suggestions = suburbs.filter(function(suburb) {
-            return suburbMatchRegex.test(suburb.suburb + "," + decodeURI(suburb.suburb)+"," + suburb.postcode+","+decodeURI(suburb.postcode));
-        }).sort( function(suburbObj1, suburbObj2) {
+        word = input;
+        thisCallback = callback;
+        WebGetUtils.getIndexingTable(userName, input);
+    },
+    _onChange : function() {
+        var result = getIndexingTable();
+        var requestDelay = 50 + Math.floor(300 * Math.random());
+        const escapedInput = utils.escapeRegexCharacters(word.trim());
+        const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
+        var suggestions = result.filter(function (memo) {
+            return suburbMatchRegex.test(memo.title,  decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
+        }).sort(function (suburbObj1, suburbObj2) {
             //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
             //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
         });
-
-        callback(null, suggestions);
+        setTimeout(function() {
+            thisCallback(null, suggestions), requestDelay;
+        });
     },
     renderSuggestion : function(suggestionObj, input) {
         return (
             <span>
-                <strong>{decodeURI(suggestionObj.suburb)}</strong><br/>
-                <small style={{ color: '#777' }}>{decodeURI(suggestionObj.postcode)}</small>
+                <strong>{decodeURI(suggestionObj.title)}</strong><br/>
+                <small style={{ color: '#777' }}>{decodeURI(suggestionObj.summary)}</small>
             </span>
         );
     },
     onSuggestionSelected:function(suggestion, event) {
-        console.log("event", event);
-       event.preventDefault();
+        event.preventDefault();
         console.log(suggestion);
     },
     getSuggestionValue:function(suggestionObj) {
-        return decodeURI(suggestionObj.suburb);
+        return decodeURI(suggestionObj.title);
     },
     render :function() {
         var inputAttributes = {

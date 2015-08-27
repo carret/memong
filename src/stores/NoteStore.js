@@ -155,7 +155,6 @@ function endEditMemoAndStartPreviousEditMemo(_targetEditMemo) {
     }
     else if (memos[index].mtype == Constants.MemoType.GLOBAL_EDIT_MEMO) {
         var context = memos[index].text;
-        addMemo(_targetEditMemo, context);
         startEditMemo(memos[index-1]);
         return;
     }

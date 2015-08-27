@@ -24,10 +24,10 @@ var ServerReceiveActionCreator = {
         });
     },
 
-    receiveHashTable: function(_hashTable) {
+    receiveIndexingTable: function(_indexingTable) {
         AppDispatcher.handleServerAction({
-            actionType: Constants.SearchActionTypes.RECEIVE_HASH_TABLE,
-            hashTable: _hashTable
+            actionType: Constants.SearchActionTypes.RECEIVE_INDEXING_TABLE,
+            indexingTable: _indexingTable
         });
     },
 

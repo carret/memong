@@ -8,13 +8,11 @@ var cookie = require('react-cookie');
 var WebPostUtils = {
     postNoteWithMemo: function(_noteId, _memos) {
         var memos = new Array();
-        for (var idx=0,len=_memos.length; idx<len; idx++) {
-            if (_memos[idx].mtype != Constants.MemoType.GLOBAL_EDIT_MEMO) {
+        for (var idx=0,len=_memos.length; idx<len-1; idx++) {
                 if (_memos[idx].mtype == Constants.MemoType.EDIT_MEMO) {
                     _memos[idx].mtype = Constants.MemoType.COMPLETE_MEMO;
                 }
-                memos.push(_memos[idx]);
-            }
+            memos.push(_memos[idx]);
         }
 
         request

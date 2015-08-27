@@ -3,7 +3,6 @@ var React = require('react');
 var EditMemoItem = React.createClass({
     componentDidMount: function() {
         $(React.findDOMNode(this.refs._editMemoItem)).focus();
-
         if (!this.props.memo.haveToFocus) {
             setTimeout(function() {
                 var position = $(React.findDOMNode(this.refs._editMemoItem)).offset().top;

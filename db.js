@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var noteSchema = require('./models/note');
 var userSchema = require('./models/user');
+var indexSchema = require('./models/index');
 
 mongoose.connect('mongodb://localhost:27017/memong');
 
@@ -14,5 +15,6 @@ db.once('open', function callback () {
 
 mongoose.model('Note', noteSchema, 'Notes');
 mongoose.model('User', userSchema, 'Users');
+mongoose.model('Index', indexSchema, 'Index');
 
 module.exports = mongoose;

@@ -6,7 +6,6 @@ var fs = require('fs');
 var app = express();
 
 var routes = require('./routes/routes.js');
-
 var passports = require('./passports');
 
 app.use(bodyParser.json());
@@ -15,7 +14,6 @@ app.use(cookieParser('myKey'));
 app.use(session({
     secret: 'my secret',
     cookie: { maxAge: 60000 },
-    secret: 'myKey',
     proxy: true,
     resave: true,
     saveUninitialized: true}));
@@ -30,5 +28,4 @@ app.use(express.static(__dirname + '/assets'));
 routes.doRoutes(app);
 
 app.listen(8888);
-
 console.log("Running at Port 8888");

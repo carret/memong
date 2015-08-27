@@ -46,16 +46,17 @@ var WebGetUtils = {
             });
     },
 
-    getHashTable: function() {
+    getIndexingTable: function(user, word) {
         request
-            .get(Constants.API.GET_HASH_TABLE)
-            .set('API-Key', 'GET_DIRECTORY')
+            .get(Constants.API.GET_SEARCH)
+            .query({username: user, word: word})
             .set('Accept', 'application/json')
             .end(function(err,res) {
                 if (res.ok) {
-                    ServerReceiveActionCreator.receiveHashTable(res.hashTable);
+                    ServerReceiveActionCreator.receiveIndexingTable(res.body.memos);
                 }
                 else {
+                    console.log('request error');
                     // Show Notification
                 }
             })

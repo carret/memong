@@ -37,33 +37,28 @@ var Editor = React.createClass({
 
     render: function() {
         var items;
-        if (this.state.memos == null) {
-            items = <div>선택된 노트가 없습니다.</div>;
-        }
-        else {
             items = _.map(this.state.memos, function(memo, index) {
                 var type = memo.mtype;
-                switch(type) {
-                    case Constants.MemoType.COMPLETE_MEMO :
-                        if (index == this.state.memos.length - 2) {
-                            return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={true}/>;
-                        }
-                        return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={false} />;
+                    switch(type) {
+                        case Constants.MemoType.COMPLETE_MEMO :
+                            if (index == this.state.memos.length - 2) {
+                                return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={true}/>;
+                            }
+                            return <CompleteMemo memo={memo} key={memo.key} enableAddMemo={false} />;
 
-                    case Constants.MemoType.EDIT_MEMO :
-                        if (index == 0) {
-                            return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={true} />;
-                        }
-                        return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={false} />;
+                        case Constants.MemoType.EDIT_MEMO :
+                            if (index == 0) {
+                                return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={true} />;
+                            }
+                            return <EditMemo memo={memo} key={memo.key} scrollAndFocusTarget={this._scrollAndFocusTarget} focusThis={memo.haveToFocus} preventMoveToPrevious={false} />;
 
-                    case Constants.MemoType.NONE_MEMO :
-                        return <NoneMemo memo={memo} key={memo.key}/>;
+                        case Constants.MemoType.NONE_MEMO :
+                            return <NoneMemo memo={memo} key={memo.key}/>;
 
-                    case Constants.MemoType.GLOBAL_EDIT_MEMO :
-                        return <GlobalEditMemo memo={memo} key={memo.key} />;
-                }
-            }.bind(this));
-        }
+                        case Constants.MemoType.GLOBAL_EDIT_MEMO :
+                            return <GlobalEditMemo memo={memo} key={memo.key} />;
+                    }
+                }.bind(this));
 
         return (
             <div id="editor" ref="_editor">{items}</div>

@@ -1,6 +1,3 @@
-/**
- * Created by cho on 2015-08-05.
- */
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema,
