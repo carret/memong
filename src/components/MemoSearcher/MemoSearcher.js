@@ -40,20 +40,26 @@ var AutoInput = React.createClass({
     _onChange : function() {
         if ( word != null ) {
             var result = getIndexingTable();
+            console.log("result", result);
             var requestDelay = 50 + Math.floor(300 * Math.random());
             const escapedInput = utils.escapeRegexCharacters(word.trim());
             const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
-            var suggestions = result.filter(function (memo) {
-                return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
-            }).sort(function (suburbObj1, suburbObj2) {
-                //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
-                //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
+            var suggestions = result.map(function (memo) {
+                var newItem = {
+                    title: decodeURI(memo.title),
+                    summary: decodeURI(memo.summary),
+                    memoId: memo.memoId
+                };
+                return newItem;
+                //return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
             });
+            console.log("suggestions", suggestions);
             setTimeout(function () {
                 thisCallback(null, suggestions), requestDelay;
             });
         }
     },
+
     renderSuggestion : function(suggestionObj, input) {
         return (
             <span className="suggestion-memo">
