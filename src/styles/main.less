@@ -1254,9 +1254,9 @@ html, body {
         }
     }
 }
-#logoutModelTitle { font-size: 1.5em; }
-#logModelTitle { font-size: 1.5em; }
-.confirmDialog-title { font-size: 1.5em; }
+
+.dialog-title { font-size: 1.5em; }
+
 #renameTitle {
     display: -webkit-box;
     display: -webkit-flex;
@@ -1271,6 +1271,17 @@ html, body {
     -moz-box-direction: normal;
     -ms-flex-direction: column;
     flex-direction: column;
+
+    .inputRename {
+        font-size: 1em;
+        padding: .5rem;
+
+        margin-top: .5rem;
+
+        outline: 0;
+        border: 1px solid @color-grey-300;
+        border-radius: 2px;
+    }
 
     .redundancyCheckDialog-btnMenu {
         display: -webkit-box;
@@ -1288,6 +1299,7 @@ html, body {
         margin-top: 2rem;
 
         font-size: 1em;
+
 
         button {
             outline: none;
@@ -1312,6 +1324,23 @@ html, body {
             cursor: pointer;
 
             text-align: center;
+        }
+
+        .ok {
+            background-color: #FFB300;
+            padding: .5rem 1rem;
+            color: #FFF;
+            margin-right: .5rem;
+
+            &:hover { background-color: #FFA000; }
+        }
+
+        .no {
+            background-color: @color-grey-200;
+            border: 1px solid @color-grey-300;
+            padding: .5rem;
+
+            &:hover { background-color: @color-grey-300; }
         }
     }
 }

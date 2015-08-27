@@ -219,7 +219,7 @@ var DirectoryViewer = React.createClass({
 
     handleTrigger_AddNote: function () {
         this.d = showDialog(<TitleCheckingDialog actionItem={this._addNodeToTree} handleClose={this._onClose} elTree={$(elTree)} selectedNode={_selectedNode}  type='note'/>,{
-            title: <p className="redundancyCheckDialog-title">노트 생성</p>,
+            title: <p className="dialog-title">노트 추가하기</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -229,7 +229,7 @@ var DirectoryViewer = React.createClass({
 
     handleTrigger_AddFolder: function () {
         this.d = showDialog(<TitleCheckingDialog actionItem={this._addNodeToTree} handleClose={this._onClose} elTree={$(elTree)}  selectedNode={_selectedNode}  type='folder'/>,{
-            title: <p className="redundancyCheckDialog-title">폴더 생성</p>,
+            title: <p className="dialog-title">폴더 추가하기</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -240,7 +240,7 @@ var DirectoryViewer = React.createClass({
     handleTrigger_RenameNode: function () {
 
         this.d = showDialog(<TitleCheckingDialog actionItem={this._renameNode} handleClose={this._onClose} elTree={$(elTree)}  selectedNode={_selectedNode} type='rename'/>,{
-            title: <p className="redundancyCheckDialog-title">타이틀 변경</p>,
+            title: <p className="dialog-title">이름 변경</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -250,7 +250,7 @@ var DirectoryViewer = React.createClass({
 
     handleTrigger_RemoveNode: function () {
         this.d = showDialog(<RemoveDialog actionItem={this._deleteNode} handleClose={this._onClose} elTree={$(elTree)} selectedNode={_selectedNode} type='remove'/>,{
-            title: <p className="confirmDialog-title">아이템 삭제</p>,
+            title: <p className="dialog-title">삭제</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -261,7 +261,7 @@ var DirectoryViewer = React.createClass({
     render: function() {
         return (
             <div id="directory-viewer">
-                <div className="header">디렉토리</div>
+                <div className="header">노트</div>
                 <div className="addNode">
                     <button className = "btn_addNode" onClick={this.handleTrigger_AddNote} >노트 추가하기</ button>
                     <button className = "btn_addNode" onClick={this.handleTrigger_AddFolder} >폴더 추가하기</ button>

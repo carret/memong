@@ -70,7 +70,7 @@ var MemoItem = React.createClass({
 
     handleTrigger: function () {
         this.d = showDialog(<DialogContent deleteItem={this._onDelete} handleClose={this._onClose} />,{
-            title: <p className="memoDeleteDialog-title">메모 삭제</p>,
+            title: <p className="dialog-title">메모 삭제</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,

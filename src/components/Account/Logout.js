@@ -50,10 +50,11 @@ var DialogContent = React.createClass({
     }
 });
 
+
 var Logout = React.createClass({
     handleTrigger: function () {
         this.d = showDialog(<DialogContent handleClose={this._onClose}  />,{
-            title: <p id="logoutModelTitle">로그아웃</p>,
+            title: <p className="dialog-title">로그아웃</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,

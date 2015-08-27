@@ -19,7 +19,7 @@ var TitleCheckingDialog = React.createClass({
 
     _IsRedundancy: function() {
         var node = $(elTree).tree('getSelectedNode'), nodeParent;
-        var title = document.getElementById('title').value;
+        var title = document.getElementById('this-title').value;
         var type = this.props.type;
 
         if (node == false) { node = $(elTree).tree('getNodeById', 0); }
@@ -44,9 +44,9 @@ var TitleCheckingDialog = React.createClass({
     render : function() {
         return (
             <div id="renameTitle" ref="_dialog">
-                <div className="redundancyCheckDialog-text"><span>타이틀 중복 확인</span></div>
-                <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
-                <span id="redundancy-alert" style={{"color":"red",  "display":"none"}}>! 중복 타이틀입니다.</span>
+                <div className="redundancyCheckDialog-text"><span>이름을 입력해주세요.</span></div>
+                <input id="this-title" className="inputRename" type='text' onChange={this.handleChange} value={this.state.value} />
+                <span id="redundancy-alert" style={{"color":"red",  "display":"none"}}>! 중복된 이름입니다.</span>
                 <div className="redundancyCheckDialog-btnMenu">
                     <button className="ok" onClick={this._IsRedundancy} >확인</button>
                     <button className="no" onClick={this.props.handleClose} >취소</button>

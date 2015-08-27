@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var less = require('gulp-less');
 var minifyCss = require('gulp-minify-css');
 var ejsmin = require('gulp-ejsmin');
+var uglify = require('gulp-uglify');
+var buffer = require('vinyl-buffer');
 
 var browserify = require('browserify');
 var reactify = require('reactify');
@@ -22,6 +24,8 @@ gulp.task('build-js', function() {
         .transform(reactify)
         .bundle()
         .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(uglify())
         .pipe(gulp.dest('./build'))
         .pipe(browserSync.stream());
 });
