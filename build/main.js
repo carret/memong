@@ -59215,7 +59215,7 @@ module.exports={
     "flux": "^2.0.3",
     "jqtree": "^1.2.1",
     "jwt-simple": "^0.3.0",
-    "mecab-ffi": "^0.1.0",
+    "mecab-ffi": "git+https://github.com/xissy/node-mecab-ffi.git",
     "mongoose": "^4.1.2",
     "node-uuid": "^1.4.3",
     "passport": "0.2.2",
@@ -60978,8 +60978,8 @@ var AutoInput = React.createClass({displayName: "AutoInput",
         );
     },
     onSuggestionSelected:function(suggestion, event) {
+        console.log("click",suggestion);
         event.preventDefault();
-        console.log(suggestion);
     },
     getSuggestionValue:function(suggestionObj) {
         return decodeURI(suggestionObj.title);
@@ -62082,8 +62082,8 @@ AppDispatcher.register(function(payload) {
 
     if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE
         && action.actionType != Constants.AutoSaveActionTypes.REQUEST_SAVE
-        && action.actionType != Constants.DirectoryAction) {
-        NoteStore.emitChange();
+        && action.actionType != Constants.SearchActionTypes.RECEIVE_INDEXING_TABLE) {
+            NoteStore.emitChange();
     }
 
 

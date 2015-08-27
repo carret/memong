@@ -212,13 +212,15 @@ var saveMemo = function(req, res) {
                     async.waterfall([
                         function (callback) {
                             mecab.extractSortedNounCounts(memo.title, function (err, result) {
-                                if (!err)
+                                if (!err) {
                                     callback(null, result);
+                                }
                             });
                         }, function (titleNouns, callback) {
                             mecab.extractSortedNounCounts(content, function (err, result) {
-                                if (!err)
+                                if (!err) {
                                     callback(null, titleNouns, result);
+                                }
                             })
                         }, function (contentNouns, titleNouns, callback) {
                             var result = [];
@@ -265,11 +267,11 @@ var saveMemo = function(req, res) {
                                             }
                                         }
                                     }, {upsert:true}, function(err ) {
-                                        if ( err )
-                                            console.log(err)
+                                        if ( err ) { console.log(err) }
                                     })
                                 }(i));
                             }
+                            res.end();
                             callback();
                         }
                     ])
@@ -277,6 +279,7 @@ var saveMemo = function(req, res) {
                 }(i));
 
             }
+            callback();
         }
     ])
 };

@@ -403,8 +403,8 @@ AppDispatcher.register(function(payload) {
 
     if (action.actionType != Constants.AutoSaveActionTypes.RECEIVE_SAVE
         && action.actionType != Constants.AutoSaveActionTypes.REQUEST_SAVE
-        && action.actionType != Constants.DirectoryAction) {
-        NoteStore.emitChange();
+        && action.actionType != Constants.SearchActionTypes.RECEIVE_INDEXING_TABLE) {
+            NoteStore.emitChange();
     }
 
 

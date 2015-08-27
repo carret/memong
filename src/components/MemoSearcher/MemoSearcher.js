@@ -61,8 +61,8 @@ var AutoInput = React.createClass({
         );
     },
     onSuggestionSelected:function(suggestion, event) {
+        console.log("click", suggestion);
         event.preventDefault();
-        console.log(suggestion);
     },
     getSuggestionValue:function(suggestionObj) {
         return decodeURI(suggestionObj.title);
