@@ -33,7 +33,7 @@ var AutoInput = React.createClass({
     getSuggestion:function(input, callback) {
         word = input;
         thisCallback = callback;
-        //WebGetUtils.getIndexingTable(userName, input);
+        WebGetUtils.getIndexingTable(userName, input);
     },
     _onChange : function() {
         if ( word != null ) {
@@ -43,7 +43,6 @@ var AutoInput = React.createClass({
             const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
             var suggestions = result.filter(function (memo) {
                 return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
-
             }).sort(function (suburbObj1, suburbObj2) {
                 //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
                 //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);

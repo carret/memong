@@ -1,10 +1,11 @@
-var index = {
+var Index = {
     username : {
         type: String,
         required: true
     },
+
     word : {
-        type: String,
+        type:String,
         required: true
     },
     memos : [
@@ -26,9 +27,10 @@ var index = {
                     type:Number,
                     required:true
                 }
-            },
+            }
         }
     ]
 };
 
-module.exports = index;
+
+module.exports = Index;

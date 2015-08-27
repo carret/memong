@@ -40,7 +40,7 @@ var searchNoteAndMemo = function (req, res) {
                     }
                 }
             }
-            console.log(result);
+            console.log("result",result);
             res.send({memos : result});
         }
     });

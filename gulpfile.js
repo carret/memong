@@ -24,8 +24,6 @@ gulp.task('build-js', function() {
         .transform(reactify)
         .bundle()
         .pipe(source('main.js'))
-        .pipe(buffer())
-        .pipe(uglify())
         .pipe(gulp.dest('./build'))
         .pipe(browserSync.stream());
 });
