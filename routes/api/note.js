@@ -19,10 +19,78 @@ var userName;
 
 exports.doRoutes = function(app) {
     app.get(Constants.API.GET_NOTE_WITH_MEMO , getSelectNoteWithMemo);
+    app.get(Constants.API.GET_NOTE_WITH_MEMO_BY_SEARCH, getNoteWithMemoBySearch);
     app.post(Constants.API.POST_NOTE_WITH_MEMO, saveMemo);
 
 };
 
+var getNoteWithMemoBySearch = function(req, res) {
+    var userToken = req.query.userToken;
+    var memoId = req.query.memoId;
+
+    var userName;
+    if ( userToken != null) {
+        userName = jwt.decode(userToken, pkgInfo.oauth.token.secret).username;
+    }
+
+    async.waterfall([
+        function(callback) {
+            Note.findOne(
+                {memos: {'$elemMatch': {_id: memoId}} },
+                function(err, result) {
+                    if (err) { return next(err); }
+                    else {
+                        var note = {
+                            title: result.title,
+                            idAttribute: result._id,
+                            date: result.date
+                        };
+                        var memos = (function(memos){
+                            var arr = new Array();
+                            for (var idx=0, len=memos.length; idx<len; idx++) {
+                                var obj = {
+                                    _id: memos[idx]._id,
+                                    date: memos[idx].date,
+                                    title: memos[idx].title,
+                                    text: memos[idx].text,
+                                    mtype: memos[idx].mtype
+                                };
+                                arr.push(obj);
+                            }
+                            return arr;
+                        })(result.memos);
+
+                        callback(null, note, memos);
+                    }
+                }
+            )
+        },
+        function(note, memos, callback) {
+            User.findOneAndUpdate(
+                {username: userName},
+                {selectNoteId: note.idAttribute},
+                function(err, result) {
+                if (err) { return next(err); }
+                else {
+                    if (result == null) {
+                        console.log("유저 없음");
+                        return next("유저가 없습니다.");
+                    }
+                    else {
+                        var selectNodeId = _findNodeId(result.treeTable, note.idAttribute.toString());
+                        note.nodeId = selectNodeId;
+                        callback({
+                            note: note,
+                            memos: memos
+                        });
+                    }
+                }
+            })
+        }
+    ], function(result) {
+        res.send(result);
+    })
+};
 
 var getSelectNoteWithMemo = function(req, res) {
     var userToken = _replaceXss(req.query.userToken);

@@ -8,6 +8,7 @@ module.exports = {
         LOGIN_GOOGLE: APIRoot + "/login/google",
         LOGOUT: APIRoot + "/logout",
         GET_NOTE_WITH_MEMO: APIRoot + "/getNoteWithMemo",
+        GET_NOTE_WITH_MEMO_BY_SEARCH: APIRoot + "/getNoteWithMemoBySearch",
         GET_DIRECTORY: APIRoot + "/getDirectory",
         POST_NOTE_WITH_MEMO: APIRoot + "/postNoteWithMemo",
         POST_DIRECTORY: APIRoot + "/postDirectory",
@@ -80,7 +81,8 @@ module.exports = {
     }),
 
     SearchActionTypes: keyMirror({
-        RECEIVE_INDEXING_TABLE: null
+        RECEIVE_INDEXING_TABLE: null,
+        SELECT_MEMO: null
     }),
 
 

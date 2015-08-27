@@ -185,79 +185,6 @@ html, body {
             #memo-searcher {
                 padding: 0;
                 height: inherit;
-
-                border-right: 2px solid @color-grey-850;
-
-                .inputer {
-                    width: 280px;
-                    height: inherit;
-                    background-color: @color-teal-500;
-
-                    display: -webkit-box;
-                    display: -webkit-flex;
-                    display: -moz-box;
-                    display: -ms-flexbox;
-                    display: flex;
-
-                    input {
-                        width: 230px;
-                        display: inline-block;
-                        resize: none;
-                        border: none;
-                        padding: 0;
-                        outline: none;
-                        color: @color-grey-200;
-
-                        font-size: 1.171em;
-                        font-weight: 100;
-
-                        padding: 0 1.25rem;
-
-                        line-height: inherit;
-
-                        overflow-x: scroll;
-
-                        background-color: transparent;
-
-                        &::-webkit-input-placeholder {
-                            color: @color-teal-700;
-                        }
-
-                        &:-moz-placeholder { /* Firefox 18- */
-                            color: @color-teal-700;
-                        }
-
-                        &::-moz-placeholder {  /* Firefox 19+ */
-                            color: @color-teal-700;
-                        }
-
-                        &:-ms-input-placeholder {
-                            color: @color-teal-700;
-                        }
-                    }
-
-                    button {
-                        width: 50px;
-                        padding: 0;
-                        border: 0;
-                        outline: 0;
-
-                        background-color: transparent;
-                        color: @color-grey-50;
-
-                        cursor: pointer;
-
-                        will-change: color;
-
-                        -webkit-transition: color .5s ease;
-                        -moz-transition: color .5s ease;
-                        -ms-transition: color .5s ease;
-                        -o-transition: color .5s ease;
-                        transition: color .5s ease;
-
-                        &:hover { color: @color-grey-300; }
-                    }
-                }
             }
 
             .account {
@@ -2462,18 +2389,19 @@ span.jqtree-dragging {
 
     position: relative;
 
-    input {
-        width: 240px;
-        height: 30px;
-        padding: 10px 20px;
-        font-size: @font-size;
-        border: 1px solid @border-color;
-        border-radius: @border-radius;
+    margin-right: 1.5rem;
 
-        &[aria-expanded="true"] {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
+    input {
+        width: 250px;
+        padding: 1rem .5rem;
+        font-size: 1em;
+        line-height: 1.8;
+        color: @color-teal-50;
+        border: none;
+        border-bottom: 2px solid @color-teal-300;
+        border-right: 0;
+        background: transparent;
+        border-radius: 0;
 
         &:focus {
             outline: none;
@@ -2483,7 +2411,7 @@ span.jqtree-dragging {
     &__suggestions {
         position: absolute;
         top: 51px;
-        width: 280px;
+        width: 250px;
         margin: 0;
         padding: 0;
         list-style-type: none;
@@ -2493,6 +2421,7 @@ span.jqtree-dragging {
         border-bottom-left-radius: @border-radius;
         border-bottom-right-radius: @border-radius;
         z-index: 2;
+
 
         &-section {
             &:first-child {
@@ -2519,10 +2448,10 @@ span.jqtree-dragging {
 
     &__suggestion {
         cursor: pointer;
-        padding: 10px 20px;
+        padding: 1.5rem 1rem;
 
         &--focused {
-            background-color: #ddd;
+            background-color: @color-teal-100;
         }
     }
 }
@@ -2530,3 +2459,33 @@ span.jqtree-dragging {
     height: 240px;
     overflow: auto;
 }
+
+.suggestion-memo {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+
+    line-height: 1.5;
+
+    .memo-title {
+        display: block;
+        font-size: 1.3rem;
+        line-height: 1rem;
+    }
+    .memo-text {
+        display: inline-block;
+        font-size: 1rem;
+        line-height: 1rem;
+    }
+}
+

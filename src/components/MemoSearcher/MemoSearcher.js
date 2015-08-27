@@ -11,6 +11,8 @@ var pkgInfo = require('../../../package');
 var userToken = cookie.load('token', null);
 var userName;
 
+var SearchActionCreator = require('../../actions/SearchActionCreator');
+
 var word;
 var thisCallback;
 if ( userToken != null ) {
@@ -54,15 +56,14 @@ var AutoInput = React.createClass({
     },
     renderSuggestion : function(suggestionObj, input) {
         return (
-            <span>
-                <strong>{decodeURI(suggestionObj.title)}</strong><br/>
-                <small style={{ color: '#777' }}>{decodeURI(suggestionObj.summary)}</small>
+            <span className="suggestion-memo">
+                <span className="memo-title">{decodeURI(suggestionObj.title)}</span><br/>
+                <span className="memo-text" style={{ color: '#777' }}>{decodeURI(suggestionObj.summary)}</span>
             </span>
         );
     },
     onSuggestionSelected:function(suggestion, event) {
-        console.log("click", suggestion);
-        event.preventDefault();
+        SearchActionCreator.selectMemo(suggestion.memoId);
     },
     getSuggestionValue:function(suggestionObj) {
         return decodeURI(suggestionObj.title);
@@ -70,7 +71,7 @@ var AutoInput = React.createClass({
     render :function() {
         var inputAttributes = {
             id : 'memo-searcher',
-            placeholder : 'Input Memo Title'
+            placeholder : '검색할 내용을 입력하세요.'
         };
         return (
             <div className="custom-renderer-example">
