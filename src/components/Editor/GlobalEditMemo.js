@@ -2,6 +2,7 @@ var React = require('react');
 var MemoActionCreator = require('../../actions/MemoActionCreator');
 var Constants = require('../../constants/Constants');
 var _ = require('underscore');
+var NoteStore = require('../../stores/NoteStore');
 
 var Textarea = require('react-textarea-autosize');
 
@@ -22,6 +23,8 @@ var GlobalEditMemo = React.createClass({
     componentDidMount: function() {
         var text = this.props.memo.text;
 
+        NoteStore.addFocusListener(this._onFocus);
+
         TextareaDOM = React.findDOMNode(this.refs._textarea);
         TextareaDOM.selectionStart = text.length;
         TextareaDOM.selectionEnd = text.length;
@@ -29,11 +32,30 @@ var GlobalEditMemo = React.createClass({
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
-            if (keyCode == Constants.KeyCode.ENTER) {
 
+            if (event.which == Constants.KeyCode.ENTER && event.shiftKey) {
+                event.preventDefault();
+                this._handleCompleteMemo();
+                return;
             }
-            if (keyCode == Constants.KeyCode.TAB) {
 
+            switch(keyCode) {
+                case Constants.KeyCode.ENTER:
+                    this._handleAddMemo();
+                    break;
+
+                case Constants.KeyCode.TAB:
+                    event.preventDefault();
+                    this._handleCompleteMemo();
+                    break;
+
+                case Constants.KeyCode.ARROW_UP:
+                    this._handleMoveToPrevious();
+                    break;
+
+                case Constants.KeyCode.BACKSPACE:
+                    this._handleMoveToPreviousByBackSpace();
+                    break;
             }
         }.bind(this));
     },
@@ -65,31 +87,61 @@ var GlobalEditMemo = React.createClass({
     },
 
     _handleCompleteMemo: function() {
-        event.preventDefault();
         var text = $(TextareaDOM).val();
         if (text == "") {
             return;
         }
         else {
-            var result = text;
             MemoActionCreator.addMemo(_.extend(this.props.memo, {
                 text: ""
-            }), result);
+            }), text);
             $(TextareaDOM).val("");
             TextareaDOM.focus();
         }
     },
 
+    _handleMoveToPrevious: function() {
+        if (0 == TextareaDOM.selectionStart) {
+            this.props.memo = _.extend(this.props.memo, {
+                text: $(TextareaDOM).val()
+            });
+            $(TextareaDOM).val("");
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+        }
+    },
+
+    _handleMoveToPreviousByBackSpace: function() {
+        if (0 == TextareaDOM.selectionStart && $(TextareaDOM).val() == "") {
+            this.props.memo = _.extend(this.props.memo, {
+                text: $(TextareaDOM).val()
+            });
+            $(TextareaDOM).val("");
+            MemoActionCreator.endEditMemoAndStartPreviousEditMemo(this.props.memo);
+        }
+    },
+
+    _handleClick: function() {
+        MemoActionCreator.startEditMemo(this.props.memo);
+    },
+
+
+    _onFocus: function() {
+        $(TextareaDOM).focus();
+    },
 
     __checkIfHeaderAreTwo: function(_headerOneMatches) {
         if (_headerOneMatches.length >= 2) return true;
         return false;
     },
 
+
+
+
     render: function() {
         return(
             <div className="globaledit-memo">
                 <Textarea ref="_textarea"
+                          onClick={this._handleClick}
                           minRows={25}
                           className="global-edit-memo-textarea"
                     />

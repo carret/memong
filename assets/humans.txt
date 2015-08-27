@@ -1,0 +1,9 @@
+/* MAIN */
+  Develop: 김재욱, 장초롱, 나석주
+  Mentor: 우상훈(Naver)
+  Site: http://www.memong.xyz
+
+/* SITE */
+  Last update: 27/08/2015
+  Doctype: HTML5
+  IDE: WebStorm

@@ -22,13 +22,11 @@ passport.use(new FacebookStrategy({
         clientID: pkginfo.oauth.facebook.FACEBOOK_APP_ID,
         clientSecret: pkginfo.oauth.facebook.FACEBOOK_APP_SECRET,
         callbackURL: pkginfo.oauth.facebook.callbackURL,
-        profileFields: ['id', 'displayName', 'email']
+        profileFields: ['email']
     },
     function (accessToken, refreshToken, profile, done) {
         var user = {
-            email : profile._json.email,
-            token : accessToken,
-            servicetype:'facebook'
+            email : profile._json.email
         };
         return done(null, user);
     }
@@ -40,7 +38,10 @@ passport.use(new GoogleStrategy({
         callbackURL: pkginfo.oauth.google.callbackURL
     },
     function (accessToken, refreshToken, profile, done) {
-        return done(null, profile);
+        var user = {
+            email : profile._json.emails[0].value
+        };
+        return done(null, user);
     }
 ));
 

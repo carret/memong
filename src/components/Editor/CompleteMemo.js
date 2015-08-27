@@ -8,7 +8,7 @@ var md = new Remarkable({
     langPrefix:   'language-',  // CSS language prefix for fenced blocks
     linkify:      false,        // Autoconvert URL-like text to links
     typographer:  false,
-    quotes: '“”‘’',
+    quotes: '“”‘’'
 });
 
 
@@ -19,15 +19,27 @@ var CompleteMemo = React.createClass({
 
     render: function() {
         var context = md.render(this.props.memo.text);
+
+        var _date = new Date(this.props.memo.date);
+
+        var date = _date.getFullYear() + '-'
+            + (_date.getMonth() + 1) + '-'
+            + _date.getDate();
+
+        var toolbar = (this.props.enableAddMemo) ? (
+            <div className="toolbar">
+                <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>
+                <span onClick={this._handleAddMemo}>새로운 메모 추가하기</span>
+            </div>
+        ) : <div />;
+
+
         return (
-            <div className="complete-memo" >
+            <div ref="_completeMemo" className="complete-memo" >
                 <div className="complete-memo-inner" onClick={this.startEditMemo}>
                     <div dangerouslySetInnerHTML={{__html: context}} />
                 </div>
-                <div className="toolbar">
-                    <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>
-                    <span onClick={this._handleAddMemo}>새로운 메모 추가하기</span>
-                </div>
+                {toolbar}
             </div>
         );
     },

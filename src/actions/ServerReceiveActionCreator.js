@@ -16,17 +16,18 @@ var ServerReceiveActionCreator = {
         });
     },
 
-    receiveDirectory: function(_tree) {
+    receiveTree: function(_tree, _selectNodeId) {
         AppDispatcher.handleServerAction({
-            actionType: Constants.DirectoryActionTypes.RECEIVE_DIRECTORY,
-            tree: _tree
+            actionType: Constants.DirectoryAction.RECEIVE_TREE,
+            tree: _tree,
+            selectNodeId: _selectNodeId
         });
     },
 
-    receiveHashTable: function(_hashTable) {
+    receiveIndexingTable: function(_indexingTable) {
         AppDispatcher.handleServerAction({
-            actionType: Constants.SearchActionTypes.RECEIVE_HASH_TABLE,
-            hashTable: _hashTable
+            actionType: Constants.SearchActionTypes.RECEIVE_INDEXING_TABLE,
+            indexingTable: _indexingTable
         });
     },
 

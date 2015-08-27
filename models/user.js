@@ -1,36 +1,41 @@
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
+
 var User = {
 
-    token : {
-        type : Object,
-        unique : true,
-        required : true
-    },
     username : {
         type : String,
         required:true
     },
-    servicetype:{
-        type:String,
-        required:true
+
+    selectNoteId: {
+        type: Object
     },
-    category : [
-        {
-            /* file && note categories */
-            name: {
-                type: String,
-                required: true
-            }, /* dir name - user defined
-         note - unique id */
-            type: {
-                /*  type ::  dir / note */
-                type: String,
-                required: true
-            },
-            parent: {
-                type: String /* null -- Root */
+
+
+    hashtable : [
+            {
+
             }
+    ],
+
+
+    tree : {
+        type : String
+    },
+
+    treeTable : [{
+        id : {
+            type : String,
+            required : true
+        },
+
+        nid : {
+            type : ObjectId
         }
-    ]
+    }]
 };
 
 module.exports = User;

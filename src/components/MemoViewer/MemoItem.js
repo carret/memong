@@ -49,16 +49,15 @@ var DialogContent = React.createClass({
     render : function() {
         return (
             <div ref="_dialog">
-                <div className="memoDeleteDialog-text"><span>정말로 삭제하시겠습니까?</span></div>
+                <div className="memoDeleteDialog-text"><span>정말 삭제하시겠습니까?</span></div>
                 <div className="memoDeleteDialog-btnMenu">
-                    <button onClick={this._deleteItem} >예</button>
-                    <button onClick={this.props.handleClose} >아니요</button>
+                    <button className="delete-ok" onClick={this._deleteItem} >삭제</button>
+                    <button className="delete-cancel" onClick={this.props.handleClose} >취소</button>
                 </div>
             </div>
         );
     }
 });
-
 
 var MemoItem = React.createClass({
     _onDelete: function() {
@@ -71,7 +70,7 @@ var MemoItem = React.createClass({
 
     handleTrigger: function () {
         this.d = showDialog(<DialogContent deleteItem={this._onDelete} handleClose={this._onClose} />,{
-            title: <p className="memoDeleteDialog-title">메모 삭제</p>,
+            title: <p className="dialog-title">메모 삭제</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -79,10 +78,14 @@ var MemoItem = React.createClass({
         });
     },
 
+    _onEditStart: function() {
+        MemoActionCreator.startEditMemoFromMemoViewer(this.props.memo);
+    },
+
     render: function() {
         return (
             <div className="memo-viewer-item">
-                <span className="title">
+                <span className="title" onClick={this._onEditStart}>
                     {this.props.memo.title}
                 </span>
                 <div>
