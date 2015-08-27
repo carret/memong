@@ -11,6 +11,8 @@ var pkgInfo = require('../../../package');
 var userToken = cookie.load('token', null);
 var userName;
 
+var SearchActionCreator = require('../../actions/SearchActionCreator');
+
 var word;
 var thisCallback;
 
@@ -38,31 +40,36 @@ var AutoInput = React.createClass({
     _onChange : function() {
         if ( word != null ) {
             var result = getIndexingTable();
+            console.log("result", result);
             var requestDelay = 50 + Math.floor(300 * Math.random());
             const escapedInput = utils.escapeRegexCharacters(word.trim());
             const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
-            var suggestions = result.filter(function (memo) {
-                return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
-            }).sort(function (suburbObj1, suburbObj2) {
-                //suburbObj1.suburb.toLowerCase().indexOf(lowercasedInput);
-                //suburbObj2.suburb.toLowerCase().indexOf(lowercasedInput);
+            var suggestions = result.map(function (memo) {
+                var newItem = {
+                    title: decodeURI(memo.title),
+                    summary: decodeURI(memo.summary),
+                    memoId: memo.memoId
+                };
+                return newItem;
+                //return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
             });
+            console.log("suggestions", suggestions);
             setTimeout(function () {
                 thisCallback(null, suggestions), requestDelay;
             });
         }
     },
+
     renderSuggestion : function(suggestionObj, input) {
         return (
-            <span>
-                <strong>{decodeURI(suggestionObj.title)}</strong><br/>
-                <small style={{ color: '#777' }}>{decodeURI(suggestionObj.summary)}</small>
+            <span className="suggestion-memo">
+                <span className="memo-title">{decodeURI(suggestionObj.title)}</span><br/>
+                <span className="memo-text" style={{ color: '#777' }}>{decodeURI(suggestionObj.summary)}</span>
             </span>
         );
     },
     onSuggestionSelected:function(suggestion, event) {
-        event.preventDefault();
-        console.log(suggestion);
+        SearchActionCreator.selectMemo(suggestion.memoId);
     },
     getSuggestionValue:function(suggestionObj) {
         return decodeURI(suggestionObj.title);
@@ -70,7 +77,7 @@ var AutoInput = React.createClass({
     render :function() {
         var inputAttributes = {
             id : 'memo-searcher',
-            placeholder : 'Input Memo Title'
+            placeholder : '검색할 내용을 입력하세요.'
         };
         return (
             <div className="custom-renderer-example">

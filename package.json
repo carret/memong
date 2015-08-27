@@ -18,6 +18,7 @@
     "flux": "^2.0.3",
     "jqtree": "^1.2.1",
     "jwt-simple": "^0.3.0",
+    "mecab-ffi": "git+https://github.com/xissy/node-mecab-ffi.git",
     "mongoose": "^4.1.2",
     "node-uuid": "^1.4.3",
     "passport": "0.2.2",

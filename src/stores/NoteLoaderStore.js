@@ -15,9 +15,25 @@ var needToLoadNoteAndMemos = {
     nodeId: null
 };
 
+var needToLoadNoteAndMemosBySearch = {
+    isTrue: false,
+    memoId: null
+};
+
 
 function wait() {
     needToWait = true;
+}
+
+function selectMemoInSearch(_memoId) {
+    needToLoadNoteAndMemosBySearch.isTrue = true;
+    needToLoadNoteAndMemosBySearch.memoId = _memoId;
+
+    if (!needToWait && needToLoadNoteAndMemosBySearch.isTrue) {
+        WebGetUtils.getNoteWithMemosBySearch(needToLoadNoteAndMemosBySearch.memoId);
+        needToLoadNoteAndMemosBySearch.isTrue = false;
+        NoteLoader.emitAutoSaveComplete();
+    }
 }
 
 function autoSaveComplete() {
@@ -25,6 +41,10 @@ function autoSaveComplete() {
     if (needToLoadNoteAndMemos.isTrue == true) {
         WebGetUtils.getNoteWithMemos(cookie.load('token'), needToLoadNoteAndMemos.nodeId);
         needToLoadNoteAndMemos.isTrue = false;
+    }
+    if (needToLoadNoteAndMemosBySearch.isTrue) {
+        WebGetUtils.getNoteWithMemosBySearch(needToLoadNoteAndMemosBySearch.memoId);
+        needToLoadNoteAndMemosBySearch.isTrue = false;
     }
 }
 
@@ -38,6 +58,7 @@ function selectNote(_nodeId) {
         NoteLoader.emitAutoSaveComplete();
     }
 }
+
 
 var NoteLoader = _.extend({}, EventEmitter.prototype, {
     emitWait: function() {
@@ -70,7 +91,6 @@ NoteStore.addAutoSaveRequestListener(wait);
 
 AppDispatcher.register(function(payload) {
     var action = payload.action;
-    console.log(action);
 
     switch(action.actionType) {
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
@@ -84,6 +104,12 @@ AppDispatcher.register(function(payload) {
             NoteLoader.emitWait();
             selectNote(action.nodeId);
             break;
+
+        case Constants.SearchActionTypes.SELECT_MEMO:
+            NoteLoader.emitWait();
+            selectMemoInSearch(action.memoId);
+            break;
+
     }
 });
 

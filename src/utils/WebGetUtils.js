@@ -29,6 +29,28 @@ var WebGetUtils = {
             });
     },
 
+    getNoteWithMemosBySearch: function(_memoId) {
+        request
+            .get(Constants.API.GET_NOTE_WITH_MEMO_BY_SEARCH)
+            .query({userToken: cookie.load('token'), memoId: _memoId})
+            .set('API-Key', 'GET_NOTE_WITH_MEMO_BY_SEARCH')
+            .set('Accept', 'application/json')
+            .end(function(err,res) {
+                if (res.ok) {
+                    if (res.body.hasOwnProperty("note")) {
+                        ServerReceiveActionCreator.receiveNote(res.body.note);
+                        ServerReceiveActionCreator.receiveMemo(res.body.memos);
+                    }
+                    else {
+                        throw new Error;
+                    }
+                }
+                else {
+                    // Show Notification
+                }
+            });
+    },
+
     getDirectory: function(callback) {
         request
             .get(Constants.API.GET_LOAD_DIRECTORY)

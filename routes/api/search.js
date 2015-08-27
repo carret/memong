@@ -13,8 +13,7 @@ var searchNoteAndMemo = function (req, res) {
     var user = req.query.username;
 
     Index.find({word: { $regex : word }, username: user}, function(err, memos) {
-        if ( err )
-            res.send(err);
+        if ( err ) { res.send(err); }
         else {
             var result = [];
             var memoIds = [];
@@ -25,7 +24,8 @@ var searchNoteAndMemo = function (req, res) {
                     var search = {
                         title : encodeURI(" " + memos[i].memos[j].memo.title),
                         summary : encodeURI(" " + memos[i].memos[j].memo.summary),
-                        memoId : memos[i].memos[j].memo.memoId
+                        memoId : memos[i].memos[j].memo.memoId,
+                        weight : memos[i].memos[j].memo.weight
                     };
                     if ( memoIds.indexOf(memos[i].memos[j].memo.memoId) == -1 ) {
                         memoIds.push(memos[i].memos[j].memo.memoId);
@@ -41,7 +41,11 @@ var searchNoteAndMemo = function (req, res) {
                     }
                 }
             }
-            console.log(result);
+
+            result.sort(function(a,b) {
+                return a.weight > b.weight ? -1 : a.weight < b.weight ? 1 : 0;
+            });
+            console.log("result",result);
             res.send({memos : result});
         }
     });
