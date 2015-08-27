@@ -48,12 +48,9 @@ $ gulp
 
 **Shift + ENTER**: 메모 편집 완료.
 
-<<<<<<< HEAD
->>>>>>> seokju
 =======
 **BACKSPACE**: 아래 메모로 포커스 이동.
 
->>>>>>> seokju
 
 
 ### 레이아웃 구성
