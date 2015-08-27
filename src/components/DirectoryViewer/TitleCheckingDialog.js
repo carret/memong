@@ -43,13 +43,13 @@ var TitleCheckingDialog = React.createClass({
 
     render : function() {
         return (
-            <div ref="_dialog">
+            <div id="renameTitle" ref="_dialog">
                 <div className="redundancyCheckDialog-text"><span>타이틀 중복 확인</span></div>
                 <input id="title" type='text' onChange={this.handleChange} value={this.state.value} />
                 <span id="redundancy-alert" style={{"color":"red",  "display":"none"}}>! 중복 타이틀입니다.</span>
                 <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._IsRedundancy} >확인</button>
-                    <button onClick={this.props.handleClose} >취소</button>
+                    <button className="ok" onClick={this._IsRedundancy} >확인</button>
+                    <button className="no" onClick={this.props.handleClose} >취소</button>
                 </div>
             </div>
         );

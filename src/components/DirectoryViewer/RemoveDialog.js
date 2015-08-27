@@ -37,17 +37,18 @@ var RemoveDialog = React.createClass({
 
     render : function() {
         return (
-            <div ref="_dialog">
+            <div id="removeDialog" ref="_dialog">
                 <div className="redundancyCheckDialog-text"><span>정말 삭제하시겠습니까?</span></div>
                 <span id="remove-alert" style={{"color":"red",  "display":"none"}}>! 마지막 노트는 삭제할 수 없습니다.</span>
                 <div className="redundancyCheckDialog-btnMenu">
-                    <button onClick={this._removeNode} >확인</button>
-                    <button onClick={this.props.handleClose} >취소</button>
+                    <button className="delete-ok" onClick={this._removeNode} >확인</button>
+                    <button className="delete-cancel" onClick={this.props.handleClose} >취소</button>
                 </div>
             </div>
         );
     }
 });
+
 
 function _noteCheck(){
 

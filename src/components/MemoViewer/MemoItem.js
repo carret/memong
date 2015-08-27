@@ -49,7 +49,7 @@ var DialogContent = React.createClass({
     render : function() {
         return (
             <div ref="_dialog">
-                <div className="memoDeleteDialog-text"><span>정말로 삭제하시겠습니까?</span></div>
+                <div className="memoDeleteDialog-text"><span>정말 삭제하시겠습니까?</span></div>
                 <div className="memoDeleteDialog-btnMenu">
                     <button className="delete-ok" onClick={this._deleteItem} >삭제</button>
                     <button className="delete-cancel" onClick={this.props.handleClose} >취소</button>

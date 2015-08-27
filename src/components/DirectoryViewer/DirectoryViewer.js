@@ -62,6 +62,7 @@ var DirectoryViewer = React.createClass({
                 data: treeData,
                 autoOpen: true,
                 dragAndDrop: true,
+                keyboardSupport: false,
 
                 onCreateLi: function(node, $li) {
                     switch(node.type) {
@@ -70,7 +71,7 @@ var DirectoryViewer = React.createClass({
                             break;
 
                         case 'note':
-                            $li.find('.jqtree-title').before('<span class="node-icon"><i class="material-icons">&#xE873;</i></span>');
+                            $li.find('.jqtree-title').before('<span class="node-icon isNote"><i class="material-icons">&#xE873;</i></span>');
                             break;
                     }
 
@@ -175,6 +176,8 @@ var DirectoryViewer = React.createClass({
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
 
+        this._onChange();
+
         if (node.type == 'note') DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id);
         else  DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title);
     },
@@ -188,6 +191,7 @@ var DirectoryViewer = React.createClass({
     _onChange : function(){
         var selector;
 
+        if(_selectedNode != null) { blockBtn(_selectedNode.id);}
         if(_selectedNoteId != 0) {
             selector = $('#btn_mod'+_selectedNoteId);
             selector.parent().children('span').css('font-weight','normal');
@@ -202,12 +206,11 @@ var DirectoryViewer = React.createClass({
         NoteStore.removeInitListener(this._onChange);
     },
     componentDidMount: function() {
-
         NoteStore.addInitListener(this._onChange);
+
         this._initComponent();
         this._getDataToDB();
         this._bindTreeEvent();
-
     },
 
     _onClose: function() {
@@ -246,7 +249,6 @@ var DirectoryViewer = React.createClass({
     },
 
     handleTrigger_RemoveNode: function () {
-
         this.d = showDialog(<RemoveDialog actionItem={this._deleteNode} handleClose={this._onClose} elTree={$(elTree)} selectedNode={_selectedNode} type='remove'/>,{
             title: <p className="confirmDialog-title">아이템 삭제</p>,
             animation: 'zoom',

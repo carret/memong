@@ -59585,7 +59585,7 @@ var DialogContent = React.createClass({displayName: "DialogContent",
         return (
             React.createElement("div", {id: "logoutModel"}, 
                 React.createElement("div", {className: "content"}, 
-                    React.createElement("span", null, "정말로 로그아웃 하시겠습니까?")
+                    React.createElement("span", null, "정말 로그아웃 하시겠습니까?")
                 ), 
                 React.createElement("div", {className: "btn"}, 
                     React.createElement("a", {className: "logout-ok", href: "/logout"}, React.createElement("span", null, "로그아웃")), 
@@ -59758,6 +59758,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                 data: treeData,
                 autoOpen: true,
                 dragAndDrop: true,
+                keyboardSupport: false,
 
                 onCreateLi: function(node, $li) {
                     switch(node.type) {
@@ -59766,7 +59767,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
                             break;
 
                         case 'note':
-                            $li.find('.jqtree-title').before('<span class="node-icon"><i class="material-icons">&#xE873;</i></span>');
+                            $li.find('.jqtree-title').before('<span class="node-icon isNote"><i class="material-icons">&#xE873;</i></span>');
                             break;
                     }
 
@@ -59871,6 +59872,8 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         $(elTree).tree('updateNode', node, _title);
         treeData = $(elTree).tree('toJson');
 
+        this._onChange();
+
         if (node.type == 'note') DirectoryActionCreator.renameNote_updateDB(treeData, Constants.DirectoryAPIType.RENAME_NOTE, _title, node.id);
         else  DirectoryActionCreator.renameFolder_updateDB(treeData, Constants.DirectoryAPIType.CHANGE_TREE, _title);
     },
@@ -59884,6 +59887,7 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     _onChange : function(){
         var selector;
 
+        if(_selectedNode != null) { blockBtn(_selectedNode.id);}
         if(_selectedNoteId != 0) {
             selector = $('#btn_mod'+_selectedNoteId);
             selector.parent().children('span').css('font-weight','normal');
@@ -59898,12 +59902,11 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
         NoteStore.removeInitListener(this._onChange);
     },
     componentDidMount: function() {
-
         NoteStore.addInitListener(this._onChange);
+
         this._initComponent();
         this._getDataToDB();
         this._bindTreeEvent();
-
     },
 
     _onClose: function() {
@@ -59942,7 +59945,6 @@ var DirectoryViewer = React.createClass({displayName: "DirectoryViewer",
     },
 
     handleTrigger_RemoveNode: function () {
-
         this.d = showDialog(React.createElement(RemoveDialog, {actionItem: this._deleteNode, handleClose: this._onClose, elTree: $(elTree), selectedNode: _selectedNode, type: "remove"}),{
             title: React.createElement("p", {className: "confirmDialog-title"}, "아이템 삭제"),
             animation: 'zoom',
@@ -60008,17 +60010,18 @@ var RemoveDialog = React.createClass({displayName: "RemoveDialog",
 
     render : function() {
         return (
-            React.createElement("div", {ref: "_dialog"}, 
+            React.createElement("div", {id: "removeDialog", ref: "_dialog"}, 
                 React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "정말 삭제하시겠습니까?")), 
                 React.createElement("span", {id: "remove-alert", style: {"color":"red",  "display":"none"}}, "! 마지막 노트는 삭제할 수 없습니다."), 
                 React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
-                    React.createElement("button", {onClick: this._removeNode}, "확인"), 
-                    React.createElement("button", {onClick: this.props.handleClose}, "취소")
+                    React.createElement("button", {className: "delete-ok", onClick: this._removeNode}, "확인"), 
+                    React.createElement("button", {className: "delete-cancel", onClick: this.props.handleClose}, "취소")
                 )
             )
         );
     }
 });
+
 
 function _noteCheck(){
 
@@ -60093,13 +60096,13 @@ var TitleCheckingDialog = React.createClass({displayName: "TitleCheckingDialog",
 
     render : function() {
         return (
-            React.createElement("div", {ref: "_dialog"}, 
+            React.createElement("div", {id: "renameTitle", ref: "_dialog"}, 
                 React.createElement("div", {className: "redundancyCheckDialog-text"}, React.createElement("span", null, "타이틀 중복 확인")), 
                 React.createElement("input", {id: "title", type: "text", onChange: this.handleChange, value: this.state.value}), 
                 React.createElement("span", {id: "redundancy-alert", style: {"color":"red",  "display":"none"}}, "! 중복 타이틀입니다."), 
                 React.createElement("div", {className: "redundancyCheckDialog-btnMenu"}, 
-                    React.createElement("button", {onClick: this._IsRedundancy}, "확인"), 
-                    React.createElement("button", {onClick: this.props.handleClose}, "취소")
+                    React.createElement("button", {className: "ok", onClick: this._IsRedundancy}, "확인"), 
+                    React.createElement("button", {className: "no", onClick: this.props.handleClose}, "취소")
                 )
             )
         );
@@ -61070,7 +61073,7 @@ var DialogContent = React.createClass({displayName: "DialogContent",
     render : function() {
         return (
             React.createElement("div", {ref: "_dialog"}, 
-                React.createElement("div", {className: "memoDeleteDialog-text"}, React.createElement("span", null, "정말로 삭제하시겠습니까?")), 
+                React.createElement("div", {className: "memoDeleteDialog-text"}, React.createElement("span", null, "정말 삭제하시겠습니까?")), 
                 React.createElement("div", {className: "memoDeleteDialog-btnMenu"}, 
                     React.createElement("button", {className: "delete-ok", onClick: this._deleteItem}, "삭제"), 
                     React.createElement("button", {className: "delete-cancel", onClick: this.props.handleClose}, "취소")

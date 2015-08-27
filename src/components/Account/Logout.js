@@ -39,7 +39,7 @@ var DialogContent = React.createClass({
         return (
             <div id='logoutModel'>
                 <div className="content">
-                    <span>정말로 로그아웃 하시겠습니까?</span>
+                    <span>정말 로그아웃 하시겠습니까?</span>
                 </div>
                 <div className="btn">
                     <a className="logout-ok" href="/logout"><span>로그아웃</span></a>
