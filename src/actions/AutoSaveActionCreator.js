@@ -10,7 +10,6 @@ var AutoSaveActionCreator = {
         AppDispatcher.handleAutoSaveAction({
             actionType: Constants.AutoSaveActionTypes.REQUEST_SAVE
         });
-        console.log("requestAutoSave");
         WebPostUtils.postNoteWithMemo(_selectNoteId, _memos);
     }
 };

@@ -5,7 +5,6 @@ var AutoSaver = require('../AutoSaver/AutoSaver');
 var NoteStore = require('../../stores/NoteStore');
 
 var ToggleAsideButton = require('./ToggleAsideButton');
-var HowToUse = require('./HowToUse');
 
 
 function getNoteTitle() {
@@ -33,7 +32,6 @@ var NoteHeader = React.createClass({
 
     render: function() {
         var date = new Date(this.state.date);
-        console.log(this.state.date);
         var dateItem = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 
         return(

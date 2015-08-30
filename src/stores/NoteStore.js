@@ -265,7 +265,6 @@ function _parseMemo(_unParsedMemo) {
                 key: uuid.v4()
             });
         }
-        console.log("resultMemos", resultMemos);
     }
     return resultMemos;
 }

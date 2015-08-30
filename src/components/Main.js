@@ -64,7 +64,7 @@ var Main = React.createClass({
 
     handleTrigger: function () {
         this.d = showDialog(<DialogContent />,{
-            title: <p id="logModelTitle">로그인</p>,
+            title: <p classNam="dialog-title">로그인</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,
@@ -82,11 +82,9 @@ var Main = React.createClass({
         SectionDOM.css("width", this.state.mainWidth - 502);
 
         if ( cookie.load('username') != null ) {
-            console.log('login');
             this.setState({isLogin:true})
         }
         else {
-            console.log('not login');
             this.setState({isLogin:false})
         }
 
@@ -110,9 +108,9 @@ var Main = React.createClass({
         if (!this.state.asideVisible) {
             AsideDOM.removeClass('hide');
             SectionDOM.removeClass('hide');
-            SectionDOM.animate({
-                "width": this.state.mainWidth - 502
-            }, 650);
+            setTimeout(function () {
+                SectionDOM.css("width", this.state.mainWidth - 502);
+            }.bind(this), 500);
         }
         else {
             AsideDOM.addClass('hide');
@@ -198,21 +196,21 @@ var Main = React.createClass({
                     <div className="team-info-outer">
                         <div className="team-info-inner">
                             <div className="item">
-                                <div className="profile"><img src="http://placehold.it/150x150" /></div>
+                                <div className="profile"><img src="./kjwook.png" /></div>
                                 <div className="content">
                                     <span className="name">김재욱</span>
                                     <span className="email">cmdhema@gmail.com</span>
                                 </div>
                             </div>
                             <div className="item">
-                                <div className="profile"><img src="http://placehold.it/150x150" /></div>
+                                <div className="profile"><img src="./cho.png" /></div>
                                 <div className="content">
                                     <span className="name">장초롱</span>
                                     <span className="email">crjang91@gmail.com</span>
                                 </div>
                             </div>
                             <div className="item">
-                                <div className="profile"><img src="http://placehold.it/150x150" /></div>
+                                <div className="profile"><img src="./seokju.png" /></div>
                                 <div className="content">
                                     <span className="name">나석주</span>
                                     <span className="email">seokmaTD@gmail.com</span>

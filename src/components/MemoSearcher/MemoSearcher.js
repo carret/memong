@@ -53,7 +53,6 @@ var AutoInput = React.createClass({
                 return newItem;
                 //return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
             });
-            console.log("suggestions", suggestions);
             setTimeout(function () {
                 thisCallback(null, suggestions), requestDelay;
             });

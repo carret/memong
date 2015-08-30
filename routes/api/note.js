@@ -73,7 +73,6 @@ var getNoteWithMemoBySearch = function(req, res) {
                 if (err) { return next(err); }
                 else {
                     if (result == null) {
-                        console.log("유저 없음");
                         return next("유저가 없습니다.");
                     }
                     else {
@@ -108,7 +107,6 @@ var getSelectNoteWithMemo = function(req, res) {
                     if (err) { return next(err); }
                     else {
                         if (result == null) {
-                            console.log("유저 없음");
                             return next("유저가 없습니다.");
                         }
                         else {
@@ -170,7 +168,6 @@ var getSelectNoteWithMemo = function(req, res) {
                     if (err) { return next(err); }
                     else {
                         if (result == null) {
-                            console.log("유저 없음");
                             return next("유저가 없습니다");
                         }
                         else {
@@ -267,7 +264,6 @@ var saveMemo = function(req, res) {
             )
         },
         function(memos, callback) {
-            //console.log(memos);
             Index.remove({username: userName}).exec();
             var search = [];
 
@@ -319,8 +315,6 @@ var saveMemo = function(req, res) {
                             }
                             callback(null, result);
                         }, function(result, callback) {
-                            console.log(memo.title);
-                            console.log(result);
                             for ( var i = 0; i < result.length; i++ ) {
                                 (function(currentI) {
                                     Index.update({word:result[currentI].noun, username:userName}, {

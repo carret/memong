@@ -43,7 +43,7 @@ var Header = React.createClass({
                 <NoteLoader />
                 <div className="header-left">
                     <div id="logo-icon">
-                        <img src="./logo.svg" />
+                        <img src="./logo.png" />
                     </div>
                     <a id="logo" href='/'>memong</a>
                 </div>

@@ -20,12 +20,6 @@ var CompleteMemo = React.createClass({
     render: function() {
         var context = md.render(this.props.memo.text);
 
-        var _date = new Date(this.props.memo.date);
-
-        var date = _date.getFullYear() + '-'
-            + (_date.getMonth() + 1) + '-'
-            + _date.getDate();
-
         var toolbar = (this.props.enableAddMemo) ? (
             <div className="toolbar">
                 <i onClick={this._handleAddMemo} className="material-icons">&#xE147;</i>

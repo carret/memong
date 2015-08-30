@@ -28,7 +28,6 @@ exports.doRoutes = function(app) {
         failureRedirect: '/login/google/fail'
     }));
     app.get('/login/google/success', ensureAuthenticated, function (req, res, next) {
-        console.log('google login success');
         writeCookie(req, res, next);
         writeDB(req, res, next);
         res.redirect('/');
@@ -40,14 +39,12 @@ exports.doRoutes = function(app) {
         failureRedirect: '/login/facebook/fail'
     }));
     app.get('/login/facebook/success', ensureAuthenticated, function (req, res, next) {
-        console.log('facebook login success');
         writeCookie(req, res, next);
         writeDB(req, res, next);
         res.redirect('/');
     });
 
     app.get('/logout', function (req, res) {
-        console.log('logout');
         res.clearCookie('token');
         req.logout();
         res.redirect('/');
@@ -56,7 +53,6 @@ exports.doRoutes = function(app) {
 
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
-            console.log('isEnsureAuthenticated!');
             next();
         }
         else {
@@ -65,7 +61,6 @@ exports.doRoutes = function(app) {
     }
 
     function writeCookie(req, res, next) {
-        console.log('write cookie');
         token = jwt.encode({username: req.session.passport.user.email}, pkginfo.oauth.token.secret);
         res.cookie('token', token, {
             expires: new Date(Date.now() + 99999999999)
@@ -76,13 +71,10 @@ exports.doRoutes = function(app) {
     function writeDB(req, res, next) {
         async.waterfall([
             function (callback) {
-                console.log("1");
                 client.set(token, req.session.passport.user.email, redis.print);
                 client.get(token, function (err, name) {
-                    console.log('redis name : ' + name);
                     User.findOne({username: req.session.passport.user.email}, function (err, user) {
                         if (user == null) {
-                            console.log("2");
                             var newUser = new User({
                                 username: req.session.passport.user.email
                             });
@@ -97,7 +89,6 @@ exports.doRoutes = function(app) {
             },
             function (userId, isFirstUser, callback) {
                 if (isFirstUser) {
-                    console.log("4");
                     var newNote = new Note({
                         title: "새로운 노트",
                         memos: [
@@ -114,7 +105,6 @@ exports.doRoutes = function(app) {
                             res.send(err);
                         }
                         else {
-                            console.log("save new note");
                             callback(null, userId, result._id);
                         }
                     })
@@ -153,7 +143,6 @@ exports.doRoutes = function(app) {
                             res.send(err);
                         }
                         else {
-                            console.log("New User", result);
                             callback();
                         }
                     }
