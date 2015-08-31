@@ -2,16 +2,21 @@
 
 ### 소개
 memong은 웹 클라우드 텍스트 에디터입니다.
+
 1. 마크다운을 지원합니다.
 2. 텍스트 내용을 ``메모``라는 단위로 구분하여 관리합니다.
 3. 타이핑 중심의 텍스트 에디터로 여러 키보드 단축키를 지원합니다.
 
 다음은 해당 프로젝트의 개발툴 및 서비스입니다.
+
 ``node.js``, ``mongoDB``, ``Redis``, `React.js`, `jQuery`, `Flux`, `less`, `gulp`
 
 Site: [http://memong.xyz](http://memong.xyz)
+
 Trello: [https://trello.com/b/T4XVwb2J/carret](https://trello.com/b/T4XVwb2J/carret)
+
 Git: [https://github.com/carret/memong](https://github.com/carret/memong)
+
 
 **저자**
 * 김재욱(cmdhema@gmail.com)
