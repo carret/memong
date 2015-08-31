@@ -171,7 +171,7 @@ var Main = React.createClass({
                         <div className="item">
                             <div className="main">
                                 <span className="header">2. 내용을 입력하세요</span>
-                                <span className="content">여러 헤더들과 링크, 이미지, 리스트 등을 메모안에 입력하세요! 마크다운을 사용하기 때문에 오로지 텍스트로만 이루어집니다. 이는 텍스트로만으로 빠르고 싶게 아름다운 타이포그래피를 만들 수 있도록 합니다.</span>
+                                <span className="content">여러 헤더들과 링크, 이미지, 리스트 등을 메모안에 입력하세요! 마크다운을 사용하기 때문에 오로지 텍스트로만 이루어집니다. 이는 텍스트만으로도 빠르고 싶게 아름다운 타이포그래피를 만들 수 있도록 합니다.</span>
                             </div>
                             <img className="img2" src="./front-section3-2.svg" />
                         </div>
