@@ -64,7 +64,7 @@ var Main = React.createClass({
 
     handleTrigger: function () {
         this.d = showDialog(<DialogContent />,{
-            title: <p classNam="dialog-title">로그인</p>,
+            title: <p className="dialog-title">로그인</p>,
             animation: 'zoom',
             maskAnimation: 'fade',
             onBeforeClose: this.beforeClose,

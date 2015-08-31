@@ -11,7 +11,6 @@ var cookie = require('react-cookie');
 
 
 
-
 //Note Data
 var selectNote = {};
 

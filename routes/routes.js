@@ -24,7 +24,7 @@ var index = function(req, res) {
             } else {
                 res.render('index', {title: "memong"});
             }
-        })
+        });
     } else {
         res.render('index', {title: "memong"});
     }

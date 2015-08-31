@@ -14,14 +14,6 @@ var User = {
         type: Object
     },
 
-
-    hashtable : [
-            {
-
-            }
-    ],
-
-
     tree : {
         type : String
     },
