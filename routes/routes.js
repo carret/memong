@@ -15,21 +15,17 @@ exports.doRoutes = function(app) {
 
 var index = function(req, res) {
     var cookieToken = req.cookies.token;
-    console.log("쿠키 토큰 : " + cookieToken);
 
     if ( cookieToken != null ) {
         client.get(cookieToken, function(err, name) {
             if ( name == null ) {
-                console.log('unAuthorized 비정상 접근입니다.');
                 res.status=401;
                 res.send('unAuthorized 비정상 접근입니다.');
             } else {
-                console.log('token available, render');
                 res.render('index', {title: "memong"});
             }
-        })
+        });
     } else {
-        console.log('token null, render');
         res.render('index', {title: "memong"});
     }
 };

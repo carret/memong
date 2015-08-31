@@ -24,6 +24,7 @@ var WebGetUtils = {
                     }
                 }
                 else {
+                    console.log('request error');
                     // Show Notification
                 }
             });
@@ -46,6 +47,7 @@ var WebGetUtils = {
                     }
                 }
                 else {
+                    console.log('request error');
                     // Show Notification
                 }
             });
@@ -63,6 +65,7 @@ var WebGetUtils = {
                     callback(res.body);
                 }
                 else {
+                    console.log('request error');
                     callback('error');
                 }
             });

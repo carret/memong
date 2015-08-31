@@ -94,13 +94,11 @@ AppDispatcher.register(function(payload) {
 
     switch(action.actionType) {
         case Constants.AutoSaveActionTypes.RECEIVE_SAVE:
-            console.log("NoteLoader RECEIVE_SAVE");
             autoSaveComplete();
             NoteLoader.emitAutoSaveComplete();
             break;
 
         case Constants.DirectoryAction.SELECT_NOTE:
-            console.log("NoteLoader SELECT_NOTE");
             NoteLoader.emitWait();
             selectNote(action.nodeId);
             break;

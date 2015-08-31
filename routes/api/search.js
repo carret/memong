@@ -41,11 +41,9 @@ var searchNoteAndMemo = function (req, res) {
                     }
                 }
             }
-
             result.sort(function(a,b) {
                 return a.weight > b.weight ? -1 : a.weight < b.weight ? 1 : 0;
             });
-            console.log("result",result);
             res.send({memos : result});
         }
     });

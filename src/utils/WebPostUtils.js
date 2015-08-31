@@ -15,6 +15,11 @@ var WebPostUtils = {
             memos.push(_memos[idx]);
         }
 
+        if (_memos.length == 1) {
+            ServerReceiveActionCreator.receiveAutoSaveComplete();
+            return;
+        }
+
         request
             .post(Constants.API.POST_NOTE_WITH_MEMO)
             .send({noteId: _noteId, memos: memos})
@@ -25,6 +30,7 @@ var WebPostUtils = {
                     ServerReceiveActionCreator.receiveAutoSaveComplete();
                 }
                 else {
+                    console.log('request error');
                     // Show Notification
                 }
             });
@@ -51,14 +57,15 @@ var WebPostUtils = {
             .end(function(err,res) {
                 if (res.ok){
                     ServerReceiveActionCreator.receiveTree(_tree);
-                    console.log("res", res);
                     if (res.body != null) {
                         if(res.body.hasOwnProperty('noteId')) {
                             WebGetUtils.getNoteWithMemos(cookie.load('token'), null);
                         }
                     }
                 }
-                else console.log('error');
+                else {
+                    console.log('request error');
+                }
             });
     }
 };

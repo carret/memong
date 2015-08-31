@@ -30,7 +30,6 @@ var AutoInput = React.createClass({
         SearchStore.addChangeListener(this._onChange); //Store의 데이터 변경을 감지하는 Listener 등록
     },
     onSuggestionFocused:function(suggestion) { // In this example 'suggestion' is a string
-        console.log('Suggestion focused: [' + suggestion + ']');
     },
     getSuggestion:function(input, callback) {
         word = input;
@@ -40,7 +39,6 @@ var AutoInput = React.createClass({
     _onChange : function() {
         if ( word != null ) {
             var result = getIndexingTable();
-            console.log("result", result);
             var requestDelay = 50 + Math.floor(300 * Math.random());
             const escapedInput = utils.escapeRegexCharacters(word.trim());
             const suburbMatchRegex = new RegExp('\\b' + encodeURI(escapedInput), 'i');
@@ -53,7 +51,6 @@ var AutoInput = React.createClass({
                 return newItem;
                 //return suburbMatchRegex.test(memo.title, decodeURI(memo.title), memo.summary, decodeURI(memo.summary));
             });
-            console.log("suggestions", suggestions);
             setTimeout(function () {
                 thisCallback(null, suggestions), requestDelay;
             });

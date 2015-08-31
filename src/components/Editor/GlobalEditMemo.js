@@ -26,9 +26,9 @@ var GlobalEditMemo = React.createClass({
         NoteStore.addFocusListener(this._onFocus);
 
         TextareaDOM = React.findDOMNode(this.refs._textarea);
-        TextareaDOM.selectionStart = text.length;
-        TextareaDOM.selectionEnd = text.length;
-        TextareaDOM.focus();
+        //TextareaDOM.selectionStart = text.length;
+        //TextareaDOM.selectionEnd = text.length;
+        //TextareaDOM.focus();
 
         $(TextareaDOM).on("keydown", function(event) {
             var keyCode = event.keyCode;
