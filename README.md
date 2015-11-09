@@ -19,11 +19,11 @@
 
 ## 문서
 * 한국어
-	* [memong 소개](https://github.com/carret/memong/docs/KR/Introduction(KR).md)
+	* [소개](https://github.com/carret/memong/blob/master/docs/KR/Introduction(KR).md)
 	* API Reference
 
 * English
-	* [Introduction](https://github.com/carret/memong/docs/EN/Introduction(EN).md)
+	* [Introduction](https://github.com/carret/memong/blob/master/docs/EN/Introduction(EN).md)
 	* API Reference
 
 
