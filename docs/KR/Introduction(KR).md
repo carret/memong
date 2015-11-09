@@ -17,17 +17,6 @@
 * 나석주 (seokmaTD@gmail.com)
 
 
-## 문서
-* 한국어
-	* [memong 소개](https://github.com/carret/memong/docs/KR/Introduction(KR).md)
-	* API Reference
-
-* English
-	* [Introduction](https://github.com/carret/memong/docs/EN/Introduction(EN).md)
-	* API Reference
-
-
-
 ### 디렉토리 구성
 
 ```
