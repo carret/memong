@@ -4,7 +4,7 @@
 
 **Current release version is v0.0.1, You can download memong application via this [link](https://github.com/carret/memong/releases/tag/v0.0.1). This master branch is currently under development.**
 
-see this README.md in [Korean](https://github.com/carret/memong/blob/master/docs/README(KR).md).
+see this README.md in [한국어](https://github.com/carret/memong/blob/master/docs/README(KR).md).
 
 visit [Main Showcase](http://memong.xyz/).
 

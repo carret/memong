@@ -63,7 +63,12 @@ Use gulp to build source codes.
 $ gulp
 ```
 
-> **NOTE:** You might need to install gulp by global when the ``$ gulp`` commands cause error. Try to install gulp by global: ``$ npm install -g gulp``, and re-try the build.
+After gulp default task, it will build source codes under the ``src`` folder. And automatically access to ``http://loaclhost:3000``. Is will be synced when you access local server by port ``3000`` because of [browser-sync](http://www.browsersync.io/).
+
+
+> **NOTE 1**: NOTE 1: Will thorw error when MongoDB and Redis are NOT excuting. Make sure to excute after install them.
+
+> **NOTE 2**: If commands cannot find ``gulp``, do ``$ npm install -g gulp`` and try to build source codes by gulp again.
 
 
 ## Architecture
