@@ -31,6 +31,7 @@ Documentation for **Developer**.
 └── package.json                # Package Manager
 ```
 
+<br />
 ## Getting Start
 
 ### Pre-requisites
@@ -38,6 +39,10 @@ Documentation for **Developer**.
 * [Git](http://git-scm.com/)
 * [node.js / npm](https://nodejs.org/en/)
 * [gulp](http://gulpjs.com/)
+* [MongoDB](https://www.mongodb.org/)
+* [Redis](http://www.redis.io/)
+
+> **NOTE**: After install MongoDB and Redis, make sure excute them.
 
 
 ### Download Project
@@ -71,6 +76,7 @@ After gulp default task, it will build source codes under the ``src`` folder. An
 > **NOTE 2**: If commands cannot find ``gulp``, do ``$ npm install -g gulp`` and try to build source codes by gulp again.
 
 
+<br />
 ## Architecture
 
 ![memong-architecture](https://farm1.staticflickr.com/728/22903475152_7265387735_k.jpg)
