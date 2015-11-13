@@ -1,24 +1,7 @@
-# memong
+# Developer Guide
+Documentation for **Developer**.
 
-### Introduction
-[memong](http://memong.xyz) is a Web Cloud Text Editor. memong has special features.
-
-1. Support Makrdown.
-2. Managed contexts by ``memo`` which is separated from texts.
-3. Focus on Typing.
-4. Support many keyboard shortcuts.
-
-
-We used [Trello](https://trello.com/b/T4XVwb2J/carret) for team communicate.
-
-
-### Teams
-* Jae Wook, Kim (cmdhema@gmail.com)
-* Chorong, Jang (crjang91@gmail.com)
-* Seok Ju, Na (seokmaTD@gmail.com)
-
-
-### Directory
+## Directory
 
 ```
 .
@@ -48,37 +31,44 @@ We used [Trello](https://trello.com/b/T4XVwb2J/carret) for team communicate.
 └── package.json                # Package Manager
 ```
 
+## Getting Start
 
-### Build & Run
-First, ``git clone`` to get project.
+### Pre-requisites
+
+* [Git](http://git-scm.com/)
+* [node.js / npm](https://nodejs.org/en/)
+* [gulp](http://gulpjs.com/)
+
+
+### Download Project
+
+* Git Clone.
 
 ```shell
 $ git clone https://github.com/carret/memong.git
 ```
 
-Install node modules.
+* Download development tools.
 
 ```shell
 $ npm install
 ```
 
-After install node modules, install [gulp](http://gulpjs.com/) module by global to build project by gulp. Run defulat ``gulp task`` to build source codes.
+### Build & Run
+
+Use gulp to build source codes.
+
 
 ```shell
-$ npm install -g gulp
-$ gulp                          
+$ gulp
 ```
 
-You can access same screen when you use port 3000 by [browser-sync](http://www.browsersync.io/). In addition when you modify source codes, it will be build source codes and refresh browser automatically.
+> **NOTE:** You might need to install gulp by global when the ``$ gulp`` commands cause error. Try to install gulp by global: ``$ npm install -g gulp``, and re-try the build.
 
 
-### How to use Editor
-**TAB**: Focus move to down ``memo``.
+## Architecture
 
-**Arrow Down**: Focus move to down ``memo``.(same as TAB)
+![memong-architecture](https://farm1.staticflickr.com/728/22903475152_7265387735_k.jpg)
 
-**Arrow Up**: Focus move to up ``memo``.
+The modules are loaded by **[browserify](http://browserify.org/)** which follows [AMD(Asynchronous Module Definition)](https://github.com/amdjs/amdjs-api/wiki/AMD).
 
-**Shift + ENTER**: Complete ``memo`` editing.
-
-**BACKSPACE**: Focus move to up ``memo``.

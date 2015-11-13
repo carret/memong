@@ -8,11 +8,13 @@ var app = express();
 var routes = require('./routes/routes.js');
 var passports = require('./passports');
 
+var pkg = require('./package');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser('myKey'));
+app.use(cookieParser(pkg.cookieSecret));
 app.use(session({
-    secret: 'my secret',
+    secret: pkg.sessionSecret,
     cookie: { maxAge: 60000 },
     proxy: true,
     resave: true,
