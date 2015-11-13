@@ -24,11 +24,11 @@
 
 ### 문서
 * 한국어
-	* [memong 시작하기](#)
-	* [개발자 가이드](#)
+	* [memong 시작하기](https://github.com/carret/memong/blob/master/docs/KR/memong%20%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0.md)
+	* [개발자 가이드](https://github.com/carret/memong/blob/master/docs/KR/%EA%B0%9C%EB%B0%9C%EC%9E%90%20%EA%B0%80%EC%9D%B4%EB%93%9C.md)
 * English
-	* [Hello! memong](#)
-	* [Developer Guide](#)
+	* [Hello! memong](https://github.com/carret/memong/blob/master/docs/EN/Hello%20memong!.md)
+	* [Developer Guide](https://github.com/carret/memong/blob/master/docs/EN/Developer%20Guide.md)
 
 
 ## 프로젝트 정보
