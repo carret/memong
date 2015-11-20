@@ -12,17 +12,28 @@ Your documents will be store in your account's database.
 
 
 ## Notes
-Notes are synced with your account. 
+Notes are synced with your account.
 
 ### Create a note
+Click `Create Note` to create a note.
 
 ### Switch to another note
+Click another note in ``Note`` Directory View.
+
+It allows Drag&Drop in Directory View, so you can change note's position easily.
+
+If you edit current selected note, it will change after auto save completed.
 
 ### Rename a note
+Click icon ![icon-edit](https://farm1.staticflickr.com/633/22848236540_476254aa07_t.jpg) in selected note.
+
 
 ### Delete a note
+Click icon ![icon-delete](https://farm1.staticflickr.com/598/23117963326_42b18660b9_t.jpg) in selected note.
 
 ### Editing a note
+You can edit your note in the right Editor View.
+
 
 
 ## Shortcut Key
@@ -37,4 +48,3 @@ Notes are synced with your account.
 
 
 ## Markdown Grammers
-
