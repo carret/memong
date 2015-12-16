@@ -1,8 +1,9 @@
 node_modules/
 .idea/
-build/
 .idea
 .DS_Store*
 ehthumbs.db
 Icon?
 Thumbs.db
+src/jspm_packages/
+src/css/

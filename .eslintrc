@@ -1,0 +1,22 @@
+{
+  "env": {
+    "es6": true,
+    "browser": true,
+    "mocha": false,
+    "node": true
+  },
+
+  "ecmaFeatures": {
+    "modules": true,
+    "jsx": true
+  },
+
+  "globals": {
+    "document": true,
+    "window": true
+  },
+
+  "rules": {
+    "semi": [2, "always"]
+  }
+}

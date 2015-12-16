@@ -1,0 +1,6 @@
+dist/
+docs/
+src/config.js
+src/jspm_packages/
+gulpfile.js
+package.json

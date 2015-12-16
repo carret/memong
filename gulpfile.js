@@ -1,81 +1,124 @@
+'use strict';
+
 var gulp = require('gulp');
-var less = require('gulp-less');
+
+var autoprefixer = require('gulp-autoprefixer');
+var concat = require('gulp-concat');
+var exec = require('child_process').execSync;
 var minifyCss = require('gulp-minify-css');
-var ejsmin = require('gulp-ejsmin');
-var uglify = require('gulp-uglify');
-var buffer = require('vinyl-buffer');
+var minifyEjs = require('gulp-minify-ejs');
+var rename = require('gulp-rename');
+var replace = require('gulp-replace');
+var runSeq = require('run-sequence');
+var less = require('gulp-less');
 
-var browserify = require('browserify');
-var reactify = require('reactify');
-var source = require('vinyl-source-stream');
+var connect = require('gulp-connect');
+var cache = require('gulp-cached');
+var eslint = require('gulp-eslint');
+var path = require('path');
+var util = require('gulp-util');
 
-var nodemon = require('gulp-nodemon');
-var browserSync = require('browser-sync').create();
 
 var paths = {
-    js: ['./src/**/**/*.js', './src/**/*.js', './src/*.js'],
-    styles: ['./src/styles/**/*.less', './src/styles/*.less'],
-    views: ['./src/views/*.*']
+    'templates': './src/templates/*.ejs',
+    'js': './src/js/**/*.js',
+    'styles': './src/styles/**/*.less',
+    'src': './src',
+    'compiled-css': './src/css',
+    'dist': './dist'
 };
 
 
-gulp.task('build-js', function() {
-    return browserify('./src/main.js')
-        .transform(reactify)
-        .bundle()
-        .pipe(source('main.js'))
-        .pipe(buffer())
-        .pipe(uglify())
-        .pipe(gulp.dest('./build'))
-        .pipe(browserSync.stream());
+
+
+// TASK: Build
+gulp.task('build', function (done) {
+    runSeq(['build-less', 'build-js'], 'build-templates', done);
 });
 
-gulp.task('build-less', function() {
-    return gulp.src(paths.styles)
+gulp.task('build-less', function () {
+    gulp.src(paths.styles)
+        .pipe(concat('main.css'))
         .pipe(less())
+        .pipe(autoprefixer())
         .pipe(minifyCss())
-        .pipe(gulp.dest('./build/css'))
-        .pipe(browserSync.stream());
+        .pipe(gulp.dest(paths.dist + '/css'));
 });
 
-gulp.task('build-views', function() {
-    return gulp.src(paths.views)
-        .pipe(gulp.dest('./build/views'))
-        .pipe(browserSync.stream());
-});
-
-gulp.task('run', ['build-js', 'build-less', 'build-views'], function(cb) {
-    var called = false;
-    browserSync.init({
-        proxy: 'http://localhost:8888',
-        port: 3000
+gulp.task('build-js', function () {
+    exec('npm run build', function (err, stdout, stderr) {
+        if (err)
+            throw err;
+        else
+            console.log('Build complete!');
     });
-
-    nodemon({
-        script: 'app.js',
-        env: {
-            'NODE_ENV': 'development'
-        },
-        watch: ['app.js']
-    })
-        .on('start', function onStart() {
-            if (!called) {
-                cb();
-                called = true;
-            }
-        })
-        .on('restart', function onRestart() {
-            setTimeout(function reload() {
-                browserSync.reload({
-                    stream: false
-                });
-            }, 500);
-        });
-
-    gulp.watch(paths.js, ['build-js']);
-    gulp.watch(paths.styles, ['build-less']);
-    gulp.watch(paths.views, ['build-views']);
-
 });
-//Default Task
-gulp.task('default', ['run']);
+
+gulp.task('build-templates', function () {
+    gulp.src(paths.templates)
+        .pipe(replace('../jspm_packages/system.js', '../js/main.js'))
+        .pipe(replace('<script src="../config.js"></script>', ''))
+        .pipe(replace("<script>System.import('../js/app');</script>", ''))
+        .pipe(minifyEjs())
+        .pipe(gulp.dest(paths.dist + '/templates'));
+});
+
+
+
+
+// TASK: Watch
+gulp.task('watch', function() {
+    gulp.watch([paths.js], ['lintjs', 'js']).on('change', logChanges);
+    gulp.watch([paths.styles], ['less']).on('change', logChanges);
+    gulp.watch([paths.templates], ['templates']).on('change', logChanges);
+});
+
+function logChanges(event) {
+    util.log(
+        util.colors.green('File ' + event.type + ': ') +
+        util.colors.magenta(path.basename(event.path))
+    );
+}
+
+
+// TASK: Connect
+gulp.task('connect', function() {
+    connect.server({
+        root: paths.src,
+        livereload: true,
+        fallback: paths.src + '/templates/index.ejs'
+    });
+});
+
+
+// TASK: Compile
+gulp.task('templates', function() {
+    gulp.src(paths.templates)
+        .pipe(connect.reload());
+});
+
+gulp.task('lintjs', function () {
+    return gulp.src(paths.js)
+        .pipe(cache('lintjs'))
+        .pipe(eslint())
+        .pipe(eslint.format());
+});
+
+gulp.task('js', function() {
+    gulp.src(paths.js)
+        .pipe(connect.reload());
+});
+
+gulp.task('less', function() {
+    gulp.src(paths.styles)
+        .pipe(concat('main.css'))
+        .pipe(less())
+        .pipe(autoprefixer())
+        .pipe(gulp.dest(paths['compiled-css']))
+        .pipe(connect.reload());
+});
+
+
+
+// TASK: Default
+gulp.task('default', ['connect', 'watch']);
