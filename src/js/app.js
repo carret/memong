@@ -1,6 +1,6 @@
-import Flowing from './controller/Flowing';
-import Actions from './controller/Actions';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-Flowing.createFlows(Actions.MemoActions);
-Flowing.createFlows(Actions.NoteActions);
+import HelloParse from './core/components/HelloParse';
 
+ReactDOM.render(<HelloParse />, document.getElementById('app'));

@@ -9,6 +9,7 @@ System.config({
     ]
   },
   paths: {
+    "*": "*.js",
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
   },
@@ -20,7 +21,9 @@ System.config({
     "flux": "npm:flux@2.1.1",
     "jquery": "npm:jquery@2.1.4",
     "keymirror": "npm:keymirror@0.1.1",
+    "parse": "npm:parse@1.6.10",
     "react": "npm:react@0.14.3",
+    "react-dom": "npm:react-dom@0.14.3",
     "underscore": "npm:underscore@1.8.3",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -137,6 +140,10 @@ System.config({
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
+    "npm:parse@1.6.10": {
+      "babel-runtime": "npm:babel-runtime@5.8.34",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:path-browserify@0.0.0": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
@@ -146,6 +153,9 @@ System.config({
     "npm:promise@7.0.4": {
       "asap": "npm:asap@2.0.3",
       "fs": "github:jspm/nodelibs-fs@0.1.2"
+    },
+    "npm:react-dom@0.14.3": {
+      "react": "npm:react@0.14.3"
     },
     "npm:react@0.14.3": {
       "envify": "npm:envify@3.4.0",

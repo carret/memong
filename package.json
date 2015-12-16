@@ -50,7 +50,9 @@
       "flux": "npm:flux@^2.1.1",
       "jquery": "npm:jquery@^2.1.4",
       "keymirror": "npm:keymirror@^0.1.1",
+      "parse": "npm:parse@^1.6.10",
       "react": "npm:react@^0.14.3",
+      "react-dom": "npm:react-dom@^0.14.3",
       "underscore": "npm:underscore@^1.8.3"
     },
     "devDependencies": {

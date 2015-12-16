@@ -7,6 +7,10 @@ const Actions = {
     NoteActions: [
         'ADD_NOTE',
         'DELETE_NOTE'
+    ],
+
+    TestActions: [
+        'SUBMIT_TEXT'
     ]
 };
 
