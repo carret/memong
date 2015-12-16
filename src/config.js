@@ -19,7 +19,9 @@ System.config({
     "core-js": "npm:core-js@1.2.6",
     "flux": "npm:flux@2.1.1",
     "jquery": "npm:jquery@2.1.4",
+    "keymirror": "npm:keymirror@0.1.1",
     "react": "npm:react@0.14.3",
+    "underscore": "npm:underscore@1.8.3",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },

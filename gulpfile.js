@@ -84,7 +84,7 @@ function logChanges(event) {
 // TASK: Connect
 gulp.task('connect', function() {
     connect.server({
-        root: paths.src,
+        root: [paths.src, './assets'],
         livereload: true,
         fallback: paths.src + '/templates/index.ejs'
     });

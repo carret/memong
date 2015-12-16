@@ -1,7 +1,6 @@
-import $ from 'jquery';
+import Flowing from './controller/Flowing';
+import Actions from './controller/Actions';
 
-$(document).ready(() => {
-    $('#app').append("<h1>Hello World!</h1>");
-    console.log("Document Ready");
+Flowing.createFlows(Actions.MemoActions);
+Flowing.createFlows(Actions.NoteActions);
 
-});

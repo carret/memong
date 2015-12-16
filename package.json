@@ -49,7 +49,9 @@
     "dependencies": {
       "flux": "npm:flux@^2.1.1",
       "jquery": "npm:jquery@^2.1.4",
-      "react": "npm:react@^0.14.3"
+      "keymirror": "npm:keymirror@^0.1.1",
+      "react": "npm:react@^0.14.3",
+      "underscore": "npm:underscore@^1.8.3"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
