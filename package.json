@@ -9,7 +9,8 @@
     "packages": "src/jspm_packages"
   },
   "scripts": {
-    "build": "jspm bundle-sfx js/app dist/js/main.js --minify --skip-source-maps"
+    "build": "jspm bundle-sfx js/app dist/js/main.js --minify --skip-source-maps",
+    "electron-start": "electron main.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   },
   "homepage": "https://github.com/carret/memong",
   "devDependencies": {
+    "electron-prebuilt": "^0.36.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-cached": "^1.1.0",
@@ -47,10 +49,12 @@
       "doc": "docs"
     },
     "dependencies": {
+      "detect-node": "npm:detect-node@^2.0.3",
       "flux": "npm:flux@^2.1.1",
       "jquery": "npm:jquery@^2.1.4",
       "keymirror": "npm:keymirror@^0.1.1",
-      "parse": "npm:parse@^1.6.10",
+      "node-parse-api": "npm:node-parse-api@^0.3.8",
+      "parse": "npm:parse@^1.6.11",
       "react": "npm:react@^0.14.3",
       "react-dom": "npm:react-dom@^0.14.3",
       "underscore": "npm:underscore@^1.8.3"

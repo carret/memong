@@ -1,1 +1,47 @@
-@font-face{font-family:notokr;src:url(../fonts/noto/notokr-bold.eot);src:url(../fonts/noto/notokr-bold.eot?#iefix) format('embedded-opentype'),url(../fonts/noto/notokr-bold.woff2) format('woff2'),url(../fonts/noto/notokr-bold.woff) format('woff'),url(../fonts/noto/notokr-bold.ttf) format('truetype'),url(../fonts/noto/notokr-bold.svg#notokr-bold) format('svg');font-weight:900;font-style:normal}@font-face{font-family:notokr;src:url(../fonts/noto/notokr-medium.eot);src:url(../fonts/noto/notokr-medium.eot?#iefix) format('embedded-opentype'),url(../fonts/noto/notokr-medium.woff2) format('woff2'),url(../fonts/noto/notokr-medium.woff) format('woff'),url(../fonts/noto/notokr-medium.ttf) format('truetype'),url(../fonts/noto/notokr-medium.svg#notokr-medium) format('svg');font-weight:700;font-style:normal}@font-face{font-family:notokr;src:url(../fonts/noto/notokr-regular.eot);src:url(../fonts/noto/notokr-regular.eot?#iefix) format('embedded-opentype'),url(../fonts/noto/notokr-regular.woff2) format('woff2'),url(../fonts/noto/notokr-regular.woff) format('woff'),url(../fonts/noto/notokr-regular.ttf) format('truetype'),url(../fonts/noto/notokr-regular.svg#notokr-regular) format('svg');font-weight:500;font-style:normal}@font-face{font-family:notokr;src:url(../fonts/noto/notokr-light.eot);src:url(../fonts/noto/notokr-light.eot?#iefix) format('embedded-opentype'),url(../fonts/noto/notokr-light.woff2) format('woff2'),url(../fonts/noto/notokr-light.woff) format('woff'),url(../fonts/noto/notokr-light.ttf) format('truetype'),url(../fonts/noto/notokr-light.svg#notokr-light) format('svg');font-weight:300;font-style:normal}@font-face{font-family:notokr;src:url(../fonts/noto/notokr-thin.eot);src:url(../fonts/noto/notokr-thin.eot?#iefix) format('embedded-opentype'),url(../fonts/noto/notokr-thin.woff2) format('woff2'),url(../fonts/noto/notokr-thin.woff) format('woff'),url(../fonts/noto/notokr-thin.ttf) format('truetype'),url(../fonts/noto/notokr-thin.svg#notokr-thin) format('svg');font-weight:100;font-style:normal}body,html{margin:0;padding:0;width:100%;height:100%;background-color:#FFF;font-family:notokr,'Apple SD Neo Gothic','Helvetica Neue',Helvetica,sans-serif;font-size:1em;font-weight:300;line-height:1.6}
+@font-face {
+  font-family: 'notokr';
+  src: url('../../assets/fonts/noto/notokr-bold.eot');
+  src: url('../../assets/fonts/noto/notokr-bold.eot?#iefix') format('embedded-opentype'), url('../../assets/fonts/noto/notokr-bold.woff2') format('woff2'), url('../../assets/fonts/noto/notokr-bold.woff') format('woff'), url('../../assets/fonts/noto/notokr-bold.ttf') format('truetype'), url('../../assets/fonts/noto/notokr-bold.svg#notokr-bold') format('svg');
+  font-weight: 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'notokr';
+  src: url('../../assets/fonts/noto/notokr-medium.eot');
+  src: url('../../assets/fonts/noto/notokr-medium.eot?#iefix') format('embedded-opentype'), url('../../assets/fonts/noto/notokr-medium.woff2') format('woff2'), url('../../assets/fonts/noto/notokr-medium.woff') format('woff'), url('../../assets/fonts/noto/notokr-medium.ttf') format('truetype'), url('../../assets/fonts/noto/notokr-medium.svg#notokr-medium') format('svg');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'notokr';
+  src: url('../../assets/fonts/noto/notokr-regular.eot');
+  src: url('../../assets/fonts/noto/notokr-regular.eot?#iefix') format('embedded-opentype'), url('../../assets/fonts/noto/notokr-regular.woff2') format('woff2'), url('../../assets/fonts/noto/notokr-regular.woff') format('woff'), url('../../assets/fonts/noto/notokr-regular.ttf') format('truetype'), url('../../assets/fonts/noto/notokr-regular.svg#notokr-regular') format('svg');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'notokr';
+  src: url('../../assets/fonts/noto/notokr-light.eot');
+  src: url('../../assets/fonts/noto/notokr-light.eot?#iefix') format('embedded-opentype'), url('../../assets/fonts/noto/notokr-light.woff2') format('woff2'), url('../../assets/fonts/noto/notokr-light.woff') format('woff'), url('../../assets/fonts/noto/notokr-light.ttf') format('truetype'), url('../../assets/fonts/noto/notokr-light.svg#notokr-light') format('svg');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'notokr';
+  src: url('../../assets/fonts/noto/notokr-thin.eot');
+  src: url('../../assets/fonts/noto/notokr-thin.eot?#iefix') format('embedded-opentype'), url('../../assets/fonts/noto/notokr-thin.woff2') format('woff2'), url('../../assets/fonts/noto/notokr-thin.woff') format('woff'), url('../../assets/fonts/noto/notokr-thin.ttf') format('truetype'), url('../../assets/fonts/noto/notokr-thin.svg#notokr-thin') format('svg');
+  font-weight: 100;
+  font-style: normal;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #FFF;
+  font-family: notokr, 'Apple SD Neo Gothic', 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 1em;
+  font-weight: 300;
+  line-height: 1.6;
+}

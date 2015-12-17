@@ -1,4 +1,4 @@
-import FlowingProto from './_FlowingProto';
+import FlowingProto from './utils/FlowingProto';
 import Actions from './Actions';
 
 var Flowing = new FlowingProto();

@@ -25,7 +25,8 @@ var paths = {
     'styles': './src/styles/**/*.less',
     'src': './src',
     'compiled-css': './src/css',
-    'dist': './dist'
+    'dist': './dist',
+    'assets': './assets'
 };
 
 
@@ -38,10 +39,11 @@ gulp.task('build', function (done) {
 
 gulp.task('build-less', function () {
     gulp.src(paths.styles)
+        .pipe(replace('../', '../../assets/'))
         .pipe(concat('main.css'))
         .pipe(less())
         .pipe(autoprefixer())
-        .pipe(minifyCss())
+        //.pipe(minifyCss())
         .pipe(gulp.dest(paths.dist + '/css'));
 });
 
@@ -59,7 +61,8 @@ gulp.task('build-templates', function () {
         .pipe(replace('../jspm_packages/system.js', '../js/main.js'))
         .pipe(replace('<script src="../config.js"></script>', ''))
         .pipe(replace("<script>System.import('../js/app');</script>", ''))
-        .pipe(minifyEjs())
+        .pipe(replace('"./', '"../../assets/'))
+        //.pipe(minifyEjs())
         .pipe(gulp.dest(paths.dist + '/templates'));
 });
 
@@ -84,7 +87,7 @@ function logChanges(event) {
 // TASK: Connect
 gulp.task('connect', function() {
     connect.server({
-        root: [paths.src, './assets'],
+        root: [paths.src, paths.assets],
         livereload: true,
         fallback: paths.src + '/templates/index.ejs'
     });

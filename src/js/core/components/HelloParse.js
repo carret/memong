@@ -14,7 +14,7 @@ class HelloParse extends React.Component {
 
     componentDidMount() {
         Flowing.subscribe(
-            'SUBMIT_TEXT',
+            Actions.TestActions.SUBMIT_TEXT,
             (payedload) => {
                 this.setState({
                     result: NoteStore.getText()
@@ -25,7 +25,7 @@ class HelloParse extends React.Component {
 
     submitText() {
         Flowing.dispatch(
-            'SUBMIT_TEXT',
+            Actions.TestActions.SUBMIT_TEXT,
             { text: this.state.text }
         );
     }

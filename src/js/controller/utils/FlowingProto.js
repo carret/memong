@@ -39,17 +39,34 @@ class Flowing {
             return;
         }
 
-        for (let idx=0; idx<flowIds.length; idx++) {
-            if (!helperFunc.idTypeCheck(flowIds[idx]))
-                throw new Error('FlowController.createFlows(...):' + flowIds[idx] + ' Type of ID must be Immutable.');
+        if (flowIds.constructor === Array) {
+            for (let idx=0; idx<flowIds.length; idx++) {
+                if (!helperFunc.idTypeCheck(flowIds[idx]))
+                    throw new Error('FlowController.createFlows(...):' + flowIds[idx] + ' Type of ID must be Immutable.');
 
-            if (_flows.hasOwnProperty(flowIds[idx]))
-                throw new Error('FlowController.createFlows(...): Already has flow with ID ' + flowIds[idx]);
+                if (_flows.hasOwnProperty(flowIds[idx]))
+                    throw new Error('FlowController.createFlows(...): Already has flow with ID ' + flowIds[idx]);
 
-            _flows[flowIds[idx]] = _.extend({}, {
-                registers: [],
-                subscribes: []
-            });
+                _flows[flowIds[idx]] = _.extend({}, {
+                    registers: [],
+                    subscribes: []
+                });
+            }
+        }
+
+        else if (flowIds.constructor === Object) {
+            for (let prop in flowIds) {
+                if (!helperFunc.idTypeCheck(flowIds[prop]))
+                    throw new Error('FlowController.createFlows(...):' + flowIds[idx] + ' Type of ID must be Immutable.');
+
+                if (_flows.hasOwnProperty(flowIds[prop]))
+                    throw new Error('FlowController.createFlows(...): Already has flow with ID ' + flowIds[idx]);
+
+                _flows[flowIds[prop]] = _.extend({
+                    registers: [],
+                    subscribes: []
+                });
+            }
         }
     }
 
