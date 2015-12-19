@@ -22,7 +22,7 @@ var util = require('gulp-util');
 var paths = {
     'templates': './src/templates/*.ejs',
     'js': './src/js/**/*.js',
-    'styles': './src/styles/**/*.less',
+    'styles': './src/styles/*.less',
     'src': './src',
     'compiled-css': './src/css',
     'dist': './dist',
@@ -89,7 +89,7 @@ gulp.task('connect', function() {
     connect.server({
         root: [paths.src, paths.assets],
         livereload: true,
-        fallback: paths.src + '/templates/index.ejs'
+        fallback: paths.src + '/templates/front(web).ejs'
     });
 });
 

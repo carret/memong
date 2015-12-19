@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: #009688;">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,38 +20,171 @@
     <link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon/favicon-16x16.png">
 
+    <link rel="stylesheet" href="./libs/slick.css" />
     <link rel="stylesheet" href="./fonts/metro/metro-icons.css" />
     <link rel="stylesheet" href="../css/main.css" />
 </head>
-<body>
-    <header class="__desktop">
+<body style="background-color: #009688;">
 
-    </header>
+    <div class="main __desktop">
+        <div class="slide">
+            <span class="slide-index">
+                <span class="slide-index-number">01.</span>
+                <span class="slide-index-title">소개</span>
+            </span>
+            <div class="slide-body">
+                <iframe src="https://player.vimeo.com/video/149124190?color=009688" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
-    <main>
-        <div id="slider" class="slider __mobile">
-            <div class="slider-item">
-
-            </div>
-            <div class="slider-item">
-
-            </div>
-            <div class="slider-item">
-
+                <h2>Hello memong!</h2>
+                <p>memong is Markdown Editor.</p>
             </div>
         </div>
-    </main>
+        <div class="slide">
+            <span class="slide-index">
+                <span class="slide-index-number">02.</span>
+                <span class="slide-index-title">기능</span>
+            </span>
+            <div class="slide-body">
+                bb
+            </div>
+        </div>
+        <div class="slide">
+            <span class="slide-index">
+                <span class="slide-index-number">03.</span>
+                <span class="slide-index-title">다운로드</span>
+            </span>
+            <div class="slide-body">
+                bb
+            </div>
+        </div>
+        <div class="slide">
+            <span class="slide-index">
+                <span class="slide-index-number">04.</span>
+                <span class="slide-index-title">가이드</span>
+            </span>
+            <div class="slide-body">
+                bb
+            </div>
+        </div>
+        <div class="slide">
+            <span class="slide-index">
+                <span class="slide-index-number">05.</span>
+                <span class="slide-index-title">연락</span>
+            </span>
+            <div class="slide-body">
+                bb
+            </div>
+        </div>
+    </div>
 
-    <footer class="__desktop">
+    <div id="slider" class="slider __mobile">
+        <div class="slider-item">
+            <span class="slider-item-index">
+                <span class="slider-item-index-number">01.</span>
+                <span class="slider-item-index-title">소개</span>
+            </span>
 
-    </footer>
+            <div class="slider-item-section __flex-2">
+                <iframe src="https://player.vimeo.com/video/149124190?color=009688" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            </div>
+
+            <div class="slider-item-paper __flex-3">
+                bb
+            </div>
+        </div>
+
+        <div class="slider-item">
+            <span class="slider-item-index">
+                <span class="slider-item-index-number">02.</span>
+                <span class="slider-item-index-title">기능</span>
+            </span>
+        </div>
+        <div class="slider-item">
+            <span class="slider-item-index">
+                <span class="slider-item-index-number">03.</span>
+                <span class="slider-item-index-title">다운로드</span>
+            </span>
+        </div>
+        <div class="slider-item">
+            <span class="slider-item-index">
+                <span class="slider-item-index-number">04.</span>
+                <span class="slider-item-index-title">가이드</span>
+            </span>
+        </div>
+        <div class="slider-item">
+            <span class="slider-item-index">
+                <span class="slider-item-index-number">05.</span>
+                <span class="slider-item-index-title">연락</span>
+            </span>
+        </div>
+    </div>
+
+    <div id="slider-dots" class="slider__dots __mobile">
+        <button class="slider__dots-dot" idx="0"><img src="./imgs/ic_circle--noFill.svg" /></button>
+        <button class="slider__dots-dot" idx="1"><img src="./imgs/ic_circle--noFill.svg" /></button>
+        <button class="slider__dots-dot" idx="2"><img src="./imgs/ic_circle--noFill.svg" /></button>
+        <button class="slider__dots-dot" idx="3"><img src="./imgs/ic_circle--noFill.svg" /></button>
+        <button class="slider__dots-dot" idx="4"><img src="./imgs/ic_circle--noFill.svg" /></button>
+    </div>
+
 
     <script type="text/javascript" src="./libs/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="./libs/slick.min.js"></script>
-    <script type="text/javascript" src="./libs/slick.min.js"></script>
+    <script type="text/javascript" src="./libs/jquery.modal.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        var sliderInit = false;
 
+        $(document).ready(function() {
+            var $slider = $('#slider');
+            var $dots = $('#slider-dots');
+
+            var DOT_CONTEXTS = {
+                'normal': '<img src="./imgs/ic_circle--noFill.svg" />',
+                'active': '<img src="./imgs/ic_circle--fill.svg" />'
+            };
+
+            function initSlider() {
+                if (sliderInit) return;
+
+                $slider.slick({
+                    dots: false,
+                    arrows: false,
+                    infinite: false,
+                    speed: 300
+                });
+                $slider.slick('setPosition');
+                sliderInit = true;
+                initDots();
+                $slider.slick('slickGoTo', 0);
+            }
+
+            function initDots() {
+                $slider.on('beforeChange', function(e, slick, currentSlider, nextSlider){
+                    $dots.children().removeClass('active');
+                    $dots.children().eq(nextSlider).addClass('active');
+                    confirmDots();
+                });
+
+                $dots.children().on('click tap', function() {
+                   $slider.slick('slickGoTo', $(this).attr('idx'));
+                });
+            }
+
+            function confirmDots(){
+                for (var idx=0; idx < $dots.children().length; idx++) {
+                    var $dot = $($dots.children().eq(idx));
+                    $dot.empty();
+
+                    if ($dot.hasClass('active'))
+                        $dot.html(DOT_CONTEXTS.active);
+
+                    else
+                        $dot.html(DOT_CONTEXTS.normal);
+                }
+            }
+
+            if ($(window).width() <= 480) initSlider();
+            else $(window).on('resize orientationchange', initSlider);
         });
     </script>
 </body>
