@@ -1,3 +1,194 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3em 0;
+  background-color: #009688;
+}
+.main .slide {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: #009688;
+  padding: 3em 0;
+}
+@media (max-width: 1030px) {
+  .main .slide {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    padding: 3em 2em;
+  }
+}
+.main .slide-index {
+  font-size: 2.5em;
+  width: 192px;
+  margin-right: 16px;
+  font-weight: 700;
+  font-family: 'Helvetica Neue', Helvetica;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin-bottom: 1em;
+}
+.main .slide-index-number {
+  margin-bottom: 4px;
+  display: block;
+  font-size: .88em;
+  font-weight: 300;
+  color: #FAFAFA;
+}
+.main .slide-body {
+  display: block;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  background-color: #FFFFFF;
+  box-shadow: 0px 1px 2px 0px rgba(38, 50, 56, 0.3);
+  border-radius: 3px;
+  padding: 32px;
+}
+.main .slide-body iframe {
+  display: block !important;
+  width: 100% !important;
+  height: 393px !important;
+  margin: 1em auto !important;
+}
+.slider {
+  height: 100%;
+}
+.slider .slick-list {
+  height: 100% !important;
+}
+.slider .slick-list .slick-track {
+  height: 100% !important;
+}
+.slider-item {
+  z-index: 5;
+  display: -webkit-box !important;
+  display: -webkit-flex !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 100%;
+  padding-bottom: 46px;
+  outline: none;
+}
+.slider-item .__flex-1 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+.slider-item .__flex-2 {
+  -webkit-box-flex: 2;
+  -webkit-flex: 2;
+      -ms-flex: 2;
+          flex: 2;
+}
+.slider-item .__flex-3 {
+  -webkit-box-flex: 3;
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+}
+.slider-item .__flex-4 {
+  -webkit-box-flex: 4;
+  -webkit-flex: 4;
+      -ms-flex: 4;
+          flex: 4;
+}
+.slider-item .__flex-5 {
+  -webkit-box-flex: 5;
+  -webkit-flex: 5;
+      -ms-flex: 5;
+          flex: 5;
+}
+.slider-item-index {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+      -ms-flex: none;
+          flex: none;
+  display: block;
+  padding: 16px 20px;
+  font-size: 1.5em;
+  font-weight: 700;
+  font-family: 'Helvetica Neue', Helvetica;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+.slider-item-index-number {
+  display: inline-block;
+  font-size: .88em;
+  font-weight: 300;
+  color: #FAFAFA;
+}
+.slider-item-paper {
+  background-color: #FFFFFF;
+  box-shadow: 0px 1px 2px 0px rgba(38, 50, 56, 0.3);
+  border-radius: 3px;
+  margin: 8px 16px;
+  padding: 16px;
+}
+.slider-item-section {
+  margin: 8px 0;
+  padding: 0 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.slider-item-section iframe {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  width: 100% !important;
+  height: auto !important;
+}
+.slider__dots {
+  position: fixed;
+  z-index: 10;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+.slider__dots-dot {
+  display: inline-block;
+  padding: 0;
+  outline: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  margin: 0 4px;
+  opacity: .75;
+}
+.slider__dots-dot img {
+  width: 20px;
+  height: 20px;
+}
+.__mobile {
+  display: none;
+}
+@media (max-width: 480px) {
+  .__mobile {
+    display: block;
+  }
+}
+.__desktop {
+  display: block;
+}
+@media (max-width: 480px) {
+  .__desktop {
+    display: none;
+  }
+}
 @font-face {
   font-family: 'notokr';
   src: url('../../assets/fonts/noto/notokr-bold.eot');
@@ -33,10 +224,11 @@
   font-weight: 100;
   font-style: normal;
 }
+* {
+  box-sizing: border-box;
+}
 html,
 body {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   background-color: #FFF;
@@ -44,4 +236,6 @@ body {
   font-size: 1em;
   font-weight: 300;
   line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }

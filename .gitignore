@@ -1,9 +1,22 @@
-node_modules/
+# Ignore Project Info
 .idea/
 .idea
+
+# Ignore Libraries
+node_modules/
+src/jspm_packages/
+
+# Ignore Build Temp files
+src/css/
+
+# Ignore Electron Platform
+main.js
+src/templates/front-desktop.ejs
+src/styles/front-web.less
+dist/templates/front-desktop.ejs
+
+# Ignore Others
 .DS_Store*
 ehthumbs.db
 Icon?
 Thumbs.db
-src/jspm_packages/
-src/css/

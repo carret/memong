@@ -89,7 +89,7 @@ gulp.task('connect', function() {
     connect.server({
         root: [paths.src, paths.assets],
         livereload: true,
-        fallback: paths.src + '/templates/front(web).ejs'
+        fallback: paths.src + '/templates/index.ejs'
     });
 });
 
