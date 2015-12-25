@@ -1,6 +1,6 @@
 import Parse from '../../controller/Parse';
 import Actions from '../../controller/Actions';
-import Flowing from '../../controller/Flowing';
+import Flowing from '../../controller/AppFlowing';
 
 
 var text = "";
@@ -16,12 +16,18 @@ Flowing.register(
     (payload) => {
         text = payload.text;
         return new Promise((resolve, reject) => {
-            Parse.insert('TextObj', {
-                text: payload.text
-            }, (err, res) => {
-                if (err) console.log("Error: ", err);
-                console.log("Saved: ", res);
-                resolve();
+            var TestingObj = Parse.Object.extend("Testing");
+            var obj = new TestingObj();
+
+            obj.set('text', payload.text);
+            obj.save(null, {
+                success: (res) => {
+                    console.log("Saved: ", res);
+                    resolve();
+                },
+                error: (res,err) => {
+                    console.log("Error: ", err);
+                }
             });
         });
     }

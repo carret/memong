@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Flowing from '../../controller/Flowing';
+import Flowing from '../../controller/AppFlowing';
 import Actions from '../../controller/Actions';
 
 import NoteStore from '../stores/NoteStore';

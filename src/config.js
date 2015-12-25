@@ -14,6 +14,7 @@ System.config({
   },
 
   map: {
+    "async": "npm:async@1.5.0",
     "babel": "npm:babel-core@5.8.34",
     "babel-runtime": "npm:babel-runtime@5.8.34",
     "core-js": "npm:core-js@1.2.6",
@@ -79,6 +80,9 @@ System.config({
     },
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
+    },
+    "npm:async@1.5.0": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:babel-runtime@5.8.34": {
       "process": "github:jspm/nodelibs-process@0.1.2"
